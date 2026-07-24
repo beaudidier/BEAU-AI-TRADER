@@ -7,14 +7,11 @@ function ScanButton({ loading, onClick }: ScanButtonProps) {
   return (
     <button
       onClick={onClick}
-      style={{
-        padding: "12px 20px",
-        fontSize: "18px",
-        marginBottom: "30px",
-        cursor: "pointer",
-      }}
+      disabled={loading}
+      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-cyan-400 px-4 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-70"
     >
-      {loading ? "Scanning..." : "Scan Market"}
+      <span aria-hidden="true">{loading ? "◌" : "↻"}</span>
+      {loading ? "Scanning market..." : "Run scan"}
     </button>
   );
 }
