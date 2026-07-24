@@ -19,6 +19,7 @@ from engines.trade_plan_engine import calculate_trade_plan
 from backtesting.runner import run_backtest
 from saas.middleware import RateLimitReadyMiddleware
 from saas.router import router as saas_router
+from briefing import build_daily_briefing
 
 app = FastAPI(title="BEAU AI TRADER API")
 app.add_middleware(RateLimitReadyMiddleware)
@@ -54,6 +55,11 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {"status": "running"}
+
+
+@app.get("/briefing")
+def daily_briefing():
+    return build_daily_briefing(WATCHLIST, get_stock_data)
 
 
 @app.get("/scan")

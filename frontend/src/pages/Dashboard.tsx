@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 
 import Header from "../components/Header";
+import { BriefingSection } from "../components/BriefingSection";
 import ScanButton from "../components/ScanButton";
 import Sidebar, { type AppPage } from "../components/Sidebar";
 import StockDetailPanel from "../components/StockDetailPanel";
 import StockTable from "../components/StockTable";
 import { WatchlistManager } from "../components/WatchlistManager";
-import { scanMarket } from "../services/api";
-import type { Stock } from "../types/stock";
+import { getDailyBriefing, scanMarket } from "../services/api";
+import type { DailyBriefing, Stock } from "../types/stock";
 
 type DashboardProps = {
   onOpenChart: (stock: Stock) => void;
@@ -19,14 +20,17 @@ function Dashboard({ onOpenChart, onNavigate }: DashboardProps) {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
+  const [briefing, setBriefing] = useState<DailyBriefing | null>(null);
+  const [briefingError, setBriefingError] = useState<string | null>(null);
 
   async function handleScanMarket() {
     setLoading(true);
-
-    const results = await scanMarket();
-    setStocks(results);
-
-    setLoading(false);
+    setBriefingError(null);
+    try {
+      const [results, dailyBriefing] = await Promise.all([scanMarket(), getDailyBriefing()]);
+      setStocks(results); setBriefing(dailyBriefing);
+    } catch (error) { setBriefingError(error instanceof Error ? error.message : "Unable to refresh dashboard."); }
+    finally { setLoading(false); }
   }
 
   useEffect(() => {
@@ -43,12 +47,16 @@ function Dashboard({ onOpenChart, onNavigate }: DashboardProps) {
         <main id="scanner" className="mx-auto max-w-7xl p-5 sm:p-8">
           <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <p className="text-sm font-medium text-cyan-300">Technical analysis</p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-white">Market scanner</h2>
-              <p className="mt-2 text-sm text-slate-400">Review ranked trade setups across your watchlist.</p>
+              <p className="text-sm font-medium text-cyan-300">BEAU AI Daily Briefing</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-white">Your market intelligence, refreshed daily.</h2>
+              <p className="mt-2 text-sm text-slate-400">Review opportunities, watchlist signals, and market conditions in one place.</p>
             </div>
             <ScanButton loading={loading} onClick={handleScanMarket} />
           </div>
+          {briefingError && <p className="mb-6 rounded-lg border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200">{briefingError}</p>}
+          {!briefing && !briefingError && <div className="grid h-60 place-items-center rounded-xl border border-slate-800 bg-slate-900/40 text-sm text-slate-400">Loading AI daily briefing…</div>}
+          {briefing && <div className="mb-8"><BriefingSection briefing={briefing} onAnalyze={onOpenChart} /></div>}
+          <div className="mb-4"><h2 className="text-xl font-semibold text-white">Scanner workspace</h2><p className="mt-1 text-sm text-slate-500">The full scanner remains available below the daily briefing.</p></div>
           <section className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 shadow-xl shadow-slate-950/30">
             <div className="flex flex-col gap-4 border-b border-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>

@@ -118,3 +118,5 @@ export type InstitutionalAnalysis = {
   weaknesses: string[];
   warnings: string[];
 };
+
+export type DailyBriefing = { market_summary: { sentiment: string; confidence: number; explanation: string }; opportunities: Array<{ ticker: string; confidence: number; recommendation: string; rr: number; trend: string; price: number }>; watchlist_summary: { biggest_winner: { ticker: string; change_percent: number } | null; biggest_loser: { ticker: string; change_percent: number } | null; new_buy_signals: string[]; new_strong_buy_signals: string[] }; market_health: Record<string, { label: string; value: string }>; daily_opportunities: string; upcoming_events: Array<{ title: string; detail: string }> };
