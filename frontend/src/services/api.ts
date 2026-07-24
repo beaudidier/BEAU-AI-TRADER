@@ -1,4 +1,4 @@
-import type { BacktestRequest, BacktestResult, BacktestTrade, CoachAnalysis, DailyBriefing, InstitutionalAnalysis, Stock, StockChartData, Timeframe, TradePlan } from "../types/stock";
+import type { BacktestRequest, BacktestResult, BacktestTrade, CoachAnalysis, DailyBriefing, InstitutionalAnalysis, ScanJob, Stock, StockChartData, Timeframe, TradePlan } from "../types/stock";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -10,6 +10,24 @@ export async function scanMarket(): Promise<Stock[]> {
   }
 
   return response.json() as Promise<Stock[]>;
+}
+
+export async function createScanJob(market: "stocks" | "crypto", universe: string): Promise<ScanJob> {
+  const response = await fetch(`${API_BASE_URL}/scan/jobs`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ market, universe }) });
+  if (!response.ok) throw new Error("Unable to start this market scan.");
+  return response.json() as Promise<ScanJob>;
+}
+
+export async function getScanJob(jobId: string): Promise<ScanJob> {
+  const response = await fetch(`${API_BASE_URL}/scan/jobs/${jobId}`);
+  if (!response.ok) throw new Error("Unable to check scan progress.");
+  return response.json() as Promise<ScanJob>;
+}
+
+export async function getScanJobResults(jobId: string): Promise<{ job: ScanJob; results: Stock[]; failed_symbols: string[] }> {
+  const response = await fetch(`${API_BASE_URL}/scan/jobs/${jobId}/results`);
+  if (!response.ok) throw new Error("Unable to load scan results.");
+  return response.json() as Promise<{ job: ScanJob; results: Stock[]; failed_symbols: string[] }>;
 }
 
 export async function getStockChart(ticker: string, timeframe: Timeframe): Promise<StockChartData> {

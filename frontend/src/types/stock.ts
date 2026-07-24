@@ -12,6 +12,19 @@ export type Stock = {
   reasons: string[];
 };
 
+export type ScanJob = {
+  job_id: string;
+  status: "queued" | "running" | "completed";
+  market: "stocks" | "crypto";
+  universe: string;
+  total_symbols: number;
+  completed_symbols: number;
+  failed_symbols: number;
+  progress_percentage: number;
+  started_at: string | null;
+  completed_at: string | null;
+};
+
 export type Timeframe = "1D" | "1W" | "1M" | "3M" | "6M" | "1Y";
 
 export type Candle = {

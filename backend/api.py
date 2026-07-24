@@ -21,6 +21,7 @@ from coach.coach_engine import analyze_completed_trade
 from saas.middleware import RateLimitReadyMiddleware
 from saas.router import router as saas_router
 from briefing import build_daily_briefing
+from universe.universe_registry import scan_jobs
 
 app = FastAPI(title="BEAU AI TRADER API")
 app.add_middleware(RateLimitReadyMiddleware)
@@ -47,6 +48,12 @@ class CoachTradeRequest(BaseModel):
     confidence_score: float = Field(ge=0, le=100)
     recommendation: str
     exit_reason: str
+
+
+class ScanJobRequest(BaseModel):
+    market: str = Field(default="stocks")
+    universe: str = Field(default="demo")
+    custom_symbols: list[str] | None = None
 
 TIMEFRAMES = {
     "1D": {"period": "1d", "interval": "5m"},
@@ -77,7 +84,16 @@ def daily_briefing():
 
 
 @app.get("/scan")
-def scan():
+def scan(market: str = Query(default="stocks"), universe: str = Query(default="demo")):
+
+    if market != "stocks" or universe != "demo":
+        try:
+            job = scan_jobs.start(market, universe)
+        except ValueError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+        if job.status != "completed":
+            return {"job": job.summary(), "results": []}
+        return job.results
 
     results = []
 
@@ -115,6 +131,30 @@ def scan():
     results.sort(key=lambda x: x["score"], reverse=True)
 
     return results
+
+
+@app.post("/scan/jobs")
+def create_scan_job(request: ScanJobRequest):
+    try:
+        return scan_jobs.start(request.market, request.universe, request.custom_symbols).summary()
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@app.get("/scan/jobs/{job_id}")
+def get_scan_job(job_id: str):
+    job = scan_jobs.get(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Scan job not found")
+    return job.summary()
+
+
+@app.get("/scan/jobs/{job_id}/results")
+def get_scan_job_results(job_id: str):
+    job = scan_jobs.get(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Scan job not found")
+    return {"job": job.summary(), "results": job.results, "failed_symbols": job.failures}
 
 
 @app.get("/stocks/{ticker}/history")
