@@ -45,6 +45,24 @@ def build_trade_coach_payload(trade: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def build_close_preview(trade: dict[str, Any], latest_quote: float, quote_timestamp: str) -> dict[str, Any]:
+    """Build the non-mutating price and P/L values shown before a market close."""
+
+    quantity = _value(trade.get("quantity"))
+    entry = _value(trade.get("entry_price"))
+    quote = _value(latest_quote)
+    side = str(trade.get("side") or "BUY").upper()
+    return {
+        "trade_id": str(trade.get("id") or ""),
+        "ticker": str(trade.get("ticker") or "").upper(),
+        "side": side,
+        "latest_quote": _round(quote),
+        "quote_timestamp": quote_timestamp,
+        "estimated_exit_value": _round(quote * quantity),
+        "realized_pnl_estimate": _round((quote - entry) * quantity * _side_multiplier(side)),
+    }
+
+
 def build_portfolio_summary(account: dict[str, Any], open_trades: list[dict[str, Any]], closed_trades: list[dict[str, Any]], quotes: dict[str, dict[str, Any]]) -> dict[str, Any]:
     """Calculate portfolio metrics from persisted trades and provider quotes."""
 

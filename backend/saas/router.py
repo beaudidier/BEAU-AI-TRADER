@@ -1,4 +1,5 @@
 import math
+from datetime import datetime, timezone
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -7,7 +8,8 @@ from pydantic import BaseModel, Field
 from .auth import CurrentUser, get_current_user, get_user_client
 from .entitlements import entitlement_for, require_limit
 from coach.coach_engine import analyze_completed_trade
-from paper_trading.engine import build_portfolio_summary, build_trade_coach_payload
+from paper_trading.engine import build_close_preview, build_portfolio_summary, build_trade_coach_payload
+from paper_trading.validation import validate_long_paper_trade
 from providers import get_market_data_provider
 from engines.institutional_engine import calculate_institutional_analysis
 from learning.learning_engine import build_learning_context, build_learning_dashboard, build_learning_trade_update
@@ -44,14 +46,16 @@ class TradeUpdate(BaseModel):
 
 class PaperTradeOpen(BaseModel):
     ticker: str = Field(min_length=1, max_length=20)
-    side: Literal["BUY", "SELL"]
-    entry_price: float = Field(gt=0)
-    stop_loss: float = Field(gt=0)
-    target_1: float = Field(gt=0)
-    target_2: float = Field(gt=0)
-    quantity: float = Field(gt=0)
-    confidence_score: float = Field(ge=0, le=100)
+    side: Literal["BUY"]
+    current_price: float
+    entry_price: float
+    stop_loss: float
+    target_1: float
+    target_2: float
+    quantity: float
+    confidence_score: float
     recommendation: str = Field(min_length=1, max_length=40)
+    risk_reward_target_1: float
 
 
 def _data(response): return response.data or []
@@ -212,8 +216,12 @@ def get_paper_portfolio(user: CurrentUser = Depends(get_current_user)):
 
 @router.post("/paper-trading/open", status_code=status.HTTP_201_CREATED)
 def open_paper_trade(payload: PaperTradeOpen, user: CurrentUser = Depends(get_current_user)):
-    """Open a simulated long or short position using stored trade-plan values."""
+    """Open a validated simulated long position using stored trade-plan values."""
 
+    try:
+        validate_long_paper_trade(payload.model_dump())
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
     context = _learning_context(payload)
     parameters = {
         "p_ticker": payload.ticker.upper(), "p_side": payload.side, "p_entry_price": payload.entry_price,
@@ -225,6 +233,17 @@ def open_paper_trade(payload: PaperTradeOpen, user: CurrentUser = Depends(get_cu
         return _one(_client(user).rpc("open_paper_trade", parameters).execute())
     except Exception as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unable to open paper trade. Check account balance and trade values.") from error
+
+
+@router.get("/paper-trading/{trade_id}/close-preview")
+def preview_paper_trade_close(trade_id: str, user: CurrentUser = Depends(get_current_user)):
+    """Return a non-mutating close estimate using the latest available quote."""
+
+    trade = _one(_client(user).table("paper_trades").select("*").eq("id", trade_id).eq("user_id", user.id).eq("status", "OPEN").maybe_single().execute())
+    if not trade:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Open paper trade not found")
+    quote = _quote_price(trade["ticker"])
+    return build_close_preview(trade, quote, datetime.now(timezone.utc).isoformat())
 
 
 @router.post("/paper-trading/{trade_id}/close")

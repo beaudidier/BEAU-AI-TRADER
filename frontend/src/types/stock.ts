@@ -51,6 +51,8 @@ export type TradePlan = {
   risk_reward_target_2: number;
   position_size: number;
   total_position_value: number;
+  maximum_risk: number;
+  account_risk_percent: number;
   recommendation: string;
   confidence_score: number;
   reasons: string[];

@@ -91,6 +91,8 @@ def calculate_trade_plan(
         "risk_reward_target_2": round(risk_reward_target_2, 2),
         "position_size": position_size,
         "total_position_value": round(total_position_value, 2),
+        "maximum_risk": round(risk_per_share * position_size, 2),
+        "account_risk_percent": round(risk_percent, 2),
         "recommendation": recommendation,
         "confidence_score": round(confidence),
         "reasons": reasons,
