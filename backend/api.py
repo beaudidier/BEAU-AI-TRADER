@@ -1,6 +1,9 @@
 import math
 from datetime import date, timedelta
 
+import pandas as pd
+import ta
+
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -13,7 +16,7 @@ from volume import add_volume_analysis
 from scoring import calculate_score
 from support_resistance import calculate_support_resistance
 from engines.confidence_engine import calculate_confidence
-from engines.institutional_engine import calculate_institutional_analysis
+from engines.institutional_engine import calculate_institutional_analysis, load_weights
 from engines.engine_utils import has_valid_market_data, safe_float
 from engines.trade_plan_engine import calculate_trade_plan
 from backtesting.runner import run_backtest
@@ -24,6 +27,8 @@ from briefing import build_daily_briefing
 from universe.universe_registry import scan_jobs
 from validation.validation_engine import validation_store
 from providers import get_market_data_provider
+
+_previous_debug_scores: dict[str, dict] = {}
 
 app = FastAPI(title="BEAU AI TRADER API")
 app.add_middleware(RateLimitReadyMiddleware)
@@ -228,6 +233,30 @@ def get_stock_analysis(ticker: str):
     levels = calculate_support_resistance(df)
     validation_store.record(ticker, analysis["overall_score"], analysis["recommendation"], float(df["Close"].iloc[-1]), levels["support"], levels["resistance"], "Risk-on" if analysis["engines"]["market_regime"]["score"] >= 60 else "Defensive")
     return analysis
+
+
+@app.get("/debug/score/{ticker}")
+def debug_score(ticker: str):
+    """Expose the existing deterministic score calculation without changing it."""
+
+    df = get_stock_data(ticker.upper(), period="2y", interval="1d")
+    if df is None or df.empty:
+        raise HTTPException(status_code=404, detail="No market data found")
+    benchmark = get_stock_data("SPY", period="2y", interval="1d")
+    analysis = calculate_institutional_analysis(df, benchmark)
+    close = pd.to_numeric(df["Close"], errors="coerce")
+    macd = ta.trend.MACD(close=close)
+    levels = calculate_support_resistance(df)
+    latest = df.iloc[-1]
+    weights = {name: round(weight * 100, 2) for name, weight in load_weights().items()}
+    raw = {"open": safe_float(latest.get("Open")), "high": safe_float(latest.get("High")), "low": safe_float(latest.get("Low")), "close": safe_float(latest.get("Close")), "volume": safe_float(latest.get("Volume")), "ema20": safe_float(close.ewm(span=20, adjust=False).mean().iloc[-1]), "ema50": safe_float(close.ewm(span=50, adjust=False).mean().iloc[-1]), "ema200": safe_float(close.ewm(span=200, adjust=False).mean().iloc[-1]), "rsi14": safe_float(ta.momentum.rsi(close=close, window=14).iloc[-1]), "macd": safe_float(macd.macd().iloc[-1]), "macd_signal": safe_float(macd.macd_signal().iloc[-1]), "volume_sma20": safe_float(pd.to_numeric(df["Volume"], errors="coerce").rolling(20).mean().iloc[-1]), "atr14": safe_float(ta.volatility.average_true_range(high=df["High"], low=df["Low"], close=df["Close"], window=14).iloc[-1]), "support": levels["support"], "resistance": levels["resistance"]}
+    missing = [name for name, value in raw.items() if value is None]
+    contributions = {name: round(result["score"] * (weights[name] / 100), 2) for name, result in analysis["engines"].items()}
+    previous = _previous_debug_scores.get(ticker.upper())
+    changes = ["No previous debug scan is available for this ticker."] if previous is None else [f"{name.replace('_', ' ')} changed by {analysis['engines'][name]['score'] - previous['engines'][name]['score']:+.0f} points." for name in analysis["engines"] if analysis["engines"][name]["score"] != previous["engines"][name]["score"]] or ["No engine score changed from the previous debug scan."]
+    response = {"provider": type(get_market_data_provider()).__name__, "data_timestamp": df.index[-1].isoformat(), "timeframe": {"period": "2y", "interval": "1d"}, "raw_indicator_values": raw, "engine_scores": analysis["engines"], "weights": weights, "weighted_contributions": contributions, "final_score": analysis["overall_score"], "final_recommendation": analysis["recommendation"], "missing_or_invalid_fields": missing, "reasons_score_changed_from_previous_scan": changes}
+    _previous_debug_scores[ticker.upper()] = analysis
+    return response
 
 
 @app.get("/trade-plan/{ticker}")
