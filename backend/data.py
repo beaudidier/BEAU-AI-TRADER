@@ -4,20 +4,27 @@ import pandas as pd
 from config import PERIOD, INTERVAL
 
 
-def get_stock_data(ticker, period=PERIOD, interval=INTERVAL):
+def get_stock_data(ticker, period=PERIOD, interval=INTERVAL, start=None, end=None):
     """
     Download historische koersdata van Yahoo Finance.
     """
 
     try:
-        df = yf.download(
-            ticker,
-            period=period,
-            interval=interval,
-            progress=False,
-            auto_adjust=True,
-            group_by="column",
-        )
+        download_options = {
+            "tickers": ticker,
+            "interval": interval,
+            "progress": False,
+            "auto_adjust": True,
+            "group_by": "column",
+        }
+
+        if start is not None:
+            download_options["start"] = start
+            download_options["end"] = end
+        else:
+            download_options["period"] = period
+
+        df = yf.download(**download_options)
 
         if df.empty:
             return None

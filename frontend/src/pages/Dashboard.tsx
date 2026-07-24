@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import Header from "../components/Header";
 import ScanButton from "../components/ScanButton";
-import Sidebar from "../components/Sidebar";
+import Sidebar, { type AppPage } from "../components/Sidebar";
 import StockDetailPanel from "../components/StockDetailPanel";
 import StockTable from "../components/StockTable";
 import { scanMarket } from "../services/api";
@@ -10,9 +10,10 @@ import type { Stock } from "../types/stock";
 
 type DashboardProps = {
   onOpenChart: (stock: Stock) => void;
+  onNavigate: (page: AppPage) => void;
 };
 
-function Dashboard({ onOpenChart }: DashboardProps) {
+function Dashboard({ onOpenChart, onNavigate }: DashboardProps) {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,7 +36,7 @@ function Dashboard({ onOpenChart }: DashboardProps) {
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans text-slate-100 lg:flex">
-      <Sidebar />
+      <Sidebar onNavigate={onNavigate} />
       <div className="min-w-0 flex-1">
         <Header />
         <main id="scanner" className="mx-auto max-w-7xl p-5 sm:p-8">

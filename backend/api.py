@@ -1,7 +1,9 @@
 import math
+from datetime import date, timedelta
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
 from config import WATCHLIST
 from data import get_stock_data
@@ -13,8 +15,18 @@ from support_resistance import calculate_support_resistance
 from engines.confidence_engine import calculate_confidence
 from engines.engine_utils import has_valid_market_data, safe_float
 from engines.trade_plan_engine import calculate_trade_plan
+from backtesting.runner import run_backtest
 
 app = FastAPI(title="BEAU AI TRADER API")
+
+
+class BacktestRequest(BaseModel):
+    ticker: str
+    start_date: date
+    end_date: date
+    minimum_confidence: int = Field(default=65, ge=0, le=100)
+    account_size: float = Field(default=10000, gt=0)
+    risk_percent: float = Field(default=1, gt=0, le=100)
 
 TIMEFRAMES = {
     "1D": {"period": "1d", "interval": "5m"},
@@ -180,3 +192,32 @@ def get_trade_plan(
         )
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@app.post("/backtest")
+def backtest(request: BacktestRequest):
+    """Simulate confidence-driven trade plans over a historical date range."""
+
+    if request.start_date >= request.end_date:
+        raise HTTPException(status_code=422, detail="start_date must be before end_date")
+
+    warmup_start = request.start_date - timedelta(days=400)
+    df = get_stock_data(
+        request.ticker.upper(),
+        interval="1d",
+        start=warmup_start.isoformat(),
+        end=(request.end_date + timedelta(days=1)).isoformat(),
+    )
+
+    if df is None or df.empty:
+        raise HTTPException(status_code=404, detail="No market data found")
+
+    return run_backtest(
+        ticker=request.ticker,
+        data=df,
+        start_date=request.start_date,
+        end_date=request.end_date,
+        minimum_confidence=request.minimum_confidence,
+        account_size=request.account_size,
+        risk_percent=request.risk_percent,
+    )

@@ -1,4 +1,4 @@
-import type { Stock, StockChartData, Timeframe, TradePlan } from "../types/stock";
+import type { BacktestRequest, BacktestResult, Stock, StockChartData, Timeframe, TradePlan } from "../types/stock";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -27,4 +27,18 @@ export async function getTradePlan(ticker: string, accountSize = 10000, riskPerc
   }
 
   return response.json() as Promise<TradePlan>;
+}
+
+export async function runBacktest(request: BacktestRequest): Promise<BacktestResult> {
+  const response = await fetch(`${API_BASE_URL}/backtest`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to run backtest. Check the selected inputs and try again.");
+  }
+
+  return response.json() as Promise<BacktestResult>;
 }

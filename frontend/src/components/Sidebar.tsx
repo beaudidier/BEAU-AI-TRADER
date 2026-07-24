@@ -1,10 +1,16 @@
-const navigationItems = [
-  ["▦", "Dashboard"],
-  ["⌁", "Scanner"],
-  ["◫", "Watchlist"],
+export type AppPage = "dashboard" | "backtesting";
+
+const navigationItems: Array<[string, string, AppPage]> = [
+  ["▦", "Dashboard", "dashboard"],
+  ["◫", "Backtesting", "backtesting"],
 ];
 
-function Sidebar() {
+type SidebarProps = {
+  activePage?: AppPage;
+  onNavigate?: (page: AppPage) => void;
+};
+
+function Sidebar({ activePage = "dashboard", onNavigate }: SidebarProps) {
   return (
     <aside className="hidden w-64 shrink-0 border-r border-slate-800 bg-slate-950 p-5 lg:flex lg:flex-col">
       <div className="mb-12 flex items-center gap-3 px-2">
@@ -12,10 +18,10 @@ function Sidebar() {
         <span className="font-semibold tracking-tight text-white">BEAU AI TRADER</span>
       </div>
       <nav className="space-y-1" aria-label="Primary navigation">
-        {navigationItems.map(([icon, label], index) => (
-          <a key={label} href="#scanner" className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${index === 0 ? "bg-cyan-400/10 text-cyan-300" : "text-slate-400 hover:bg-slate-900 hover:text-white"}`}>
+        {navigationItems.map(([icon, label, page]) => (
+          <button key={label} type="button" onClick={() => onNavigate?.(page)} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition ${activePage === page ? "bg-cyan-400/10 text-cyan-300" : "text-slate-400 hover:bg-slate-900 hover:text-white"}`}>
             <span aria-hidden="true">{icon}</span>{label}
-          </a>
+          </button>
         ))}
       </nav>
       <div className="mt-auto rounded-xl border border-slate-800 bg-slate-900/70 p-4">

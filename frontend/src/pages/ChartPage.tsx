@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
+import Sidebar, { type AppPage } from "../components/Sidebar";
 import TimeframeSelector from "../components/TimeframeSelector";
 import TradingChart from "../components/TradingChart";
 import { getStockChart } from "../services/api";
@@ -10,9 +10,10 @@ import type { Stock, StockChartData, Timeframe } from "../types/stock";
 type ChartPageProps = {
   stock: Stock;
   onBack: () => void;
+  onNavigate: (page: AppPage) => void;
 };
 
-function ChartPage({ stock, onBack }: ChartPageProps) {
+function ChartPage({ stock, onBack, onNavigate }: ChartPageProps) {
   const [timeframe, setTimeframe] = useState<Timeframe>("6M");
   const [chartData, setChartData] = useState<StockChartData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +42,7 @@ function ChartPage({ stock, onBack }: ChartPageProps) {
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans text-slate-100 lg:flex">
-      <Sidebar />
+      <Sidebar onNavigate={onNavigate} />
       <div className="min-w-0 flex-1">
         <Header eyebrow="Technical analysis" title={`${stock.ticker} chart`} />
         <main className="mx-auto max-w-7xl p-5 sm:p-8">

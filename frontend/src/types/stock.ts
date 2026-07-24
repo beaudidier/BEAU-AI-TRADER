@@ -56,3 +56,50 @@ export type TradePlan = {
   reasons: string[];
   warnings: string[];
 };
+
+export type BacktestRequest = {
+  ticker: string;
+  start_date: string;
+  end_date: string;
+  minimum_confidence: number;
+  account_size: number;
+  risk_percent: number;
+};
+
+export type BacktestSummary = {
+  total_trades: number;
+  wins: number;
+  losses: number;
+  win_rate: number;
+  average_rr: number;
+  average_confidence: number;
+  max_drawdown: number;
+  profit_factor: number;
+  expectancy: number;
+  starting_equity: number;
+  ending_equity: number;
+  net_profit: number;
+};
+
+export type BacktestTrade = {
+  ticker: string;
+  entry_date: string;
+  exit_date: string;
+  entry: number;
+  exit: number;
+  stop_loss: number;
+  target_1: number;
+  target_2: number;
+  shares: number;
+  pnl: number;
+  realized_rr: number;
+  confidence_score: number;
+  recommendation: string;
+  exit_reason: string;
+};
+
+export type BacktestResult = {
+  summary: BacktestSummary;
+  equity_curve: Array<{ time: string; value: number }>;
+  trades: BacktestTrade[];
+};
