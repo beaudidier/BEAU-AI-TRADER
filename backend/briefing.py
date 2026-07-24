@@ -32,7 +32,7 @@ def build_daily_briefing(watchlist: list[str], get_data) -> dict:
                 pass
         close = float(data["Close"].iloc[-1]); previous = float(data["Close"].iloc[-2])
         moves.append({"ticker": ticker, "change_percent": round(((close / previous) - 1) * 100, 2)})
-        opportunities.append({"ticker": ticker, "confidence": analysis["overall_score"], "recommendation": analysis["recommendation"], "rr": plan["risk_reward_target_1"] if plan else 0, "trend": _trend_label(analysis["engines"]["trend"]["score"]), "price": round(close, 2)})
+        opportunities.append({"ticker": ticker, "confidence": analysis["overall_score"], "recommendation": analysis["recommendation"], "rr": plan["risk_reward_target_1"] if plan else 0, "trend": _trend_label(analysis["engines"]["trend"]["score"]), "price": round(close, 2), "explanation": analysis["explanation"]})
 
     opportunities.sort(key=lambda item: item["confidence"], reverse=True)
     buy_signals = [item["ticker"] for item in opportunities if item["recommendation"] == "BUY"]

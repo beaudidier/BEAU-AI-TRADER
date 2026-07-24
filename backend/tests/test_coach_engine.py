@@ -13,11 +13,12 @@ class CoachEngineTests(unittest.TestCase):
 
     def test_winning_trade_returns_complete_bounded_coaching(self):
         result = analyze_completed_trade(self.winning_trade)
-        self.assertEqual(set(result), {"grade", "score", "summary", "mistakes", "positives", "improvements", "confidence_alignment", "emotional_bias", "discipline_score"})
+        self.assertEqual(set(result), {"grade", "score", "summary", "mistakes", "positives", "improvements", "confidence_alignment", "emotional_bias", "discipline_score", "explanation"})
         self.assertIn(result["grade"], {"A", "B", "C", "D", "F"})
         self.assertGreaterEqual(result["score"], 0)
         self.assertLessEqual(result["discipline_score"], 100)
         self.assertTrue(result["positives"])
+        self.assertEqual(result["explanation"]["verdict"], "BUY")
 
     def test_stopped_trade_identifies_improvement(self):
         result = analyze_completed_trade({**self.winning_trade, "exit": 96, "pnl": -400, "realized_rr": -1, "exit_reason": "Stop loss"})

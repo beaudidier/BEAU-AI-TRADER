@@ -4,6 +4,7 @@ import pandas as pd
 
 from decision_rules import recommendation_for_score
 from .engine_utils import safe_float
+from .explainability_engine import build_explanation
 
 
 def calculate_trade_plan(
@@ -71,7 +72,7 @@ def calculate_trade_plan(
 
     recommendation = recommendation_for_score(confidence)
 
-    return {
+    result = {
         "ticker": ticker.upper(),
         "current_price": round(current_price, 2),
         "entry": round(entry, 2),
@@ -92,3 +93,5 @@ def calculate_trade_plan(
         "reasons": reasons,
         "warnings": warnings,
     }
+    result["explanation"] = build_explanation(confidence, support=support, resistance=resistance, plan=result)
+    return result

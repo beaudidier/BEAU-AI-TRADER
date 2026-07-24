@@ -58,6 +58,18 @@ export type TradePlan = {
   confidence_score: number;
   reasons: string[];
   warnings: string[];
+  explanation: ExplainableRecommendation;
+};
+
+export type ExplainableRecommendation = {
+  verdict: string;
+  summary: string;
+  strengths: string[];
+  weaknesses: string[];
+  risks: string[];
+  invalidation: string;
+  next_trigger: string;
+  confidence_explanation: string;
 };
 
 export type BacktestRequest = {
@@ -117,6 +129,7 @@ export type CoachAnalysis = {
   confidence_alignment: string;
   emotional_bias: string;
   discipline_score: number;
+  explanation: ExplainableRecommendation;
 };
 
 export type InstitutionalEngineResult = {
@@ -132,6 +145,7 @@ export type InstitutionalAnalysis = {
   strengths: string[];
   weaknesses: string[];
   warnings: string[];
+  explanation: ExplainableRecommendation;
 };
 
-export type DailyBriefing = { market_summary: { sentiment: string; confidence: number; explanation: string }; opportunities: Array<{ ticker: string; confidence: number; recommendation: string; rr: number; trend: string; price: number }>; watchlist_summary: { biggest_winner: { ticker: string; change_percent: number } | null; biggest_loser: { ticker: string; change_percent: number } | null; new_buy_signals: string[]; new_strong_buy_signals: string[] }; market_health: Record<string, { label: string; value: string }>; daily_opportunities: string; upcoming_events: Array<{ title: string; detail: string }> };
+export type DailyBriefing = { market_summary: { sentiment: string; confidence: number; explanation: string }; opportunities: Array<{ ticker: string; confidence: number; recommendation: string; rr: number; trend: string; price: number; explanation: ExplainableRecommendation }>; watchlist_summary: { biggest_winner: { ticker: string; change_percent: number } | null; biggest_loser: { ticker: string; change_percent: number } | null; new_buy_signals: string[]; new_strong_buy_signals: string[] }; market_health: Record<string, { label: string; value: string }>; daily_opportunities: string; upcoming_events: Array<{ title: string; detail: string }> };

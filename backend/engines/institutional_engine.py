@@ -5,6 +5,7 @@ import pandas as pd
 
 from decision_rules import recommendation_for_score
 from .engine_utils import clamp_score
+from .explainability_engine import build_explanation
 from .market_regime_engine import analyze_market_regime
 from .momentum_engine import analyze_momentum
 from .relative_strength_engine import analyze_relative_strength
@@ -70,4 +71,5 @@ def calculate_institutional_analysis(df: pd.DataFrame, benchmark_df: pd.DataFram
         "strengths": strengths,
         "weaknesses": weaknesses,
         "warnings": warnings,
+        "explanation": build_explanation(overall_score, engines=engines),
     }

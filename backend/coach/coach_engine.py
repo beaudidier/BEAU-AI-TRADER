@@ -10,6 +10,7 @@ import math
 from typing import Any
 
 from decision_rules import is_actionable_score, recommendation_for_score
+from engines.explainability_engine import build_explanation
 
 
 def _number(trade: dict[str, Any], field: str, *, required: bool = True) -> float | None:
@@ -139,7 +140,7 @@ def analyze_completed_trade(trade: dict[str, Any]) -> dict[str, Any]:
         improvements.append("Review whether price action invalidated the setup before taking a similar entry again.")
 
     score = _clamp(discipline)
-    return {
+    result = {
         "grade": _grade(score),
         "score": score,
         "summary": f"{outcome} {exit_reason} was the recorded exit reason.",
@@ -150,3 +151,5 @@ def analyze_completed_trade(trade: dict[str, Any]) -> dict[str, Any]:
         "emotional_bias": emotional_bias,
         "discipline_score": score,
     }
+    result["explanation"] = build_explanation(confidence, plan={"current_price": entry, "entry": entry, "stop_loss": stop_loss, "target_1": target_1, "risk_reward_target_1": target_rr})
+    return result

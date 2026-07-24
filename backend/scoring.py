@@ -1,6 +1,7 @@
 from support_resistance import calculate_support_resistance
 from volume import get_volume_score
 from decision_rules import recommendation_for_score
+from engines.explainability_engine import build_explanation
 
 
 def calculate_score(df):
@@ -78,4 +79,5 @@ def calculate_score(df):
         "support": support,
         "resistance": resistance,
         "reasons": reasons,
+        "explanation": build_explanation(score, price=current["Close"], ema20=current["EMA20"], ema50=current["EMA50"], support=support, resistance=resistance),
     }

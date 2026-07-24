@@ -39,3 +39,13 @@ def is_actionable_score(value: Any) -> bool:
     """Whether the canonical decision permits a long trade entry."""
 
     return recommendation_for_score(value) in {"BUY", "STRONG BUY"}
+
+
+def next_threshold_for_score(value: Any) -> tuple[int, str] | None:
+    """Return the next recommendation tier without duplicating rule thresholds."""
+
+    score = normalized_score(value)
+    for threshold, recommendation in ((60, "WATCH"), (75, "BUY"), (90, "STRONG BUY")):
+        if score < threshold:
+            return threshold, recommendation
+    return None
