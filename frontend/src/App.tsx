@@ -8,6 +8,7 @@ import BacktestingPage from "./pages/BacktestingPage";
 import BillingPage from "./pages/BillingPage";
 import Dashboard from "./pages/Dashboard";
 import ProfileSettingsPage from "./pages/ProfileSettingsPage";
+import PaperTradingPage from "./pages/PaperTradingPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
@@ -19,11 +20,11 @@ function ProtectedApplication() {
   const routerNavigate = useNavigate();
   const location = useLocation();
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
-  const page: AppPage = location.pathname === "/backtesting" ? "backtesting" : "dashboard";
+  const page: AppPage = location.pathname === "/backtesting" ? "backtesting" : location.pathname === "/paper-trading" ? "paper-trading" : "dashboard";
 
   function navigatePage(nextPage: AppPage) {
     setSelectedStock(null);
-    routerNavigate(nextPage === "dashboard" ? "/dashboard" : "/backtesting");
+    routerNavigate(nextPage === "dashboard" ? "/dashboard" : nextPage === "backtesting" ? "/backtesting" : "/paper-trading");
   }
 
   if (selectedStock) {
@@ -34,11 +35,15 @@ function ProtectedApplication() {
     return <BacktestingPage onNavigate={navigatePage} />;
   }
 
+  if (page === "paper-trading") {
+    return <PaperTradingPage onNavigate={navigatePage} />;
+  }
+
   return <Dashboard onOpenChart={(stock) => { setSelectedStock(stock); routerNavigate("/chart"); }} onNavigate={navigatePage} />;
 }
 
 function App() {
-  return <BrowserRouter><AuthProvider><Routes><Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} /><Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} /><Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} /><Route path="/reset-password" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} /><Route path="/settings/profile" element={<ProtectedRoute><ProfileSettingsPage /></ProtectedRoute>} /><Route path="/settings/billing" element={<ProtectedRoute><BillingPage /></ProtectedRoute>} /><Route path="/dashboard" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/backtesting" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/chart" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="*" element={<Navigate to="/dashboard" replace />} /></Routes></AuthProvider></BrowserRouter>;
+  return <BrowserRouter><AuthProvider><Routes><Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} /><Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} /><Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} /><Route path="/reset-password" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} /><Route path="/settings/profile" element={<ProtectedRoute><ProfileSettingsPage /></ProtectedRoute>} /><Route path="/settings/billing" element={<ProtectedRoute><BillingPage /></ProtectedRoute>} /><Route path="/dashboard" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/backtesting" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/paper-trading" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/chart" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="*" element={<Navigate to="/dashboard" replace />} /></Routes></AuthProvider></BrowserRouter>;
 }
 
 export default App;

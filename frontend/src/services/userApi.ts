@@ -21,4 +21,7 @@ export const userApi = {
   deleteWatchlist: (id: string) => authenticatedFetch(`/me/watchlists/${id}`, { method: "DELETE" }),
   saveAnalysis: (ticker: string, analysisJson: unknown) => authenticatedFetch("/me/saved-analyses", { method: "POST", body: JSON.stringify({ ticker, analysis_json: analysisJson }) }),
   saveBacktest: (ticker: string, parameters: unknown, results: unknown) => authenticatedFetch("/me/backtests/save", { method: "POST", body: JSON.stringify({ ticker, parameters, results }) }),
+  paperPortfolio: () => authenticatedFetch("/me/paper-trading/portfolio"),
+  openPaperTrade: (payload: unknown) => authenticatedFetch("/me/paper-trading/open", { method: "POST", body: JSON.stringify(payload) }),
+  closePaperTrade: (id: string) => authenticatedFetch(`/me/paper-trading/${id}/close`, { method: "POST" }),
 };

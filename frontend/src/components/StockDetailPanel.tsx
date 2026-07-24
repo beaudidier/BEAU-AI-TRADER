@@ -38,11 +38,27 @@ function StockDetailPanel({ stock, onClose }: StockDetailPanelProps) {
   const [analysis, setAnalysis] = useState<InstitutionalAnalysis | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [analysisSaveMessage, setAnalysisSaveMessage] = useState<string | null>(null);
+  const [paperTradeMessage, setPaperTradeMessage] = useState<string | null>(null);
+  const [paperTradeLoading, setPaperTradeLoading] = useState<"BUY" | "SELL" | null>(null);
 
   async function saveAnalysis() {
     if (!stock || !analysis) return;
     try { await userApi.saveAnalysis(stock.ticker, analysis); setAnalysisSaveMessage("Analysis saved to your account."); }
     catch (error) { setAnalysisSaveMessage(error instanceof Error ? error.message : "Unable to save analysis."); }
+  }
+
+  async function openPaperTrade(side: "BUY" | "SELL") {
+    if (!stock || !tradePlan) return;
+    setPaperTradeLoading(side);
+    setPaperTradeMessage(null);
+    try {
+      await userApi.openPaperTrade({ ticker: stock.ticker, side, entry_price: tradePlan.entry, stop_loss: tradePlan.stop_loss, target_1: tradePlan.target_1, target_2: tradePlan.target_2, quantity: tradePlan.position_size, confidence_score: tradePlan.confidence_score, recommendation: tradePlan.recommendation });
+      setPaperTradeMessage(`Paper ${side.toLowerCase()} position opened using this trade plan.`);
+    } catch (error) {
+      setPaperTradeMessage(error instanceof Error ? error.message : "Unable to open paper trade.");
+    } finally {
+      setPaperTradeLoading(null);
+    }
   }
 
   useEffect(() => {
@@ -141,6 +157,7 @@ function StockDetailPanel({ stock, onClose }: StockDetailPanelProps) {
             </dl>
             <div className="mt-6"><h3 className="text-sm font-semibold text-white">Plan reasons</h3><ul className="mt-3 space-y-2">{tradePlan.reasons.map((reason) => <li key={reason} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-slate-300">{reason}</li>)}</ul></div>
             {tradePlan.warnings.length > 0 && <div className="mt-6"><h3 className="text-sm font-semibold text-amber-200">Warnings</h3><ul className="mt-3 space-y-2">{tradePlan.warnings.map((warning) => <li key={warning} className="rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-sm text-amber-100">{warning}</li>)}</ul></div>}
+            <div className="mt-6 border-t border-slate-800 pt-6"><p className="text-xs leading-5 text-slate-500">Paper trading uses simulated funds only. The entry, stop, targets, position size, and confidence are saved with the trade.</p><div className="mt-4 grid grid-cols-2 gap-3"><button type="button" onClick={() => void openPaperTrade("BUY")} disabled={paperTradeLoading !== null} className="rounded-lg bg-emerald-400 px-3 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:opacity-60">{paperTradeLoading === "BUY" ? "Opening…" : "Paper Buy"}</button><button type="button" onClick={() => void openPaperTrade("SELL")} disabled={paperTradeLoading !== null} className="rounded-lg border border-rose-400/40 px-3 py-2.5 text-sm font-semibold text-rose-200 transition hover:bg-rose-400/10 disabled:opacity-60">{paperTradeLoading === "SELL" ? "Opening…" : "Paper Sell"}</button></div>{paperTradeMessage && <p className="mt-3 text-xs text-slate-400">{paperTradeMessage}</p>}</div>
           </>}
         </div>
       </section>

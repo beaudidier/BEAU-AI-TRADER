@@ -1,8 +1,9 @@
-export type AppPage = "dashboard" | "backtesting";
+export type AppPage = "dashboard" | "backtesting" | "paper-trading";
 
 const navigationItems: Array<[string, string, AppPage]> = [
   ["▦", "Dashboard", "dashboard"],
   ["◫", "Backtesting", "backtesting"],
+  ["◉", "Paper trading", "paper-trading"],
 ];
 
 type SidebarProps = {

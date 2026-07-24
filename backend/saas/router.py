@@ -1,10 +1,14 @@
-from typing import Any
+import math
+from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, Field
 
 from .auth import CurrentUser, get_current_user, get_user_client
 from .entitlements import entitlement_for, require_limit
+from coach.coach_engine import analyze_completed_trade
+from paper_trading.engine import build_portfolio_summary, build_trade_coach_payload
+from providers import get_market_data_provider
 
 
 router = APIRouter(prefix="/me", tags=["SaaS user data"])
@@ -34,6 +38,18 @@ class TradeCreate(BaseModel):
     ticker: str; side: str; entry_price: float; stop_price: float | None = None; target_price: float | None = None; quantity: float; status: str = "OPEN"; notes: str | None = None
 class TradeUpdate(BaseModel):
     stop_price: float | None = None; target_price: float | None = None; quantity: float | None = None; status: str | None = None; pnl: float | None = None; notes: str | None = None
+
+
+class PaperTradeOpen(BaseModel):
+    ticker: str = Field(min_length=1, max_length=20)
+    side: Literal["BUY", "SELL"]
+    entry_price: float = Field(gt=0)
+    stop_loss: float = Field(gt=0)
+    target_1: float = Field(gt=0)
+    target_2: float = Field(gt=0)
+    quantity: float = Field(gt=0)
+    confidence_score: float = Field(ge=0, le=100)
+    recommendation: str = Field(min_length=1, max_length=40)
 
 
 def _data(response): return response.data or []
@@ -151,3 +167,62 @@ def update_trade(trade_id: str, payload: TradeUpdate, user: CurrentUser = Depend
 @router.delete("/trades/{trade_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_trade(trade_id: str, user: CurrentUser = Depends(get_current_user)):
     _client(user).table("trades").delete().eq("id", trade_id).execute(); return Response(status_code=204)
+
+
+def _quote_price(ticker: str) -> float:
+    quote = get_market_data_provider().get_quote(ticker)
+    try:
+        price = float((quote or {}).get("price"))
+    except (TypeError, ValueError):
+        price = 0
+    if not math.isfinite(price) or price <= 0:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unable to obtain a valid market quote")
+    return price
+
+
+@router.get("/paper-trading/portfolio")
+def get_paper_portfolio(user: CurrentUser = Depends(get_current_user)):
+    """Return the authenticated user's simulated account, positions, and performance."""
+
+    client = _client(user)
+    account = _one(client.table("paper_accounts").select("*").eq("user_id", user.id).maybe_single().execute())
+    if not account:
+        account = _one(client.table("paper_accounts").insert({"user_id": user.id}).execute())
+    open_trades = _data(client.table("paper_trades").select("*").eq("user_id", user.id).eq("status", "OPEN").order("opened_at", desc=True).execute())
+    closed_trades = _data(client.table("paper_trades").select("*").eq("user_id", user.id).eq("status", "CLOSED").order("closed_at", desc=True).execute())
+    quotes = {ticker: get_market_data_provider().get_quote(ticker) or {} for ticker in {trade["ticker"] for trade in open_trades}}
+    return build_portfolio_summary(account, open_trades, closed_trades, quotes)
+
+
+@router.post("/paper-trading/open", status_code=status.HTTP_201_CREATED)
+def open_paper_trade(payload: PaperTradeOpen, user: CurrentUser = Depends(get_current_user)):
+    """Open a simulated long or short position using stored trade-plan values."""
+
+    parameters = {
+        "p_ticker": payload.ticker.upper(), "p_side": payload.side, "p_entry_price": payload.entry_price,
+        "p_stop_loss": payload.stop_loss, "p_target_1": payload.target_1, "p_target_2": payload.target_2,
+        "p_quantity": payload.quantity, "p_confidence_score": payload.confidence_score, "p_recommendation": payload.recommendation,
+    }
+    try:
+        return _one(_client(user).rpc("open_paper_trade", parameters).execute())
+    except Exception as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unable to open paper trade. Check account balance and trade values.") from error
+
+
+@router.post("/paper-trading/{trade_id}/close")
+def close_paper_trade(trade_id: str, user: CurrentUser = Depends(get_current_user)):
+    """Close an open simulated position at the latest provider quote and run AI Coach."""
+
+    client = _client(user)
+    existing = _one(client.table("paper_trades").select("ticker").eq("id", trade_id).eq("user_id", user.id).eq("status", "OPEN").maybe_single().execute())
+    if not existing:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Open paper trade not found")
+    try:
+        trade = _one(client.rpc("close_paper_trade", {"p_trade_id": trade_id, "p_exit_price": _quote_price(existing["ticker"])}).execute())
+        coach_analysis = analyze_completed_trade(build_trade_coach_payload(trade))
+        updated = _one(client.table("paper_trades").update({"coach_analysis": coach_analysis}).eq("id", trade_id).execute())
+        return updated or {**trade, "coach_analysis": coach_analysis}
+    except HTTPException:
+        raise
+    except Exception as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unable to close paper trade") from error
