@@ -1,6 +1,6 @@
 import math
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import WATCHLIST
@@ -11,6 +11,8 @@ from volume import add_volume_analysis
 from scoring import calculate_score
 from support_resistance import calculate_support_resistance
 from engines.confidence_engine import calculate_confidence
+from engines.engine_utils import has_valid_market_data, safe_float
+from engines.trade_plan_engine import calculate_trade_plan
 
 app = FastAPI(title="BEAU AI TRADER API")
 
@@ -137,5 +139,44 @@ def get_stock_analysis(ticker: str):
 
     if df is None or df.empty:
         raise HTTPException(status_code=404, detail="No market data found")
+    if not has_valid_market_data(df, minimum_rows=200):
+        raise HTTPException(status_code=422, detail="Insufficient valid market data for analysis")
 
     return calculate_confidence(df)
+
+
+@app.get("/trade-plan/{ticker}")
+def get_trade_plan(
+    ticker: str,
+    account_size: float = Query(default=10000, gt=0),
+    risk_percent: float = Query(default=1, gt=0, le=100),
+):
+    """Return a risk-managed trade plan informed by the confidence engine."""
+
+    df = get_stock_data(ticker.upper(), period="2y", interval="1d")
+
+    if df is None or df.empty:
+        raise HTTPException(status_code=404, detail="No market data found")
+    if not has_valid_market_data(df, minimum_rows=200):
+        raise HTTPException(status_code=422, detail="Insufficient valid market data for trade planning")
+
+    df = add_atr(df)
+    atr = safe_float(df["ATR"].iloc[-1])
+    levels = calculate_support_resistance(df)
+
+    if atr is None or atr <= 0:
+        raise HTTPException(status_code=422, detail="Unable to calculate a valid ATR")
+
+    try:
+        return calculate_trade_plan(
+            ticker=ticker,
+            df=df,
+            account_size=account_size,
+            risk_percent=risk_percent,
+            confidence_output=calculate_confidence(df),
+            support=levels["support"],
+            resistance=levels["resistance"],
+            atr=atr,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error

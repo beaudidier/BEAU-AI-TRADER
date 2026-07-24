@@ -36,3 +36,23 @@ export type StockChartData = {
   support: number;
   resistance: number;
 };
+
+export type TradePlan = {
+  ticker: string;
+  current_price: number;
+  entry: number;
+  stop_loss: number;
+  target_1: number;
+  target_2: number;
+  risk_per_share: number;
+  reward_to_target_1: number;
+  reward_to_target_2: number;
+  risk_reward_target_1: number;
+  risk_reward_target_2: number;
+  position_size: number;
+  total_position_value: number;
+  recommendation: string;
+  confidence_score: number;
+  reasons: string[];
+  warnings: string[];
+};

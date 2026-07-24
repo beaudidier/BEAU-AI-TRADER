@@ -1,8 +1,13 @@
 import pandas as pd
 
+from .engine_utils import has_valid_market_data
+
 
 def calculate_structure_score(df: pd.DataFrame) -> int:
     """Score market structure from recent higher and lower highs and lows."""
+
+    if not has_valid_market_data(df, minimum_rows=20):
+        return 50
 
     data = df.tail(20)
 

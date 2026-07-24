@@ -1,18 +1,23 @@
 import pandas as pd
 import ta
 
+from .engine_utils import has_valid_market_data, safe_float
+
 
 def calculate_volatility_score(df: pd.DataFrame) -> int:
     """Score volatility using ATR and ATR as a percentage of price."""
 
-    atr = float(
+    if not has_valid_market_data(df, minimum_rows=14):
+        return 50
+
+    atr = safe_float(
         ta.volatility.average_true_range(
             high=df["High"], low=df["Low"], close=df["Close"], window=14
         ).iloc[-1]
     )
-    price = float(df["Close"].iloc[-1])
+    price = safe_float(df["Close"].iloc[-1])
 
-    if price <= 0 or pd.isna(atr):
+    if price is None or price <= 0 or atr is None:
         return 50
 
     atr_percent = (atr / price) * 100

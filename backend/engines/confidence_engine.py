@@ -6,6 +6,7 @@ from .structure_engine import calculate_structure_score
 from .trend_engine import calculate_trend_score
 from .volatility_engine import calculate_volatility_score
 from .volume_engine import calculate_volume_score
+from .engine_utils import clamp_score
 
 
 WEIGHTS = {
@@ -29,6 +30,7 @@ def calculate_confidence(df: pd.DataFrame) -> dict[str, int]:
         "volatility": calculate_volatility_score(df),
         "risk": calculate_risk_score(df),
     }
-    confidence = round(sum(scores[name] * WEIGHTS[name] for name in WEIGHTS))
+    scores = {name: clamp_score(score) for name, score in scores.items()}
+    confidence = clamp_score(sum(scores[name] * WEIGHTS[name] for name in WEIGHTS))
 
     return {"confidence": confidence, **scores}

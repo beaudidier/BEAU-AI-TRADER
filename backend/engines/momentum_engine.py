@@ -1,15 +1,26 @@
 import pandas as pd
 import ta
 
+from .engine_utils import clamp_score, has_valid_market_data, safe_float
+
 
 def calculate_momentum_score(df: pd.DataFrame) -> int:
     """Score momentum from RSI health and MACD direction."""
 
-    close = df["Close"]
-    rsi = float(ta.momentum.rsi(close=close, window=14).iloc[-1])
+    if not has_valid_market_data(df, minimum_rows=35):
+        return 50
+
+    close = pd.to_numeric(df["Close"], errors="coerce").dropna()
+    if len(close) < 35:
+        return 50
+
+    rsi = safe_float(ta.momentum.rsi(close=close, window=14).iloc[-1])
     macd = ta.trend.MACD(close=close)
-    macd_line = float(macd.macd().iloc[-1])
-    macd_signal = float(macd.macd_signal().iloc[-1])
+    macd_line = safe_float(macd.macd().iloc[-1])
+    macd_signal = safe_float(macd.macd_signal().iloc[-1])
+
+    if rsi is None or macd_line is None or macd_signal is None:
+        return 50
 
     if 55 <= rsi <= 70:
         rsi_score = 50
@@ -27,4 +38,4 @@ def calculate_momentum_score(df: pd.DataFrame) -> int:
     else:
         macd_score = 10
 
-    return int(rsi_score + macd_score)
+    return clamp_score(rsi_score + macd_score)

@@ -2,14 +2,25 @@ import pandas as pd
 
 from support_resistance import calculate_support_resistance
 
+from .engine_utils import clamp_score, has_valid_market_data, safe_float
+
 
 def calculate_risk_score(df: pd.DataFrame) -> int:
     """Score the trade's risk/reward against recent support and resistance."""
 
+    if not has_valid_market_data(df, minimum_rows=20):
+        return 50
+
     levels = calculate_support_resistance(df)
-    price = float(df["Close"].iloc[-1])
-    downside = price - levels["support"]
-    upside = levels["resistance"] - price
+    price = safe_float(df["Close"].iloc[-1])
+    support = safe_float(levels.get("support"))
+    resistance = safe_float(levels.get("resistance"))
+
+    if price is None or price <= 0 or support is None or resistance is None:
+        return 50
+
+    downside = price - support
+    upside = resistance - price
 
     if downside <= 0 or upside <= 0:
         return 0
@@ -32,4 +43,4 @@ def calculate_risk_score(df: pd.DataFrame) -> int:
     support_score = max(0, min(100, round(100 - (support_distance_percent * 10))))
     resistance_score = max(0, min(100, round(resistance_distance_percent * 10)))
 
-    return round((reward_score * 0.6) + (support_score * 0.2) + (resistance_score * 0.2))
+    return clamp_score((reward_score * 0.6) + (support_score * 0.2) + (resistance_score * 0.2))
