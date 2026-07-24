@@ -1,0 +1,7 @@
+import { useEffect, useState } from "react";
+import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
+import { userApi } from "../services/userApi";
+
+const plans = [{ name: "FREE", details: ["10 scans daily", "1 watchlist", "3 backtests monthly"] }, { name: "PRO", details: ["Unlimited scans", "10 watchlists", "Full trade plans"] }, { name: "ELITE", details: ["Unlimited usage", "Future portfolio AI", "Future broker integrations"] }];
+export default function BillingPage() { const [plan, setPlan] = useState("FREE"); useEffect(() => { void userApi.me().then((data) => setPlan(data.subscription?.plan ?? "FREE")); }, []); return <div className="min-h-screen bg-slate-950 text-slate-100 lg:flex"><Sidebar /><div className="min-w-0 flex-1"><Header eyebrow="Account" title="Billing" /><main className="mx-auto max-w-6xl p-5 sm:p-8"><p className="mb-6 text-sm text-slate-400">Your current plan: <span className="font-semibold text-cyan-300">{plan}</span></p><div className="grid gap-5 md:grid-cols-3">{plans.map((item) => <section key={item.name} className={`rounded-xl border p-6 ${item.name === plan ? "border-cyan-400 bg-cyan-400/5" : "border-slate-800 bg-slate-900/40"}`}><h2 className="text-xl font-semibold">{item.name}</h2><ul className="mt-5 space-y-3 text-sm text-slate-400">{item.details.map((detail) => <li key={detail}>✓ {detail}</li>)}</ul><button disabled className="mt-8 w-full rounded-lg border border-slate-700 py-2 text-sm font-semibold text-slate-500">Coming next milestone</button></section>)}</div></main></div></div>; }

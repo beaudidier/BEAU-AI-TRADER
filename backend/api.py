@@ -17,8 +17,12 @@ from engines.institutional_engine import calculate_institutional_analysis
 from engines.engine_utils import has_valid_market_data, safe_float
 from engines.trade_plan_engine import calculate_trade_plan
 from backtesting.runner import run_backtest
+from saas.middleware import RateLimitReadyMiddleware
+from saas.router import router as saas_router
 
 app = FastAPI(title="BEAU AI TRADER API")
+app.add_middleware(RateLimitReadyMiddleware)
+app.include_router(saas_router)
 
 
 class BacktestRequest(BaseModel):

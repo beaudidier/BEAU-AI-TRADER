@@ -5,6 +5,7 @@ import ScanButton from "../components/ScanButton";
 import Sidebar, { type AppPage } from "../components/Sidebar";
 import StockDetailPanel from "../components/StockDetailPanel";
 import StockTable from "../components/StockTable";
+import { WatchlistManager } from "../components/WatchlistManager";
 import { scanMarket } from "../services/api";
 import type { Stock } from "../types/stock";
 
@@ -62,6 +63,7 @@ function Dashboard({ onOpenChart, onNavigate }: DashboardProps) {
             </div>
             <StockTable stocks={filteredStocks} onOpenChart={onOpenChart} onViewDetails={setSelectedStock} />
           </section>
+          <div className="mt-6"><WatchlistManager /></div>
         </main>
       </div>
       <StockDetailPanel stock={selectedStock} onClose={() => setSelectedStock(null)} />
