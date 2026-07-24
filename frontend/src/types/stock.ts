@@ -35,6 +35,7 @@ export type StockChartData = {
   ema50: LinePoint[];
   support: number;
   resistance: number;
+  latest_timestamp: string;
 };
 
 export type TradePlan = {

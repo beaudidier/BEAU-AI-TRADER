@@ -25,5 +25,6 @@ export const userApi = {
   openPaperTrade: (payload: unknown) => authenticatedFetch("/me/paper-trading/open", { method: "POST", body: JSON.stringify(payload) }),
   closePaperTrade: (id: string) => authenticatedFetch(`/me/paper-trading/${id}/close`, { method: "POST" }),
   paperTradeClosePreview: (id: string) => authenticatedFetch(`/me/paper-trading/${id}/close-preview`),
-  learningDashboard: () => authenticatedFetch("/me/learning/dashboard"),
+  learningDashboard: (ticker?: string) => authenticatedFetch(`/me/learning/dashboard${ticker ? `?ticker=${encodeURIComponent(ticker)}` : ""}`),
+  backtests: () => authenticatedFetch("/me/backtests"),
 };

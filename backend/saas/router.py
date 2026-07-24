@@ -2,7 +2,7 @@ import math
 from datetime import datetime, timezone
 from typing import Any, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from pydantic import BaseModel, Field
 
 from .auth import CurrentUser, get_current_user, get_user_client
@@ -267,8 +267,11 @@ def close_paper_trade(trade_id: str, user: CurrentUser = Depends(get_current_use
 
 
 @router.get("/learning/dashboard")
-def get_learning_dashboard(user: CurrentUser = Depends(get_current_user)):
+def get_learning_dashboard(ticker: str | None = Query(default=None, min_length=1, max_length=20), user: CurrentUser = Depends(get_current_user)):
     """Aggregate all completed paper trades into deterministic personal learning insights."""
 
-    trades = _data(_client(user).table("paper_trades").select("*").eq("user_id", user.id).eq("status", "CLOSED").order("closed_at", desc=True).execute())
+    query = _client(user).table("paper_trades").select("*").eq("user_id", user.id).eq("status", "CLOSED")
+    if ticker:
+        query = query.eq("ticker", ticker.upper())
+    trades = _data(query.order("closed_at", desc=True).execute())
     return build_learning_dashboard(trades)

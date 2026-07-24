@@ -13,12 +13,13 @@ import type { DailyBriefing, Stock } from "../types/stock";
 type DashboardProps = {
   onOpenChart: (stock: Stock) => void;
   onNavigate: (page: AppPage) => void;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
 };
 
-function Dashboard({ onOpenChart, onNavigate }: DashboardProps) {
+function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: DashboardProps) {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
   const [briefing, setBriefing] = useState<DailyBriefing | null>(null);
   const [briefingError, setBriefingError] = useState<string | null>(null);
@@ -66,12 +67,12 @@ function Dashboard({ onOpenChart, onNavigate }: DashboardProps) {
               <label className="relative block">
                 <span className="sr-only">Search stocks</span>
                 <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-500" aria-hidden="true">⌕</span>
-                <input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search ticker" className="h-10 w-full rounded-lg border border-slate-700 bg-slate-950 pl-9 pr-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-400 sm:w-56" />
+                <input value={searchTerm} onChange={(event) => onSearchChange(event.target.value)} placeholder="Search ticker" className="h-10 w-full rounded-lg border border-slate-700 bg-slate-950 pl-9 pr-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-400 sm:w-56" />
               </label>
             </div>
             <StockTable stocks={filteredStocks} onOpenChart={onOpenChart} onViewDetails={setSelectedStock} />
           </section>
-          <div className="mt-6"><WatchlistManager /></div>
+          <div className="mt-6"><WatchlistManager onOpenTicker={(ticker) => onOpenChart({ ticker, price: 0, score: 0, recommendation: "WATCH", ema20: 0, ema50: 0, rsi: 0, atr: 0, support: 0, resistance: 0, reasons: [] })} /></div>
         </main>
       </div>
       <StockDetailPanel stock={selectedStock} onClose={() => setSelectedStock(null)} />

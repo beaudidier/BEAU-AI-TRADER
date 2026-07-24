@@ -165,6 +165,7 @@ def get_stock_history(ticker: str, timeframe: str = "6M"):
         "ema50": ema50,
         "support": levels["support"],
         "resistance": levels["resistance"],
+        "latest_timestamp": df.index[-1].isoformat(),
     }
 
 
