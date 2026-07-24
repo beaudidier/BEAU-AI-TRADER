@@ -4,7 +4,7 @@ import pandas as pd
 from config import PERIOD, INTERVAL
 
 
-def get_stock_data(ticker):
+def get_stock_data(ticker, period=PERIOD, interval=INTERVAL):
     """
     Download historische koersdata van Yahoo Finance.
     """
@@ -12,8 +12,8 @@ def get_stock_data(ticker):
     try:
         df = yf.download(
             ticker,
-            period=PERIOD,
-            interval=INTERVAL,
+            period=period,
+            interval=interval,
             progress=False,
             auto_adjust=True,
             group_by="column",

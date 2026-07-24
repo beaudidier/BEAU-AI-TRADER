@@ -8,7 +8,11 @@ import StockTable from "../components/StockTable";
 import { scanMarket } from "../services/api";
 import type { Stock } from "../types/stock";
 
-function Dashboard() {
+type DashboardProps = {
+  onOpenChart: (stock: Stock) => void;
+};
+
+function Dashboard({ onOpenChart }: DashboardProps) {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,7 +59,7 @@ function Dashboard() {
                 <input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search ticker" className="h-10 w-full rounded-lg border border-slate-700 bg-slate-950 pl-9 pr-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-400 sm:w-56" />
               </label>
             </div>
-            <StockTable stocks={filteredStocks} onSelect={setSelectedStock} />
+            <StockTable stocks={filteredStocks} onOpenChart={onOpenChart} onViewDetails={setSelectedStock} />
           </section>
         </main>
       </div>

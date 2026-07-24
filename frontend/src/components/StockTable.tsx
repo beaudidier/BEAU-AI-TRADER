@@ -4,10 +4,11 @@ import ScoreBadge from "./ScoreBadge";
 
 type StockTableProps = {
   stocks: Stock[];
-  onSelect: (stock: Stock) => void;
+  onOpenChart: (stock: Stock) => void;
+  onViewDetails: (stock: Stock) => void;
 };
 
-function StockTable({ stocks, onSelect }: StockTableProps) {
+function StockTable({ stocks, onOpenChart, onViewDetails }: StockTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[41.25rem] text-left text-sm">
@@ -22,12 +23,12 @@ function StockTable({ stocks, onSelect }: StockTableProps) {
         </thead>
         <tbody className="divide-y divide-slate-800">
           {stocks.map((stock) => (
-            <tr key={stock.ticker} className="cursor-pointer text-slate-300 transition hover:bg-slate-800/70" onClick={() => onSelect(stock)}>
+            <tr key={stock.ticker} className="cursor-pointer text-slate-300 transition hover:bg-slate-800/70" onClick={() => onOpenChart(stock)}>
               <td className="px-5 py-4 font-semibold text-white">{stock.ticker}</td>
               <td className="px-5 py-4 tabular-nums">${stock.price.toFixed(2)}</td>
               <td className="px-5 py-4"><ScoreBadge score={stock.score} /></td>
               <td className="px-5 py-4"><AdviceBadge advice={stock.recommendation} /></td>
-              <td className="px-5 py-4 text-right text-cyan-300">View <span aria-hidden="true">→</span></td>
+              <td className="px-5 py-4 text-right"><button type="button" onClick={(event) => { event.stopPropagation(); onViewDetails(stock); }} className="font-medium text-cyan-300 transition hover:text-cyan-200">Details <span aria-hidden="true">→</span></button></td>
             </tr>
           ))}
           {stocks.length === 0 && (
