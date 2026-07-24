@@ -10,6 +10,7 @@ from atr import add_atr
 from volume import add_volume_analysis
 from scoring import calculate_score
 from support_resistance import calculate_support_resistance
+from engines.confidence_engine import calculate_confidence
 
 app = FastAPI(title="BEAU AI TRADER API")
 
@@ -126,3 +127,15 @@ def get_stock_history(ticker: str, timeframe: str = "6M"):
         "support": levels["support"],
         "resistance": levels["resistance"],
     }
+
+
+@app.get("/analysis/{ticker}")
+def get_stock_analysis(ticker: str):
+    """Return a weighted multi-engine confidence score for a ticker."""
+
+    df = get_stock_data(ticker.upper(), period="2y", interval="1d")
+
+    if df is None or df.empty:
+        raise HTTPException(status_code=404, detail="No market data found")
+
+    return calculate_confidence(df)
