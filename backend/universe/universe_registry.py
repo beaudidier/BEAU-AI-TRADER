@@ -13,6 +13,7 @@ from indicators import add_indicators
 from providers import get_market_data_provider
 from scoring import calculate_score
 from volume import add_volume_analysis
+from validation.validation_engine import validation_store
 
 from .crypto_universe import CryptoUniverseProvider
 from .stock_universe import StockUniverseProvider
@@ -42,6 +43,7 @@ def _scan_symbol(symbol: str) -> dict[str, Any]:
     enriched = add_volume_analysis(add_atr(add_indicators(data)))
     score = calculate_score(enriched)
     current = enriched.iloc[-1]
+    validation_store.record(symbol, score["score"], score["recommendation"], float(current["Close"]), score["support"], score["resistance"], "Unknown")
     return {"ticker": symbol, "price": round(float(current["Close"]), 2), "ema20": round(float(current["EMA20"]), 2), "ema50": round(float(current["EMA50"]), 2), "rsi": round(float(current["RSI"]), 2), "atr": round(float(current["ATR"]), 2), "support": score["support"], "resistance": score["resistance"], "score": score["score"], "recommendation": score["recommendation"], "reasons": score["reasons"], "explanation": score["explanation"]}
 
 

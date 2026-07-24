@@ -25,6 +25,8 @@ export type ScanJob = {
   completed_at: string | null;
 };
 
+export type ValidationDashboard = { overall_accuracy: number; buy_accuracy: number; watch_accuracy: number; strong_buy_accuracy: number; confidence_accuracy: Record<string, number>; best_market_regime: { regime: string | null; accuracy: number }; worst_market_regime: { regime: string | null; accuracy: number }; expected_value: number; tracked_recommendations: number; evaluated_observations: number };
+
 export type Timeframe = "1D" | "1W" | "1M" | "3M" | "6M" | "1Y";
 
 export type Candle = {

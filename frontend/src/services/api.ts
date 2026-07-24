@@ -1,4 +1,4 @@
-import type { BacktestRequest, BacktestResult, BacktestTrade, CoachAnalysis, DailyBriefing, InstitutionalAnalysis, ScanJob, Stock, StockChartData, Timeframe, TradePlan } from "../types/stock";
+import type { BacktestRequest, BacktestResult, BacktestTrade, CoachAnalysis, DailyBriefing, InstitutionalAnalysis, ScanJob, Stock, StockChartData, Timeframe, TradePlan, ValidationDashboard } from "../types/stock";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -28,6 +28,12 @@ export async function getScanJobResults(jobId: string): Promise<{ job: ScanJob; 
   const response = await fetch(`${API_BASE_URL}/scan/jobs/${jobId}/results`);
   if (!response.ok) throw new Error("Unable to load scan results.");
   return response.json() as Promise<{ job: ScanJob; results: Stock[]; failed_symbols: string[] }>;
+}
+
+export async function getValidationDashboard(): Promise<ValidationDashboard> {
+  const response = await fetch(`${API_BASE_URL}/validation/dashboard`);
+  if (!response.ok) throw new Error("Unable to load validation metrics.");
+  return response.json() as Promise<ValidationDashboard>;
 }
 
 export async function getStockChart(ticker: string, timeframe: Timeframe): Promise<StockChartData> {

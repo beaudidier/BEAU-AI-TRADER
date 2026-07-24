@@ -22,6 +22,8 @@ from saas.middleware import RateLimitReadyMiddleware
 from saas.router import router as saas_router
 from briefing import build_daily_briefing
 from universe.universe_registry import scan_jobs
+from validation.validation_engine import validation_store
+from providers import get_market_data_provider
 
 app = FastAPI(title="BEAU AI TRADER API")
 app.add_middleware(RateLimitReadyMiddleware)
@@ -111,6 +113,7 @@ def scan(market: str = Query(default="stocks"), universe: str = Query(default="d
         score = calculate_score(df)
 
         current = df.iloc[-1]
+        validation_store.record(ticker, score["score"], score["recommendation"], float(current["Close"]), score["support"], score["resistance"], "Unknown")
 
         results.append(
             {
@@ -221,7 +224,10 @@ def get_stock_analysis(ticker: str):
         raise HTTPException(status_code=422, detail="Insufficient valid market data for analysis")
 
     benchmark_df = get_stock_data("SPY", period="2y", interval="1d")
-    return calculate_institutional_analysis(df, benchmark_df)
+    analysis = calculate_institutional_analysis(df, benchmark_df)
+    levels = calculate_support_resistance(df)
+    validation_store.record(ticker, analysis["overall_score"], analysis["recommendation"], float(df["Close"].iloc[-1]), levels["support"], levels["resistance"], "Risk-on" if analysis["engines"]["market_regime"]["score"] >= 60 else "Defensive")
+    return analysis
 
 
 @app.get("/trade-plan/{ticker}")
@@ -247,7 +253,7 @@ def get_trade_plan(
         raise HTTPException(status_code=422, detail="Unable to calculate a valid ATR")
 
     try:
-        return calculate_trade_plan(
+        plan = calculate_trade_plan(
             ticker=ticker,
             df=df,
             account_size=account_size,
@@ -257,8 +263,16 @@ def get_trade_plan(
             resistance=levels["resistance"],
             atr=atr,
         )
+        validation_store.record(ticker, plan["confidence_score"], plan["recommendation"], plan["entry"], plan["stop_loss"], plan["target_1"], "Unknown")
+        return plan
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@app.get("/validation/dashboard")
+def validation_dashboard():
+    validation_store.refresh(get_market_data_provider().get_history)
+    return validation_store.dashboard()
 
 
 @app.post("/backtest")

@@ -1,10 +1,11 @@
-export type AppPage = "dashboard" | "backtesting" | "paper-trading" | "learning";
+export type AppPage = "dashboard" | "backtesting" | "paper-trading" | "learning" | "validation";
 
 const navigationItems: Array<[string, string, AppPage]> = [
   ["▦", "Dashboard", "dashboard"],
   ["◫", "Backtesting", "backtesting"],
   ["◉", "Paper trading", "paper-trading"],
   ["◌", "Learning", "learning"],
+  ["✓", "AI Accuracy", "validation"],
 ];
 
 type SidebarProps = {
