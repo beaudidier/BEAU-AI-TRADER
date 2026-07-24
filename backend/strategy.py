@@ -1,4 +1,4 @@
-from config import BUY_SCORE, WATCH_SCORE
+from decision_rules import recommendation_for_score
 
 
 def analyse(df):
@@ -26,15 +26,8 @@ def analyse(df):
     if current["Close"] > df["Close"].iloc[-2]:
         score += 1
 
-    # Advies
-    if score >= BUY_SCORE:
-        recommendation = "🟢 BUY"
-
-    elif score >= WATCH_SCORE:
-        recommendation = "🟡 WATCH"
-
-    else:
-        recommendation = "🔴 SKIP"
+    score *= 10
+    recommendation = recommendation_for_score(score)
 
     return {
         "ticker": "",

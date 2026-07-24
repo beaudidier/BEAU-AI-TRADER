@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from decision_rules import recommendation_for_score
 from .engine_utils import clamp_score
 from .market_regime_engine import analyze_market_regime
 from .momentum_engine import analyze_momentum
@@ -56,14 +57,7 @@ def calculate_institutional_analysis(df: pd.DataFrame, benchmark_df: pd.DataFram
     weights = load_weights()
     overall_score = clamp_score(sum(engines[name]["score"] * weights[name] for name in weights))
 
-    if overall_score >= 80:
-        recommendation = "STRONG BUY"
-    elif overall_score >= 65:
-        recommendation = "BUY"
-    elif overall_score >= 50:
-        recommendation = "WATCH"
-    else:
-        recommendation = "SKIP"
+    recommendation = recommendation_for_score(overall_score)
 
     strengths = [name.replace("_", " ").title() for name, result in engines.items() if result["score"] >= 70]
     weaknesses = [name.replace("_", " ").title() for name, result in engines.items() if result["score"] <= 45]

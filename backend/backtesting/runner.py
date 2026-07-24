@@ -3,6 +3,7 @@ from datetime import date
 
 import pandas as pd
 
+from decision_rules import is_actionable_score
 from .report import build_report
 from .strategy import build_trade_signal
 
@@ -83,7 +84,7 @@ def run_backtest(
         if active is None:
             history = data.iloc[:index]
             plan = build_trade_signal(ticker, history, cash, risk_percent)
-            if plan and plan["recommendation"] in {"BUY", "STRONG BUY"} and plan["confidence_score"] >= minimum_confidence:
+            if plan and is_actionable_score(plan["confidence_score"]) and plan["confidence_score"] >= minimum_confidence:
                 entry = plan["entry"]
                 shares = plan["position_size"]
                 if shares > 0 and low <= entry <= high:

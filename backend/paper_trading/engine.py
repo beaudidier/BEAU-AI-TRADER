@@ -6,6 +6,8 @@ import math
 from datetime import datetime, timezone
 from typing import Any
 
+from decision_rules import recommendation_for_score
+
 
 def _value(value: Any, default: float = 0.0) -> float:
     try:
@@ -40,7 +42,7 @@ def build_trade_coach_payload(trade: dict[str, Any]) -> dict[str, Any]:
         "pnl": pnl,
         "realized_rr": pnl / risk if risk > 0 else 0,
         "confidence_score": _value(trade.get("confidence_score")),
-        "recommendation": str(trade.get("recommendation") or "PAPER TRADE"),
+        "recommendation": recommendation_for_score(trade.get("confidence_score")),
         "exit_reason": "Paper trade closed at market",
     }
 

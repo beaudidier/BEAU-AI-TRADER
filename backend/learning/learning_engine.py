@@ -6,6 +6,8 @@ import math
 from collections import Counter, defaultdict
 from typing import Any
 
+from decision_rules import recommendation_for_score
+
 
 def _number(value: Any, default: float = 0.0) -> float:
     try:
@@ -27,9 +29,10 @@ def build_learning_context(ticker: str, confidence: float, recommendation: str, 
     momentum_score = _number((engines.get("momentum") or {}).get("score"), 50)
     regime_score = _number((engines.get("market_regime") or {}).get("score"), 50)
     confidence = max(0, min(100, _number(confidence, 50)))
+    recommendation = recommendation_for_score(confidence)
     return {
         "ticker": ticker.upper(),
-        "setup_quality": "High quality" if confidence >= 80 and str(recommendation).upper() == "STRONG BUY" else "Qualified" if confidence >= 65 else "Watchlist",
+        "setup_quality": "High quality" if recommendation == "STRONG BUY" else "Qualified" if recommendation == "BUY" else "Watchlist",
         "market_regime": _label(regime_score, "Risk-on", "Neutral", "Defensive"),
         "trend": _label(trend_score, "Bullish", "Mixed", "Bearish"),
         "momentum": _label(momentum_score, "Positive", "Neutral", "Weak"),

@@ -2,6 +2,7 @@ import math
 
 import pandas as pd
 
+from decision_rules import recommendation_for_score
 from .engine_utils import safe_float
 
 
@@ -61,21 +62,14 @@ def calculate_trade_plan(
 
     if risk_reward_target_1 < 1.5:
         warnings.append("Target 1 risk/reward is below the 1.5 minimum")
-    if confidence < 80:
-        warnings.append("Confidence is below the 80 threshold for STRONG BUY")
+    if confidence < 90:
+        warnings.append("Confidence is below the 90 threshold for STRONG BUY")
     if position_size == 0:
         warnings.append("Account size and risk settings do not allow a position")
     if current_price > entry + atr:
         warnings.append("Current price is above the suggested entry; wait for a pullback")
 
-    if confidence >= 80 and risk_reward_target_1 >= 2:
-        recommendation = "STRONG BUY"
-    elif confidence >= 65 and risk_reward_target_1 >= 1.5:
-        recommendation = "BUY"
-    elif confidence >= 50 and risk_reward_target_1 >= 1.2:
-        recommendation = "WATCH"
-    else:
-        recommendation = "SKIP"
+    recommendation = recommendation_for_score(confidence)
 
     return {
         "ticker": ticker.upper(),

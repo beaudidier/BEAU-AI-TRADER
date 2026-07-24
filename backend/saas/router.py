@@ -186,7 +186,7 @@ def _quote_price(ticker: str) -> float:
     return price
 
 
-def _learning_context(payload: PaperTradeOpen) -> dict[str, Any]:
+def _learning_context(payload: PaperTradeOpen, recommendation: str) -> dict[str, Any]:
     """Capture explainable setup conditions without blocking paper execution on data gaps."""
 
     provider = get_market_data_provider()
@@ -197,7 +197,7 @@ def _learning_context(payload: PaperTradeOpen) -> dict[str, Any]:
         company = provider.get_company(payload.ticker)
     except Exception:
         analysis, company = None, None
-    return build_learning_context(payload.ticker, payload.confidence_score, payload.recommendation, analysis, company)
+    return build_learning_context(payload.ticker, payload.confidence_score, recommendation, analysis, company)
 
 
 @router.get("/paper-trading/portfolio")
@@ -219,14 +219,14 @@ def open_paper_trade(payload: PaperTradeOpen, user: CurrentUser = Depends(get_cu
     """Open a validated simulated long position using stored trade-plan values."""
 
     try:
-        validate_long_paper_trade(payload.model_dump())
+        recommendation = validate_long_paper_trade(payload.model_dump())
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
-    context = _learning_context(payload)
+    context = _learning_context(payload, recommendation)
     parameters = {
         "p_ticker": payload.ticker.upper(), "p_side": payload.side, "p_entry_price": payload.entry_price,
         "p_stop_loss": payload.stop_loss, "p_target_1": payload.target_1, "p_target_2": payload.target_2,
-        "p_quantity": payload.quantity, "p_confidence_score": payload.confidence_score, "p_recommendation": payload.recommendation,
+        "p_quantity": payload.quantity, "p_confidence_score": payload.confidence_score, "p_recommendation": recommendation,
         "p_setup_quality": context["setup_quality"], "p_market_regime": context["market_regime"], "p_trend": context["trend"], "p_momentum": context["momentum"], "p_sector": context["sector"],
     }
     try:

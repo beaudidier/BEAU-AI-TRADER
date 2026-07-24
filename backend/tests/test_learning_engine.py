@@ -5,7 +5,7 @@ from learning.learning_engine import build_learning_context, build_learning_dash
 
 class LearningEngineTests(unittest.TestCase):
     def test_context_classifies_setup_deterministically(self):
-        context = build_learning_context("NVDA", 85, "STRONG BUY", {"engines": {"trend": {"score": 80}, "momentum": {"score": 75}, "market_regime": {"score": 90}}}, {"sector": "Technology"})
+        context = build_learning_context("NVDA", 90, "STRONG BUY", {"engines": {"trend": {"score": 80}, "momentum": {"score": 75}, "market_regime": {"score": 90}}}, {"sector": "Technology"})
         self.assertEqual(context["setup_quality"], "High quality")
         self.assertEqual(context["market_regime"], "Risk-on")
 

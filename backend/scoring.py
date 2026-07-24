@@ -1,5 +1,6 @@
 from support_resistance import calculate_support_resistance
 from volume import get_volume_score
+from decision_rules import recommendation_for_score
 
 
 def calculate_score(df):
@@ -69,17 +70,7 @@ def calculate_score(df):
             score += 10
             reasons.append("Risk/Reward > 1.5")
 
-    if score >= 85:
-        recommendation = "🟢 STRONG BUY"
-
-    elif score >= 70:
-        recommendation = "🟢 BUY"
-
-    elif score >= 55:
-        recommendation = "🟡 WATCH"
-
-    else:
-        recommendation = "🔴 SKIP"
+    recommendation = recommendation_for_score(score)
 
     return {
         "score": score,

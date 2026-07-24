@@ -13,7 +13,11 @@ class SafePaperTradingTests(unittest.TestCase):
 
     def test_skip_trade_is_blocked(self):
         with self.assertRaisesRegex(ValueError, "SKIP"):
-            validate_long_paper_trade({**self.valid, "recommendation": "SKIP"})
+            validate_long_paper_trade({**self.valid, "confidence_score": 59, "recommendation": "SKIP"})
+
+    def test_mismatched_recommendation_is_blocked(self):
+        with self.assertRaisesRegex(ValueError, "does not match"):
+            validate_long_paper_trade({**self.valid, "recommendation": "WATCH"})
 
     def test_low_rr_trade_is_blocked(self):
         with self.assertRaisesRegex(ValueError, "risk/reward"):

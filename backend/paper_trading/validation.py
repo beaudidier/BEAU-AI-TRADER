@@ -3,6 +3,7 @@
 import math
 from typing import Any
 
+from decision_rules import recommendation_for_score
 
 def _finite_positive(payload: dict[str, Any], field: str) -> float:
     try:
@@ -14,12 +15,16 @@ def _finite_positive(payload: dict[str, Any], field: str) -> float:
     return value
 
 
-def validate_long_paper_trade(payload: dict[str, Any]) -> None:
+def validate_long_paper_trade(payload: dict[str, Any]) -> str:
     """Reject short and unsafe entries before simulated cash can be changed."""
 
     if str(payload.get("side") or "").upper() != "BUY":
         raise ValueError("Only long Paper Buy trades are supported")
-    if str(payload.get("recommendation") or "").upper() == "SKIP":
+    recommendation = recommendation_for_score(payload.get("confidence_score"))
+    supplied_recommendation = str(payload.get("recommendation") or "").upper()
+    if supplied_recommendation and supplied_recommendation != recommendation:
+        raise ValueError("Paper Buy recommendation does not match the confidence decision")
+    if recommendation == "SKIP":
         raise ValueError("SKIP recommendations cannot be paper traded")
 
     current_price = _finite_positive(payload, "current_price")
@@ -42,3 +47,4 @@ def validate_long_paper_trade(payload: dict[str, Any]) -> None:
         raise ValueError("Target 1 risk/reward must be at least 1.5")
     if abs(current_price - entry) / entry > 0.5:
         raise ValueError("Current market data is inconsistent with the suggested entry")
+    return recommendation

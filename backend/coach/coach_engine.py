@@ -9,6 +9,8 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from decision_rules import is_actionable_score, recommendation_for_score
+
 
 def _number(trade: dict[str, Any], field: str, *, required: bool = True) -> float | None:
     value = trade.get(field)
@@ -57,12 +59,12 @@ def analyze_completed_trade(trade: dict[str, Any]) -> dict[str, Any]:
     if not 0 <= confidence <= 100:
         raise ValueError("confidence_score must be between 0 and 100")
 
-    recommendation = str(trade.get("recommendation") or "").upper()
+    recommendation = recommendation_for_score(confidence)
     exit_reason = str(trade.get("exit_reason") or "Completed trade")
     is_win = pnl > 0
     followed_stop = "stop" in exit_reason.lower()
     reached_target = "target" in exit_reason.lower()
-    planned_setup = recommendation in {"BUY", "STRONG BUY"}
+    planned_setup = is_actionable_score(confidence)
     high_confidence = confidence >= 70
     risk_per_share = abs(entry - stop_loss)
     valid_stop_distance = risk_per_share > 0 and risk_per_share / entry <= 0.2
