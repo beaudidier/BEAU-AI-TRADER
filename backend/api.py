@@ -17,6 +17,7 @@ from engines.institutional_engine import calculate_institutional_analysis
 from engines.engine_utils import has_valid_market_data, safe_float
 from engines.trade_plan_engine import calculate_trade_plan
 from backtesting.runner import run_backtest
+from coach.coach_engine import analyze_completed_trade
 from saas.middleware import RateLimitReadyMiddleware
 from saas.router import router as saas_router
 from briefing import build_daily_briefing
@@ -33,6 +34,19 @@ class BacktestRequest(BaseModel):
     minimum_confidence: int = Field(default=65, ge=0, le=100)
     account_size: float = Field(default=10000, gt=0)
     risk_percent: float = Field(default=1, gt=0, le=100)
+
+
+class CoachTradeRequest(BaseModel):
+    ticker: str
+    entry: float
+    exit: float
+    stop_loss: float
+    target_1: float
+    pnl: float
+    realized_rr: float
+    confidence_score: float = Field(ge=0, le=100)
+    recommendation: str
+    exit_reason: str
 
 TIMEFRAMES = {
     "1D": {"period": "1d", "interval": "5m"},
@@ -233,3 +247,13 @@ def backtest(request: BacktestRequest):
         account_size=request.account_size,
         risk_percent=request.risk_percent,
     )
+
+
+@app.post("/coach/analyze")
+def analyze_trade_coach(trade: CoachTradeRequest):
+    """Return a deterministic post-trade coaching assessment."""
+
+    try:
+        return analyze_completed_trade(trade.model_dump())
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error

@@ -104,6 +104,18 @@ export type BacktestResult = {
   trades: BacktestTrade[];
 };
 
+export type CoachAnalysis = {
+  grade: "A" | "B" | "C" | "D" | "F";
+  score: number;
+  summary: string;
+  mistakes: string[];
+  positives: string[];
+  improvements: string[];
+  confidence_alignment: string;
+  emotional_bias: string;
+  discipline_score: number;
+};
+
 export type InstitutionalEngineResult = {
   score: number;
   explanation: string;

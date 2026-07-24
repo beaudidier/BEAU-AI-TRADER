@@ -1,4 +1,4 @@
-import type { BacktestRequest, BacktestResult, DailyBriefing, InstitutionalAnalysis, Stock, StockChartData, Timeframe, TradePlan } from "../types/stock";
+import type { BacktestRequest, BacktestResult, BacktestTrade, CoachAnalysis, DailyBriefing, InstitutionalAnalysis, Stock, StockChartData, Timeframe, TradePlan } from "../types/stock";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -41,6 +41,20 @@ export async function runBacktest(request: BacktestRequest): Promise<BacktestRes
   }
 
   return response.json() as Promise<BacktestResult>;
+}
+
+export async function analyzeTradeCoach(trade: BacktestTrade): Promise<CoachAnalysis> {
+  const response = await fetch(`${API_BASE_URL}/coach/analyze`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(trade),
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to analyze this completed trade. Please try again.");
+  }
+
+  return response.json() as Promise<CoachAnalysis>;
 }
 
 export async function getInstitutionalAnalysis(ticker: string): Promise<InstitutionalAnalysis> {
