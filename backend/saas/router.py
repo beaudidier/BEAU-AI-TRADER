@@ -9,6 +9,8 @@ from .entitlements import entitlement_for, require_limit
 from coach.coach_engine import analyze_completed_trade
 from paper_trading.engine import build_portfolio_summary, build_trade_coach_payload
 from providers import get_market_data_provider
+from engines.institutional_engine import calculate_institutional_analysis
+from learning.learning_engine import build_learning_context, build_learning_dashboard, build_learning_trade_update
 
 
 router = APIRouter(prefix="/me", tags=["SaaS user data"])
@@ -180,6 +182,20 @@ def _quote_price(ticker: str) -> float:
     return price
 
 
+def _learning_context(payload: PaperTradeOpen) -> dict[str, Any]:
+    """Capture explainable setup conditions without blocking paper execution on data gaps."""
+
+    provider = get_market_data_provider()
+    try:
+        history = provider.get_history(payload.ticker, period="1y", interval="1d")
+        benchmark = provider.get_history("SPY", period="1y", interval="1d")
+        analysis = calculate_institutional_analysis(history, benchmark) if history is not None else None
+        company = provider.get_company(payload.ticker)
+    except Exception:
+        analysis, company = None, None
+    return build_learning_context(payload.ticker, payload.confidence_score, payload.recommendation, analysis, company)
+
+
 @router.get("/paper-trading/portfolio")
 def get_paper_portfolio(user: CurrentUser = Depends(get_current_user)):
     """Return the authenticated user's simulated account, positions, and performance."""
@@ -198,10 +214,12 @@ def get_paper_portfolio(user: CurrentUser = Depends(get_current_user)):
 def open_paper_trade(payload: PaperTradeOpen, user: CurrentUser = Depends(get_current_user)):
     """Open a simulated long or short position using stored trade-plan values."""
 
+    context = _learning_context(payload)
     parameters = {
         "p_ticker": payload.ticker.upper(), "p_side": payload.side, "p_entry_price": payload.entry_price,
         "p_stop_loss": payload.stop_loss, "p_target_1": payload.target_1, "p_target_2": payload.target_2,
         "p_quantity": payload.quantity, "p_confidence_score": payload.confidence_score, "p_recommendation": payload.recommendation,
+        "p_setup_quality": context["setup_quality"], "p_market_regime": context["market_regime"], "p_trend": context["trend"], "p_momentum": context["momentum"], "p_sector": context["sector"],
     }
     try:
         return _one(_client(user).rpc("open_paper_trade", parameters).execute())
@@ -220,9 +238,18 @@ def close_paper_trade(trade_id: str, user: CurrentUser = Depends(get_current_use
     try:
         trade = _one(client.rpc("close_paper_trade", {"p_trade_id": trade_id, "p_exit_price": _quote_price(existing["ticker"])}).execute())
         coach_analysis = analyze_completed_trade(build_trade_coach_payload(trade))
-        updated = _one(client.table("paper_trades").update({"coach_analysis": coach_analysis}).eq("id", trade_id).execute())
+        learning_update = build_learning_trade_update(trade, coach_analysis)
+        updated = _one(client.table("paper_trades").update({"coach_analysis": coach_analysis, **learning_update}).eq("id", trade_id).execute())
         return updated or {**trade, "coach_analysis": coach_analysis}
     except HTTPException:
         raise
     except Exception as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unable to close paper trade") from error
+
+
+@router.get("/learning/dashboard")
+def get_learning_dashboard(user: CurrentUser = Depends(get_current_user)):
+    """Aggregate all completed paper trades into deterministic personal learning insights."""
+
+    trades = _data(_client(user).table("paper_trades").select("*").eq("user_id", user.id).eq("status", "CLOSED").order("closed_at", desc=True).execute())
+    return build_learning_dashboard(trades)
