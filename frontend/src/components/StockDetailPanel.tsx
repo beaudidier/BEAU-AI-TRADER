@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { getTradePlan } from "../services/api";
-import type { Stock, TradePlan } from "../types/stock";
+import { getInstitutionalAnalysis, getTradePlan } from "../services/api";
+import type { InstitutionalAnalysis, Stock, TradePlan } from "../types/stock";
 import AdviceBadge from "./AdviceBadge";
+import InstitutionalRadarChart from "./InstitutionalRadarChart";
 import ScoreBadge from "./ScoreBadge";
 
 type StockDetailPanelProps = {
@@ -33,6 +34,8 @@ const planMetrics: Array<[keyof Pick<TradePlan, "entry" | "stop_loss" | "target_
 function StockDetailPanel({ stock, onClose }: StockDetailPanelProps) {
   const [tradePlan, setTradePlan] = useState<TradePlan | null>(null);
   const [tradePlanError, setTradePlanError] = useState<string | null>(null);
+  const [analysis, setAnalysis] = useState<InstitutionalAnalysis | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,12 +43,16 @@ function StockDetailPanel({ stock, onClose }: StockDetailPanelProps) {
     if (!stock) {
       setTradePlan(null);
       setTradePlanError(null);
+      setAnalysis(null);
+      setAnalysisError(null);
       return undefined;
     }
 
     const ticker = stock.ticker;
     setTradePlan(null);
     setTradePlanError(null);
+    setAnalysis(null);
+    setAnalysisError(null);
 
     async function loadTradePlan() {
       try {
@@ -57,6 +64,17 @@ function StockDetailPanel({ stock, onClose }: StockDetailPanelProps) {
     }
 
     void loadTradePlan();
+
+    async function loadAnalysis() {
+      try {
+        const result = await getInstitutionalAnalysis(ticker);
+        if (!cancelled) setAnalysis(result);
+      } catch (error) {
+        if (!cancelled) setAnalysisError(error instanceof Error ? error.message : "Unable to load institutional analysis.");
+      }
+    }
+
+    void loadAnalysis();
 
     return () => { cancelled = true; };
   }, [stock]);
@@ -89,6 +107,12 @@ function StockDetailPanel({ stock, onClose }: StockDetailPanelProps) {
           <ul className="mt-3 space-y-2">
             {stock.reasons.map((reason) => <li key={reason} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-slate-300">{reason}</li>)}
           </ul>
+        </div>
+        <div className="mt-8 border-t border-slate-800 pt-8">
+          <div className="flex items-center justify-between gap-4"><div><p className="text-sm font-semibold text-white">Institutional analysis</p><p className="mt-1 text-xs text-slate-500">Seven-factor weighted model</p></div>{analysis && <ScoreBadge score={analysis.overall_score} />}</div>
+          {!analysis && !analysisError && <div className="mt-5 flex items-center gap-3 text-sm text-slate-400"><span className="size-4 animate-spin rounded-full border-2 border-cyan-300 border-t-transparent" aria-hidden="true" /> Loading analysis…</div>}
+          {analysisError && <p className="mt-5 rounded-lg border border-rose-400/20 bg-rose-400/10 p-3 text-sm text-rose-200">{analysisError}</p>}
+          {analysis && <><div className="mt-4 flex items-center gap-3"><AdviceBadge advice={analysis.recommendation} /><span className="text-sm text-slate-400">Overall {analysis.overall_score}/100</span></div><InstitutionalRadarChart engines={analysis.engines} /><ul className="mt-4 space-y-2">{Object.entries(analysis.engines).map(([name, result]) => <li key={name} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-slate-300"><span className="font-medium text-white">{name.replace("_", " ")}: {result.score}</span><span className="block pt-1 text-xs text-slate-500">{result.explanation}</span></li>)}</ul>{analysis.strengths.length > 0 && <p className="mt-4 text-xs text-emerald-300">Strengths: {analysis.strengths.join(", ")}</p>}{analysis.weaknesses.length > 0 && <p className="mt-2 text-xs text-rose-300">Weaknesses: {analysis.weaknesses.join(", ")}</p>}{analysis.warnings.length > 0 && <ul className="mt-3 space-y-1">{analysis.warnings.map((warning) => <li key={warning} className="text-xs text-amber-200">{warning}</li>)}</ul>}</>}
         </div>
         <div className="mt-8 border-t border-slate-800 pt-8">
           <div className="flex items-center justify-between gap-4">

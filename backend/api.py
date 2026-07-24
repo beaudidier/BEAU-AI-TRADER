@@ -13,6 +13,7 @@ from volume import add_volume_analysis
 from scoring import calculate_score
 from support_resistance import calculate_support_resistance
 from engines.confidence_engine import calculate_confidence
+from engines.institutional_engine import calculate_institutional_analysis
 from engines.engine_utils import has_valid_market_data, safe_float
 from engines.trade_plan_engine import calculate_trade_plan
 from backtesting.runner import run_backtest
@@ -154,7 +155,8 @@ def get_stock_analysis(ticker: str):
     if not has_valid_market_data(df, minimum_rows=200):
         raise HTTPException(status_code=422, detail="Insufficient valid market data for analysis")
 
-    return calculate_confidence(df)
+    benchmark_df = get_stock_data("SPY", period="2y", interval="1d")
+    return calculate_institutional_analysis(df, benchmark_df)
 
 
 @app.get("/trade-plan/{ticker}")

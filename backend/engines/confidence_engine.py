@@ -1,36 +1,13 @@
 import pandas as pd
 
-from .momentum_engine import calculate_momentum_score
-from .risk_engine import calculate_risk_score
-from .structure_engine import calculate_structure_score
-from .trend_engine import calculate_trend_score
-from .volatility_engine import calculate_volatility_score
-from .volume_engine import calculate_volume_score
-from .engine_utils import clamp_score
-
-
-WEIGHTS = {
-    "trend": 0.30,
-    "momentum": 0.20,
-    "volume": 0.15,
-    "structure": 0.20,
-    "volatility": 0.05,
-    "risk": 0.10,
-}
+from .institutional_engine import calculate_institutional_analysis
 
 
 def calculate_confidence(df: pd.DataFrame) -> dict[str, int]:
-    """Combine each independent analysis engine into a weighted confidence score."""
+    """Compatibility adapter for consumers that need a single confidence value."""
 
-    scores = {
-        "trend": calculate_trend_score(df),
-        "momentum": calculate_momentum_score(df),
-        "volume": calculate_volume_score(df),
-        "structure": calculate_structure_score(df),
-        "volatility": calculate_volatility_score(df),
-        "risk": calculate_risk_score(df),
+    analysis = calculate_institutional_analysis(df)
+    return {
+        "confidence": analysis["overall_score"],
+        **{name: result["score"] for name, result in analysis["engines"].items()},
     }
-    scores = {name: clamp_score(score) for name, score in scores.items()}
-    confidence = clamp_score(sum(scores[name] * WEIGHTS[name] for name in WEIGHTS))
-
-    return {"confidence": confidence, **scores}

@@ -103,3 +103,18 @@ export type BacktestResult = {
   equity_curve: Array<{ time: string; value: number }>;
   trades: BacktestTrade[];
 };
+
+export type InstitutionalEngineResult = {
+  score: number;
+  explanation: string;
+  confidence: number;
+};
+
+export type InstitutionalAnalysis = {
+  overall_score: number;
+  recommendation: string;
+  engines: Record<string, InstitutionalEngineResult>;
+  strengths: string[];
+  weaknesses: string[];
+  warnings: string[];
+};
