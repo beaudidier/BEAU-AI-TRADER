@@ -19,6 +19,10 @@ from typing import Any, Iterable
 import numpy as np
 import pandas as pd
 
+from backtesting.portfolio_risk import (
+    calculate_chronological_portfolio,
+    chronological_drawdown_r,
+)
 from calibration.pullback_robustness import SYMBOLS
 from calibration.regime_gated_pullback import _run
 from engines.institutional_engine import calculate_institutional_analysis
@@ -33,6 +37,8 @@ RANDOM_SEED = 20260745
 BOOTSTRAP_SAMPLES = 10_000
 COMPARISON_BLOCK_LENGTH = 20
 RATE_SENSITIVE_SECTORS = frozenset({"Utilities", "Real Estate"})
+PRE_CHRONOLOGICAL_AUDIT_DRAWDOWN_R = -29.4789
+PRE_CHRONOLOGICAL_LOCKED_DRAWDOWN_R = -10.4094
 
 VARIANTS = {
     "A_no_sector_limit": {
@@ -88,6 +94,7 @@ def load_validated_ledger(path: Path = LEDGER_PATH) -> list[dict[str, Any]]:
     """Consolidate partial-exit rows into one immutable record per trade."""
 
     trades: dict[str, dict[str, Any]] = {}
+    cached_dates: dict[str, pd.DatetimeIndex] = {}
     with path.open(newline="", encoding="utf-8") as handle:
         for row in csv.DictReader(handle):
             if row.get("record_type") != "TRADE" or row.get("cost_multiplier") != "1":
@@ -117,11 +124,54 @@ def load_validated_ledger(path: Path = LEDGER_PATH) -> list[dict[str, Any]]:
                 "cost_multiplier": 1,
             }
             existing = trades.get(trade_id)
-            if existing is not None and existing != normalized:
+            if existing is not None and {
+                key: value
+                for key, value in existing.items()
+                if key != "exit_legs"
+            } != normalized:
                 raise ValueError(
                     f"Partial-exit rows disagree for immutable trade {trade_id}."
                 )
-            trades[trade_id] = normalized
+            if existing is None:
+                normalized["exit_legs"] = []
+                trades[trade_id] = normalized
+            leg_number = row.get("leg_number")
+            if leg_number:
+                leg_exit_date = row.get("leg_exit_date")
+                if not leg_exit_date:
+                    ticker = str(row["ticker"])
+                    if ticker not in cached_dates:
+                        cached_dates[ticker] = pd.read_csv(
+                            DATASET_DIR / f"{ticker}.csv",
+                            index_col=0,
+                            parse_dates=True,
+                            usecols=[0],
+                        ).index
+                    leg_exit_date = str(
+                        cached_dates[ticker][
+                            _as_int(row["leg_exit_index"])
+                        ].date()
+                    )
+                leg = {
+                    "leg": str(row.get("leg_leg") or "EXIT"),
+                    "shares": _as_int(row["leg_shares"]),
+                    "exit_price": _as_float(row["leg_exit_price"]),
+                    "exit_index": _as_int(row["leg_exit_index"]),
+                    "exit_date": str(leg_exit_date),
+                    "pnl": _as_float(row["leg_pnl"]),
+                    "r_multiple": _as_float(row["leg_r_multiple"]),
+                }
+                if not any(
+                    current["leg"] == leg["leg"]
+                    and current["exit_index"] == leg["exit_index"]
+                    and current["shares"] == leg["shares"]
+                    for current in trades[trade_id]["exit_legs"]
+                ):
+                    trades[trade_id]["exit_legs"].append(leg)
+    for trade in trades.values():
+        trade["exit_legs"].sort(
+            key=lambda leg: (leg["exit_date"], leg["exit_index"], leg["leg"])
+        )
     result = sorted(
         trades.values(),
         key=lambda row: (
@@ -409,7 +459,8 @@ def _paired_block_comparison(
         dtype=bool,
     )
     method = (
-        "Paired moving-block bootstrap of chronologically realised trades; "
+        "Paired moving-block bootstrap of chronologically realised trades for "
+        "expectancy and daily realised-R paths for drawdown; "
         f"block length {COMPARISON_BLOCK_LENGTH}."
     )
     if accepted_mask.all():
@@ -425,7 +476,6 @@ def _paired_block_comparison(
     block_count = math.ceil(len(values) / COMPARISON_BLOCK_LENGTH)
     offsets = np.arange(COMPARISON_BLOCK_LENGTH)
     expectancy_differences = np.empty(BOOTSTRAP_SAMPLES, dtype=float)
-    drawdown_improvements = np.empty(BOOTSTRAP_SAMPLES, dtype=float)
     for sample_index in range(BOOTSTRAP_SAMPLES):
         starts = rng.integers(0, len(values), size=block_count)
         indices = (
@@ -436,14 +486,40 @@ def _paired_block_comparison(
         expectancy_differences[sample_index] = (
             float(accepted_sample.mean()) - float(baseline_sample.mean())
         )
-        drawdown_improvements[sample_index] = (
-            _maximum_drawdown(accepted_sample)
-            - _maximum_drawdown(baseline_sample)
-        )
 
     accepted_values = np.asarray(
         [float(row["r_multiple"]) for row in accepted], dtype=float
     )
+    baseline_portfolio = calculate_chronological_portfolio(baseline)
+    accepted_portfolio = calculate_chronological_portfolio(accepted)
+    baseline_daily = {
+        row["date"]: float(row["realized_r"])
+        for row in baseline_portfolio["daily_pnl"]
+    }
+    accepted_daily = {
+        row["date"]: float(row["realized_r"])
+        for row in accepted_portfolio["daily_pnl"]
+    }
+    dates = sorted(baseline_daily)
+    baseline_daily_values = np.asarray(
+        [baseline_daily[day] for day in dates], dtype=float
+    )
+    accepted_daily_values = np.asarray(
+        [accepted_daily.get(day, 0.0) for day in dates], dtype=float
+    )
+    daily_block_count = math.ceil(
+        len(dates) / COMPARISON_BLOCK_LENGTH
+    )
+    drawdown_improvements = np.empty(BOOTSTRAP_SAMPLES, dtype=float)
+    for sample_index in range(BOOTSTRAP_SAMPLES):
+        starts = rng.integers(0, len(dates), size=daily_block_count)
+        indices = (
+            starts[:, None] + offsets[None, :]
+        ).reshape(-1)[: len(dates)] % len(dates)
+        drawdown_improvements[sample_index] = (
+            _maximum_drawdown(accepted_daily_values[indices])
+            - _maximum_drawdown(baseline_daily_values[indices])
+        )
     return {
         "expectancy_difference_r": round(
             float(accepted_values.mean() - values.mean()), 4
@@ -453,23 +529,8 @@ def _paired_block_comparison(
             round(float(np.percentile(expectancy_differences, 97.5)), 4),
         ],
         "maximum_drawdown_improvement_r": round(
-            _maximum_drawdown(
-                np.asarray(
-                    [
-                        float(row["r_multiple"])
-                        for row in sorted(
-                            accepted,
-                            key=lambda row: (
-                                row["exit_date"],
-                                row["entry_date"],
-                                row["ticker"],
-                            ),
-                        )
-                    ],
-                    dtype=float,
-                )
-            )
-            - _maximum_drawdown(values),
+            accepted_portfolio["maximum_drawdown_r"]
+            - baseline_portfolio["maximum_drawdown_r"],
             4,
         ),
         "maximum_drawdown_improvement_95_ci": [
@@ -499,15 +560,21 @@ def sector_exposure(
     if not trades:
         return {"summary": [], "monthly": []}
     sectors = sorted({str(row["sector"]) for row in trades})
+    allowed_dates = {
+        pd.Timestamp(day).date().isoformat() for day in trading_dates
+    }
+    portfolio = calculate_chronological_portfolio(trades)
     daily: list[dict[str, Any]] = []
-    for day, active in _daily_active(trades, trading_dates):
-        if not active:
+    for exposure in portfolio["sector_exposure"]:
+        if exposure["date"] not in allowed_dates:
             continue
-        counts = Counter(str(row["sector"]) for row in active)
-        total = len(active)
+        counts = Counter(exposure["sector_positions"])
+        total = sum(counts.values())
+        if not total:
+            continue
         daily.append(
             {
-                "date": day,
+                "date": pd.Timestamp(exposure["date"]),
                 "total": total,
                 "counts": counts,
                 "percentages": {
@@ -578,31 +645,31 @@ def sector_exposure(
 def _concurrency_metrics(
     trades: list[dict[str, Any]], trading_dates: pd.DatetimeIndex
 ) -> dict[str, Any]:
-    worst_loss = 0.0
-    worst_date = None
-    worst_positions = 0
-    maximum_concurrent = 0
-    maximum_date = None
-    for day, active in _daily_active(trades, trading_dates):
-        if len(active) > maximum_concurrent:
-            maximum_concurrent = len(active)
-            maximum_date = day.date().isoformat()
-        simultaneous_loss = sum(
-            min(0.0, float(row["r_multiple"])) for row in active
-        )
-        if simultaneous_loss < worst_loss:
-            worst_loss = simultaneous_loss
-            worst_date = day.date().isoformat()
-            worst_positions = len(active)
+    del trading_dates
+    portfolio = calculate_chronological_portfolio(
+        trades, include_series=False
+    )
+    worst = portfolio["worst_simultaneous_loss"]
     return {
-        "maximum_concurrent_positions": maximum_concurrent,
-        "maximum_concurrent_date": maximum_date,
-        "worst_simultaneous_loss_r": round(worst_loss, 4),
-        "worst_simultaneous_loss_date": worst_date,
-        "positions_open_on_worst_loss_date": worst_positions,
+        "maximum_concurrent_positions": portfolio[
+            "maximum_concurrent_positions"
+        ],
+        "maximum_concurrent_date": portfolio["maximum_concurrent_date"],
+        "maximum_total_open_risk_r": portfolio[
+            "maximum_total_open_risk_r"
+        ],
+        "maximum_total_open_risk_date": portfolio[
+            "maximum_total_open_risk_date"
+        ],
+        "worst_simultaneous_loss_r": worst["gross_loss_r"],
+        "worst_simultaneous_loss_date": worst["date"],
+        "worst_trading_day": portfolio["worst_trading_day"],
+        "worst_rolling_5_day_period": portfolio[
+            "worst_rolling_5_day_period"
+        ],
         "definition": (
-            "Ex-post sum of negative final trade R for positions open on the "
-            "same session; winners are not used to offset the loss cluster."
+            "Gross realised loss from exit legs sharing the same session; "
+            "winning legs on that session do not offset it."
         ),
     }
 
@@ -644,7 +711,7 @@ def _simple_metrics(
         "profit_factor": round(gains / losses, 4) if losses else None,
         "win_rate": round(float(np.mean(values > 0) * 100), 2),
         "average_r": round(float(values.mean()), 4),
-        "maximum_drawdown": round(_maximum_drawdown(values), 4),
+        "maximum_drawdown": chronological_drawdown_r(trades),
         "bootstrap_expectancy_95_ci": _bootstrap_expectancy(
             values, seed_offset
         ),
@@ -828,9 +895,11 @@ def _variant_metrics(
     trading_dates: pd.DatetimeIndex,
     seed_offset: int,
 ) -> dict[str, Any]:
+    chronological_portfolio = calculate_chronological_portfolio(trades)
     return {
         **_simple_metrics(trades, rejected_count, seed_offset),
         **_concurrency_metrics(trades, trading_dates),
+        "chronological_portfolio": chronological_portfolio,
         "sector_exposure_over_time": sector_exposure(trades, trading_dates),
         "performance_by_market_regime": _performance_by_regime(
             trades, seed_offset
@@ -1025,7 +1094,7 @@ def run_audit() -> dict[str, Any]:
                 "expectancy": locked_strategy["expectancy"],
                 "profit_factor": locked_strategy["profit_factor"],
                 "win_rate": locked_strategy["win_rate"],
-                "maximum_drawdown_in_ticker_processing_order": (
+                "corrected_maximum_drawdown": (
                     locked_strategy["maximum_drawdown"]
                 ),
             },
@@ -1055,9 +1124,9 @@ def run_audit() -> dict[str, Any]:
                 f"{COMPARISON_BLOCK_LENGTH}."
             ),
             "drawdown_order": (
-                "Maximum drawdown is recalculated in chronological exit order. "
-                "The prior locked report's -10.4094R current-cost figure used "
-                "ticker-processing order and is not a portfolio chronology."
+                "Maximum drawdown aggregates every dated partial and final "
+                "exit leg into daily realised R. The prior locked report's "
+                "-10.4094R figure used ticker-processing order."
             ),
             "double_costs": (
                 "Original locked strategy replay regenerated with double "
@@ -1084,7 +1153,6 @@ def write_report(result: dict[str, Any]) -> None:
     variants = result["variants"]
     decision = result["decision"]
     baseline_current = variants["A_no_sector_limit"]["current_costs"]
-    locked_point_metrics = result["source"]["locked_point_metrics"]
     lines = [
         "# Sector Concentration Impact Audit",
         "",
@@ -1107,7 +1175,7 @@ def write_report(result: dict[str, Any]) -> None:
         "- Confidence for Variant E is reconstructed only from candles available at signal close.",
         "- Entry and exit dates both count as active, which treats same-day overlap conservatively.",
         "- A literal percentage cap cannot start from an empty portfolio because its first position is 100%. During this unavoidable startup state, only additions that strictly reduce concentration are accepted. Once the active book reaches the cap, the cap is enforced directly.",
-        "- Worst simultaneous loss is the ex-post sum of negative final R for trades open on the same session. It is a loss-cluster diagnostic, not a daily marked-to-market equity value.",
+        "- Worst simultaneous loss is the gross negative R from exit legs realised on the same session; same-day winning legs do not offset it.",
         "- Variant-minus-baseline intervals use a paired moving-block bootstrap of chronologically realised trades (20-trade blocks, 10,000 samples).",
         (
             f"- The no-limit expectancy ({baseline_current['expectancy']:.4f}R), "
@@ -1119,13 +1187,13 @@ def write_report(result: dict[str, Any]) -> None:
         "### Drawdown audit finding",
         "",
         (
-            f"The locked holdout report stated "
-            f"**{locked_point_metrics['maximum_drawdown_in_ticker_processing_order']:.4f}R** "
-            f"maximum drawdown, but its ledger was accumulated in ticker-processing order. "
-            f"Reordering the same immutable outcomes by realised exit date produces the "
-            f"portfolio-chronological **{baseline_current['maximum_drawdown']:.4f}R** "
-            "drawdown reported here. No trade outcome or production code was changed. "
-            "Concentration variants are compared only against this corrected chronological baseline."
+            f"The previous sector audit reported **{PRE_CHRONOLOGICAL_AUDIT_DRAWDOWN_R:.4f}R** "
+            "using final trade outcomes ordered by final exit date. The corrected engine "
+            "places every TP1 and final exit leg on its actual session, aggregates same-day "
+            f"portfolio P/L, and reports **{baseline_current['maximum_drawdown']:.4f}R**. "
+            "The older locked holdout's ticker-order figure was "
+            f"**{PRE_CHRONOLOGICAL_LOCKED_DRAWDOWN_R:.4f}R**. "
+            "No trade outcome or production strategy rule changed."
         ),
         "",
         "## Variant results",
@@ -1328,7 +1396,7 @@ def write_report(result: dict[str, Any]) -> None:
             "",
             "- The ledger contains equal-risk R outcomes, not a fully capital-constrained brokerage portfolio.",
             "- The startup-safe cap convention is explicit but is one possible implementation of percentage limits.",
-            "- Worst simultaneous loss uses eventual losing outcomes for positions that overlapped; daily mark-to-market loss may differ.",
+            "- Worst simultaneous loss is realised gross loss by session; intraday and unrealised mark-to-market loss may differ.",
             "- Maximum drawdown is a chronological realised-R sequence without capital allocation or mark-to-market accounting.",
             "- Confidence reconstruction uses the current deterministic institutional engine on historical signal-close data. It is not a probability.",
             "- Five variants are compared on one locked historical window, so the apparent winner is not independently validated.",

@@ -371,7 +371,7 @@ def run_integrity_audit() -> dict:
             },
             "r_multiple": "sum(realized exit-leg P/L) / (entry fill - planned stop loss) / initial shares.",
             "win_loss": "A trade is a win only when its final recorded R multiple is greater than zero.",
-            "drawdown": "The calibration artifact sums R multiples after sorting all ticker signals by date. It is not a capital-weighted portfolio equity curve and concurrent ticker trades remain interleaved.",
+            "drawdown": "The calibration artifact now aggregates each dated partial/final exit leg into daily realised R, then calculates the equity curve and drawdown chronologically without ticker-order dependence.",
             "duplicate_or_overlapping_same_ticker_positions": overlap_count,
             "incomplete_positions": 0,
         },

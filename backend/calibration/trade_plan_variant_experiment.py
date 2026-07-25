@@ -20,6 +20,10 @@ import pandas as pd
 
 from atr import add_atr
 from backtesting.execution import entry_fill_price, simulate_long_trade
+from backtesting.portfolio_risk import (
+    calculate_chronological_portfolio,
+    chronological_drawdown_r,
+)
 from calibration.run_audit import (
     DATASET_CACHE,
     MAX_HOLDING_DAYS,
@@ -170,18 +174,13 @@ def _metrics(rows: list[dict], rejected: int = 0) -> dict:
     values = [row["r_multiple"] for row in rows]
     gains = sum(value for value in values if value > 0)
     losses = abs(sum(value for value in values if value < 0))
-    equity = peak = drawdown = 0.0
-    for value in values:
-        equity += value
-        peak = max(peak, equity)
-        drawdown = min(drawdown, equity - peak)
     return {
         "valid_trades": len(rows), "rejected_trades": rejected,
         "win_rate": round(100 * sum(value > 0 for value in values) / len(values), 2),
         "expectancy": round(float(np.mean(values)), 4),
         "profit_factor": round(gains / losses, 4) if losses else None,
         "average_r": round(float(np.mean(values)), 4),
-        "maximum_drawdown": round(drawdown, 4),
+        "maximum_drawdown": chronological_drawdown_r(rows),
         "tp1_rate": round(100 * sum(row["tp1_hit"] for row in rows) / len(rows), 2),
         "tp2_rate": round(100 * sum(row["tp2_hit"] for row in rows) / len(rows), 2),
         "stop_rate": round(100 * sum(row["stop_hit"] for row in rows) / len(rows), 2),
@@ -260,6 +259,11 @@ def run_experiment() -> dict:
     for variant in VARIANTS:
         trades, rejected = _run_variant(variant, candidates, histories, oos_keys)
         details[variant] = _oos_summary(trades, rejected)
+        details[variant]["chronological_portfolio"] = (
+            calculate_chronological_portfolio(
+                [row for row in trades if row["out_of_sample"]]
+            )
+        )
         all_rows.extend(trades + rejected)
     return {
         "audit_status": "completed",

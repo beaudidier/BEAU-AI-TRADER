@@ -73,6 +73,7 @@ def simulate_long_trade(
             "shares": quantity,
             "exit_price": fill,
             "exit_index": index,
+            "exit_date": str(pd.Timestamp(data.index[index]).date()),
             "gross_pnl": gross_pnl,
             "allocated_entry_cost": allocated_entry_cost,
             "exit_transaction_cost": exit_cost,

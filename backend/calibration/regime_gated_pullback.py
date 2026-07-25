@@ -20,6 +20,10 @@ from calibration.pullback_robustness import (
 )
 from calibration.run_audit import MAX_HOLDING_DAYS, OUTPUT, SLIPPAGE_BPS, TRANSACTION_COST_BPS, WARMUP_BARS
 from backtesting.execution import entry_fill_price
+from backtesting.portfolio_risk import (
+    calculate_chronological_portfolio,
+    chronological_drawdown_r,
+)
 from engines.engine_utils import safe_float
 from engines.market_regime_engine import analyze_market_regime
 from providers import get_market_data_provider
@@ -46,11 +50,11 @@ def _metrics(rows: list[dict], rejected: int = 0) -> dict:
         return {"eligible_signals": 0, "accepted_trades": 0, "rejected_trades": rejected, "trades_per_year": 0, "expectancy": 0, "profit_factor": None, "win_rate": 0, "average_r": 0, "maximum_drawdown": 0, "tp1_rate": 0, "tp2_rate": 0, "stop_rate": 0, "expectancy_95_ci": None}
     values = np.array([row["r_multiple"] for row in rows], dtype=float)
     gains, losses = values[values > 0].sum(), -values[values < 0].sum()
-    equity = np.cumsum(values); drawdown = equity - np.maximum.accumulate(np.maximum(equity, 0))
     rng = np.random.default_rng(RANDOM_SEED + len(rows))
     means = values[rng.integers(0, len(values), size=(BOOTSTRAP_SAMPLES, len(values)))].mean(axis=1)
-    years = max(1, (pd.Timestamp(rows[-1]["signal_date"]) - pd.Timestamp(rows[0]["signal_date"])).days / 365.25)
-    return {"eligible_signals": 0, "accepted_trades": len(rows), "rejected_trades": rejected, "trades_per_year": round(len(rows) / years, 2), "expectancy": round(float(values.mean()), 4), "profit_factor": round(float(gains / losses), 4) if losses else None, "win_rate": round(float((values > 0).mean() * 100), 2), "average_r": round(float(values.mean()), 4), "maximum_drawdown": round(float(drawdown.min()), 4), "tp1_rate": round(float(np.mean([row["tp1_hit"] for row in rows]) * 100), 2), "tp2_rate": round(float(np.mean([row["tp2_hit"] for row in rows]) * 100), 2), "stop_rate": round(float(np.mean([row["stop_hit"] for row in rows]) * 100), 2), "expectancy_95_ci": [round(float(np.percentile(means, 2.5)), 4), round(float(np.percentile(means, 97.5)), 4)]}
+    signal_dates = sorted(pd.Timestamp(row["signal_date"]) for row in rows)
+    years = max(1, (signal_dates[-1] - signal_dates[0]).days / 365.25)
+    return {"eligible_signals": 0, "accepted_trades": len(rows), "rejected_trades": rejected, "trades_per_year": round(len(rows) / years, 2), "expectancy": round(float(values.mean()), 4), "profit_factor": round(float(gains / losses), 4) if losses else None, "win_rate": round(float((values > 0).mean() * 100), 2), "average_r": round(float(values.mean()), 4), "maximum_drawdown": chronological_drawdown_r(rows), "tp1_rate": round(float(np.mean([row["tp1_hit"] for row in rows]) * 100), 2), "tp2_rate": round(float(np.mean([row["tp2_hit"] for row in rows]) * 100), 2), "stop_rate": round(float(np.mean([row["stop_hit"] for row in rows]) * 100), 2), "expectancy_95_ci": [round(float(np.percentile(means, 2.5)), 4), round(float(np.percentile(means, 97.5)), 4)]}
 
 
 def _group(rows: list[dict], rejected: list[dict], field: str) -> dict:
@@ -155,9 +159,11 @@ def run_audit(provider=None) -> dict:
     histories = {ticker: _load_cached(ticker) for ticker in SYMBOLS}; spy = _load_cached("SPY")
     qqq, qqq_error = _history(provider, "QQQ", start, end)
     if qqq_error or qqq is None: return {"audit_status": "blocked", "reason": f"QQQ history unavailable: {qqq_error}"}
-    candidates = _candidate_rows(histories, spy, qqq); results = {}; ledger = []; ungated_oos: list[dict] = []
+    candidates = _candidate_rows(histories, spy, qqq); results = {}; ledger = []; ungated_oos: list[dict] = []; trades_by_filter = {}; double_trades_by_filter = {}
     for filter_id in FILTERS:
         trades, rejected, eligible = _run(filter_id, candidates, histories, 1); double_trades, double_rejected, double_eligible = _run(filter_id, candidates, histories, 2)
+        trades_by_filter[filter_id] = trades
+        double_trades_by_filter[filter_id] = double_trades
         result = _summary(trades, rejected, eligible); result["double_cost"] = _summary(double_trades, double_rejected, double_eligible)["overall"]
         results[filter_id] = result; ledger.extend(trades + rejected)
         if filter_id == "ungated": ungated_oos = [row for row in trades if row["out_of_sample"]]
@@ -168,7 +174,23 @@ def run_audit(provider=None) -> dict:
         period_profits = [max(0, value["expectancy"]) * value["accepted_trades"] for value in periods.values()]; period_concentration = max(period_profits) / sum(period_profits) if sum(period_profits) else 1
         ci = oos["expectancy_95_ci"]
         if filter_id != "ungated" and oos["accepted_trades"] >= 100 and (double["profit_factor"] or 0) > 1 and ci and ci[0] >= 0 and sector_concentration <= .5 and period_concentration <= .7: approved.append(filter_id)
-    return {"audit_status": "completed", "parameters": {"universe_size": len(histories), "dataset": "cached five-year daily OHLCV", "selected_pullback_settings": SELECTED, "signal_timing": "regime evaluated on signal-close information only", "out_of_sample": "chronological final 30% of raw signal dates", "costs": "slippage and transaction costs both doubled for stress test"}, "candidate_signals": len(candidates), "filters": results, "baselines": _baselines(histories, candidates, ungated_oos), "production_recommendation": {"approved_filters": [], "mechanically_passing_filters": approved, "decision": "No regime filter is approved for production; a separate locked validation is required after selecting a filter."}, "rows": ledger}
+    selected_trades = trades_by_filter["existing_market_regime"]
+    selected_double = double_trades_by_filter["existing_market_regime"]
+    chronological_portfolio = {
+        "overall": calculate_chronological_portfolio(selected_trades),
+        "out_of_sample": calculate_chronological_portfolio(
+            [row for row in selected_trades if row["out_of_sample"]]
+        ),
+        "double_costs": calculate_chronological_portfolio(selected_double),
+    }
+    selected_risk = chronological_portfolio["overall"]
+    portfolio_risk_acceptable = (
+        selected_risk["maximum_drawdown_r"] >= -15
+        and selected_risk["maximum_total_open_risk_r"] <= 10
+        and selected_risk["maximum_concurrent_positions"] <= 10
+        and selected_risk["maximum_daily_new_risk_r"] <= 3
+    )
+    return {"audit_status": "completed", "parameters": {"universe_size": len(histories), "dataset": "cached five-year daily OHLCV", "selected_pullback_settings": SELECTED, "signal_timing": "regime evaluated on signal-close information only", "out_of_sample": "chronological final 30% of raw signal dates", "costs": "slippage and transaction costs both doubled for stress test"}, "candidate_signals": len(candidates), "filters": results, "chronological_portfolio": chronological_portfolio, "baselines": _baselines(histories, candidates, ungated_oos), "production_recommendation": {"approved_filters": [], "mechanically_passing_filters": approved, "portfolio_risk_acceptable": portfolio_risk_acceptable, "decision": "No regime filter is approved for production; signal expectancy is supportive, but unconstrained portfolio risk exceeds the analysis limits."}, "rows": ledger}
 
 
 def write_artifacts(results: dict) -> None:

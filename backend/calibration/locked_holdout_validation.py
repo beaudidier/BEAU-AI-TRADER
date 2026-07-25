@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from backtesting.portfolio_risk import calculate_chronological_portfolio
 from calibration.pullback_robustness import MINIMUM_CANDLES, SYMBOLS, _validate
 from calibration.regime_gated_pullback import FILTERS, SELECTED, _baselines, _candidate_rows, _group, _metrics, _run
 from providers import get_market_data_provider
@@ -75,11 +76,25 @@ def run_validation(provider=None) -> dict:
     ungated, ungated_rejected, ungated_eligible = _run("ungated", candidates, histories, 1)
     result, ungated_result = _summary(gated, gated_rejected, gated_eligible), _summary(ungated, ungated_rejected, ungated_eligible)
     result["double_cost"] = _summary(gated_double, gated_double_rejected, gated_double_eligible)
+    result["portfolio_risk"] = calculate_chronological_portfolio(gated)
+    result["double_cost"]["portfolio_risk"] = (
+        calculate_chronological_portfolio(gated_double)
+    )
+    ungated_result["portfolio_risk"] = calculate_chronological_portfolio(
+        ungated
+    )
     profits = [max(0, value["expectancy"]) * value["accepted_trades"] for value in result["by_sector"].values()]
     concentration = max(profits) / sum(profits) if sum(profits) else 1
     ci = result["expectancy_95_ci"]
     passes = result["accepted_trades"] >= 100 and result["expectancy"] > 0 and (result["profit_factor"] or 0) > 1 and ci and ci[0] >= 0 and concentration <= .5 and (result["double_cost"]["profit_factor"] or 0) > 1
-    return {"audit_status": "completed", "parameters": {"holdout_start": START.isoformat(), "holdout_end": END.isoformat(), "relationship_to_prior_research": "non-overlapping retrospective window before the 2021-07-12 to 2026-07-23 research data", "universe_size": len(histories), "frozen_strategy": {"regime_filter": FILTERS["existing_market_regime"], **SELECTED}, "execution": "same costs, slippage, partial exits, stop-first handling, and no overlapping ticker positions"}, "provider_failures": failures, "candidate_signals": len(candidates), "selected_regime_gated_pullback": result, "ungated_pullback": ungated_result, "baselines": _baselines(histories, candidates, ungated), "approval": {"meets_mechanical_criteria": bool(passes), "sector_profit_concentration": round(concentration, 4), "decision": "No production change: retrospective holdout is supportive only; a future-forward holdout remains required."}, "rows": gated + gated_rejected}
+    portfolio = result["portfolio_risk"]
+    portfolio_risk_acceptable = (
+        portfolio["maximum_drawdown_r"] >= -15
+        and portfolio["maximum_total_open_risk_r"] <= 10
+        and portfolio["maximum_concurrent_positions"] <= 10
+        and portfolio["maximum_daily_new_risk_r"] <= 3
+    )
+    return {"audit_status": "completed", "parameters": {"holdout_start": START.isoformat(), "holdout_end": END.isoformat(), "relationship_to_prior_research": "non-overlapping retrospective window before the 2021-07-12 to 2026-07-23 research data", "universe_size": len(histories), "frozen_strategy": {"regime_filter": FILTERS["existing_market_regime"], **SELECTED}, "execution": "same costs, slippage, partial exits, stop-first handling, and no overlapping ticker positions"}, "provider_failures": failures, "candidate_signals": len(candidates), "selected_regime_gated_pullback": result, "ungated_pullback": ungated_result, "baselines": _baselines(histories, candidates, ungated), "approval": {"meets_signal_edge_criteria": bool(passes), "portfolio_risk_acceptable": portfolio_risk_acceptable, "overall_validation_passed": bool(passes and portfolio_risk_acceptable), "sector_profit_concentration": round(concentration, 4), "decision": "Signal expectancy remains validated, but unconstrained portfolio risk fails the analysis limits; keep the strategy paper-only and do not enforce new limits in production yet."}, "rows": gated + gated_rejected}
 
 
 def write_artifacts(result: dict) -> None:

@@ -93,7 +93,7 @@
     },
     "r_multiple": "sum(realized exit-leg P/L) / (entry fill - planned stop loss) / initial shares.",
     "win_loss": "A trade is a win only when its final recorded R multiple is greater than zero.",
-    "drawdown": "The calibration artifact sums R multiples after sorting all ticker signals by date. It is not a capital-weighted portfolio equity curve and concurrent ticker trades remain interleaved.",
+    "drawdown": "The calibration artifact now aggregates each dated partial/final exit leg into daily realised R, then calculates the equity curve and drawdown chronologically without ticker-order dependence.",
     "duplicate_or_overlapping_same_ticker_positions": 35,
     "incomplete_positions": 0
   },
@@ -231,8 +231,8 @@
       },
       "maximum_drawdown": {
         "previous": -15.2058,
-        "corrected": -18.1572,
-        "change": -2.9514
+        "corrected": -26.3098,
+        "change": -11.104
       }
     },
     "bands": {
@@ -259,8 +259,8 @@
         },
         "maximum_drawdown": {
           "previous": -5.3408,
-          "corrected": -9.563,
-          "change": -4.2222
+          "corrected": -16.2608,
+          "change": -10.92
         }
       },
       "60-74": {
@@ -286,8 +286,8 @@
         },
         "maximum_drawdown": {
           "previous": -17.2594,
-          "corrected": -7.3862,
-          "change": 9.8732
+          "corrected": -13.0953,
+          "change": 4.1641
         }
       },
       "75-89": {
@@ -313,8 +313,8 @@
         },
         "maximum_drawdown": {
           "previous": -3.1503,
-          "corrected": -7.2073,
-          "change": -4.057
+          "corrected": -6.3877,
+          "change": -3.2374
         }
       }
     }

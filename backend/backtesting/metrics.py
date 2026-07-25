@@ -1,6 +1,15 @@
 def calculate_metrics(trades: list[dict], equity_curve: list[dict], starting_equity: float) -> dict:
     """Calculate portfolio and trade metrics from completed trades."""
 
+    # Multiple updates for one session collapse to the final session value.
+    # Sorting by timestamp makes the public backtest independent of caller or
+    # ticker iteration order.
+    by_time = {str(point["time"]): float(point["value"]) for point in equity_curve}
+    chronological_curve = [
+        {"time": timestamp, "value": by_time[timestamp]}
+        for timestamp in sorted(by_time)
+    ]
+
     total_trades = len(trades)
     wins = sum(1 for trade in trades if trade["pnl"] > 0)
     losses = sum(1 for trade in trades if trade["pnl"] <= 0)
@@ -13,7 +22,7 @@ def calculate_metrics(trades: list[dict], equity_curve: list[dict], starting_equ
 
     peak = starting_equity
     max_drawdown = 0.0
-    for point in equity_curve:
+    for point in chronological_curve:
         value = point["value"]
         peak = max(peak, value)
         if peak > 0:
@@ -30,6 +39,6 @@ def calculate_metrics(trades: list[dict], equity_curve: list[dict], starting_equ
         "profit_factor": round(profit_factor, 2),
         "expectancy": round(expectancy, 2),
         "starting_equity": round(starting_equity, 2),
-        "ending_equity": round(equity_curve[-1]["value"] if equity_curve else starting_equity, 2),
-        "net_profit": round((equity_curve[-1]["value"] if equity_curve else starting_equity) - starting_equity, 2),
+        "ending_equity": round(chronological_curve[-1]["value"] if chronological_curve else starting_equity, 2),
+        "net_profit": round((chronological_curve[-1]["value"] if chronological_curve else starting_equity) - starting_equity, 2),
     }

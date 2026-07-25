@@ -16,6 +16,10 @@ import pandas as pd
 
 from atr import add_atr
 from backtesting.execution import TP1_PORTION, entry_fill_price, simulate_long_trade
+from backtesting.portfolio_risk import (
+    calculate_chronological_portfolio,
+    chronological_drawdown_r,
+)
 from engines.engine_utils import safe_float
 from engines.institutional_engine import calculate_institutional_analysis
 from engines.trade_plan_engine import calculate_trade_plan
@@ -42,10 +46,7 @@ def _metrics(rows: list[dict]) -> dict:
         return {"signals": 0, "total_trades": 0, "tp1_hit_rate": 0, "tp2_hit_rate": 0, "stop_loss_rate": 0, "win_rate": 0, "average_return": 0, "average_r_multiple": 0, "expectancy": 0, "profit_factor": 0, "maximum_drawdown": 0, "average_holding_time": 0, "maximum_favorable_excursion": 0, "maximum_adverse_excursion": 0}
     returns = [row["return_pct"] for row in rows]; r_values = [row["r_multiple"] for row in rows]
     gross_profit = sum(value for value in r_values if value > 0); gross_loss = abs(sum(value for value in r_values if value < 0))
-    equity, peak, drawdown = 0.0, 0.0, 0.0
-    for value in r_values:
-        equity += value; peak = max(peak, equity); drawdown = min(drawdown, equity - peak)
-    return {"signals": len(rows), "total_trades": len(rows), "tp1_hit_rate": round(sum(row["tp1_hit"] for row in rows) / len(rows) * 100, 2), "tp2_hit_rate": round(sum(row["tp2_hit"] for row in rows) / len(rows) * 100, 2), "stop_loss_rate": round(sum(row["stop_hit"] for row in rows) / len(rows) * 100, 2), "win_rate": round(sum(value > 0 for value in r_values) / len(rows) * 100, 2), "average_return": round(sum(returns) / len(rows), 4), "average_r_multiple": round(sum(r_values) / len(rows), 4), "expectancy": round(sum(r_values) / len(rows), 4), "profit_factor": round(gross_profit / gross_loss, 4) if gross_loss else None, "maximum_drawdown": round(drawdown, 4), "average_holding_time": round(sum(row["holding_days"] for row in rows) / len(rows), 2), "maximum_favorable_excursion": round(sum(row["mfe_r"] for row in rows) / len(rows), 4), "maximum_adverse_excursion": round(sum(row["mae_r"] for row in rows) / len(rows), 4)}
+    return {"signals": len(rows), "total_trades": len(rows), "tp1_hit_rate": round(sum(row["tp1_hit"] for row in rows) / len(rows) * 100, 2), "tp2_hit_rate": round(sum(row["tp2_hit"] for row in rows) / len(rows) * 100, 2), "stop_loss_rate": round(sum(row["stop_hit"] for row in rows) / len(rows) * 100, 2), "win_rate": round(sum(value > 0 for value in r_values) / len(rows) * 100, 2), "average_return": round(sum(returns) / len(rows), 4), "average_r_multiple": round(sum(r_values) / len(rows), 4), "expectancy": round(sum(r_values) / len(rows), 4), "profit_factor": round(gross_profit / gross_loss, 4) if gross_loss else None, "maximum_drawdown": chronological_drawdown_r(rows), "average_holding_time": round(sum(row["holding_days"] for row in rows) / len(rows), 2), "maximum_favorable_excursion": round(sum(row["mfe_r"] for row in rows) / len(rows), 4), "maximum_adverse_excursion": round(sum(row["mae_r"] for row in rows) / len(rows), 4)}
 
 
 def _simulate(data: pd.DataFrame, entry_index: int, entry: float, stop: float, target_1: float, target_2: float) -> dict | None:
@@ -144,7 +145,7 @@ def run_audit(provider=None) -> dict:
     grouped = lambda rows, field: {key: _metrics([row for row in rows if str(row[field]) == key]) for key in sorted({str(row[field]) for row in rows})}
     bands = lambda rows: {band: _metrics([row for row in rows if row["band"] == band]) for band in ("0-59", "60-74", "75-89", "90-100")}
     reasons = Counter(reason for row in rejected for reason in row["rejection_reasons"].split(" | ") if reason)
-    return {"audit_status": "completed", "parameters": parameters, "provider_failures": failures, "validated_symbols": sorted(histories), "rejected_gap_trades": {"total": len(rejected), "reasons": dict(sorted(reasons.items()))}, "calibration": {"overall": _metrics(calibration), "bands": bands(calibration)}, "out_of_sample": {"overall": _metrics(oos), "bands": bands(oos), "factors": {name: grouped(oos, f"{name}_score") for name in ("trend", "momentum", "volume", "support_resistance", "volatility", "relative_strength")}, "market_regime": grouped(oos, "market_regime"), "ticker": grouped(oos, "ticker"), "sector": grouped(oos, "sector")}, "trades": trades, "rejected": rejected}
+    return {"audit_status": "completed", "parameters": parameters, "provider_failures": failures, "validated_symbols": sorted(histories), "rejected_gap_trades": {"total": len(rejected), "reasons": dict(sorted(reasons.items()))}, "calibration": {"overall": _metrics(calibration), "bands": bands(calibration)}, "out_of_sample": {"overall": _metrics(oos), "bands": bands(oos), "factors": {name: grouped(oos, f"{name}_score") for name in ("trend", "momentum", "volume", "support_resistance", "volatility", "relative_strength")}, "market_regime": grouped(oos, "market_regime"), "ticker": grouped(oos, "ticker"), "sector": grouped(oos, "sector")}, "chronological_portfolio": {"calibration": calculate_chronological_portfolio(calibration), "out_of_sample": calculate_chronological_portfolio(oos)}, "trades": trades, "rejected": rejected}
 
 
 def write_artifacts(results: dict) -> None:

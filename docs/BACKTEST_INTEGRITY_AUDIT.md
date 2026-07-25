@@ -50,7 +50,7 @@ Recorded R is:
 
 The targets are calculated from the prior-close plan entry, while R uses the next-open fill. On 33 OOS trades, target 1 was already at or below that actual fill; on one trade, so was target 2. This can produce a target flag without a reward relative to the actual entry.
 
-Win/loss classification is final R greater than zero. The maximum drawdown in the calibration artifact is a sequential sum of sorted trade R multiples, not a capital-weighted portfolio equity curve; signals from concurrent ticker positions are interleaved. It should not be read as deployable portfolio drawdown.
+Win/loss classification is final R greater than zero. Maximum drawdown now aggregates dated partial and final exit legs into daily realised R before calculating the portfolio equity path. It remains an equal-risk R analysis rather than a capital-weighted brokerage account.
 
 ## Out-of-sample confidence-band results and bootstrap intervals
 
@@ -102,7 +102,7 @@ Reasons:
 - The planned entry/targets are based on the prior close while performance is measured from the next-open fill, creating 33 OOS target-1 cases with no reward from the actual fill.
 - BUY expectancy and profit-factor bootstrap intervals include break-even or loss; STRONG BUY has no observations.
 - SKIP outperforms BUY in this sample, contradicting the intended confidence ordering.
-- Drawdown is not a portfolio-level calculation and concurrent positions are not capital-constrained across tickers.
+- Drawdown is now chronological portfolio realised R, but positions remain unconstrained by total capital or open risk.
 - The baselines are descriptive and the sample is limited to one cached historical universe and period.
 
 No simulation, scoring, threshold, or weight changes were made by this audit.

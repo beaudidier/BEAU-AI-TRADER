@@ -17,6 +17,10 @@ import pandas as pd
 
 from atr import add_atr
 from backtesting.execution import entry_fill_price, exit_fill_price, transaction_cost
+from backtesting.portfolio_risk import (
+    calculate_chronological_portfolio,
+    chronological_drawdown_r,
+)
 from calibration.run_audit import MAX_HOLDING_DAYS, OUTPUT, SLIPPAGE_BPS, TRANSACTION_COST_BPS, WARMUP_BARS, _band
 from engines.engine_utils import safe_float
 from engines.institutional_engine import calculate_institutional_analysis
@@ -117,7 +121,7 @@ def _simulate(data: pd.DataFrame, entry_index: int, entry: float, stop: float, t
     def close(quantity, price, index, label):
         fill = exit_fill_price(price, slippage_bps); exit_cost = transaction_cost(fill, quantity, cost_bps)
         pnl = (fill-entry)*quantity - entry_cost*quantity/shares - exit_cost
-        legs.append({"leg": label, "shares": quantity, "exit_price": fill, "exit_index": index, "pnl": pnl, "r_multiple": pnl/risk})
+        legs.append({"leg": label, "shares": quantity, "exit_price": fill, "exit_index": index, "exit_date": str(pd.Timestamp(data.index[index]).date()), "pnl": pnl, "r_multiple": pnl/risk})
     last = entry_index
     for index in range(entry_index, min(len(data), entry_index+MAX_HOLDING_DAYS)):
         low, high = float(data.iloc[index]["Low"]), float(data.iloc[index]["High"]); last = index
@@ -133,9 +137,45 @@ def _simulate(data: pd.DataFrame, entry_index: int, entry: float, stop: float, t
 
 
 def _metrics(rows: list[dict], rejected=0) -> dict:
-    if not rows: return {"total_trades":0,"rejected_trades":rejected,"expectancy":0,"profit_factor":None,"win_rate":0,"maximum_drawdown":0,"average_r":0,"trades_per_year":0,"average_holding_time":0,"expectancy_95_ci":None}
-    values=np.array([row["r_multiple"] for row in rows]); gains,losses=values[values>0].sum(),-values[values<0].sum(); equity=np.cumsum(values); dd=equity-np.maximum.accumulate(np.maximum(equity,0)); rng=np.random.default_rng(RANDOM_SEED+len(rows)); means=values[rng.integers(0,len(values),size=(BOOTSTRAP_SAMPLES,len(values)))].mean(axis=1); years=max(1,(pd.Timestamp(rows[-1]["signal_date"])-pd.Timestamp(rows[0]["signal_date"])).days/365.25)
-    return {"total_trades":len(rows),"rejected_trades":rejected,"expectancy":round(float(values.mean()),4),"profit_factor":round(float(gains/losses),4) if losses else None,"win_rate":round(float((values>0).mean()*100),2),"maximum_drawdown":round(float(dd.min()),4),"average_r":round(float(values.mean()),4),"trades_per_year":round(len(rows)/years,2),"average_holding_time":round(float(np.mean([row["holding_days"] for row in rows])),2),"expectancy_95_ci":[round(float(np.percentile(means,2.5)),4),round(float(np.percentile(means,97.5)),4)]}
+    if not rows:
+        return {
+            "total_trades": 0,
+            "rejected_trades": rejected,
+            "expectancy": 0,
+            "profit_factor": None,
+            "win_rate": 0,
+            "maximum_drawdown": 0,
+            "average_r": 0,
+            "trades_per_year": 0,
+            "average_holding_time": 0,
+            "expectancy_95_ci": None,
+        }
+    values = np.array([row["r_multiple"] for row in rows])
+    gains = values[values > 0].sum()
+    losses = -values[values < 0].sum()
+    rng = np.random.default_rng(RANDOM_SEED + len(rows))
+    means = values[
+        rng.integers(0, len(values), size=(BOOTSTRAP_SAMPLES, len(values)))
+    ].mean(axis=1)
+    signal_dates = sorted(pd.Timestamp(row["signal_date"]) for row in rows)
+    years = max(1, (signal_dates[-1] - signal_dates[0]).days / 365.25)
+    return {
+        "total_trades": len(rows),
+        "rejected_trades": rejected,
+        "expectancy": round(float(values.mean()), 4),
+        "profit_factor": round(float(gains / losses), 4) if losses else None,
+        "win_rate": round(float((values > 0).mean() * 100), 2),
+        "maximum_drawdown": chronological_drawdown_r(rows),
+        "average_r": round(float(values.mean()), 4),
+        "trades_per_year": round(len(rows) / years, 2),
+        "average_holding_time": round(
+            float(np.mean([row["holding_days"] for row in rows])), 2
+        ),
+        "expectancy_95_ci": [
+            round(float(np.percentile(means, 2.5)), 4),
+            round(float(np.percentile(means, 97.5)), 4),
+        ],
+    }
 
 
 def _group(rows, rejected, field):
@@ -171,9 +211,9 @@ def run_audit(provider=None):
         if error: failures[ticker]=error
         else: histories[ticker]=data
     if benchmark is None or len(histories)<100: return {"audit_status":"blocked","validated_symbols":len(histories),"provider_failures":failures,"reason":"At least 100 validated five-year histories and SPY are required."}
-    candidates=_candidates(histories,benchmark); results={}; ledger=[]
+    candidates=_candidates(histories,benchmark); results={}; ledger=[]; trades_by_config={}
     for config in _configs():
-        trades,rejected=_run(config,candidates,histories); results[config["config_id"]]={"parameters":config,"overall":_metrics(trades,len(rejected)),"by_sector":_group(trades,rejected,"sector"),"by_market_regime":_group(trades,rejected,"market_regime"),"by_walk_forward_period":_group(trades,rejected,"walk_forward_period"),"rejection_reasons":dict(sorted(Counter(row["reason"] for row in rejected).items()))}; ledger.extend(trades)
+        trades,rejected=_run(config,candidates,histories); trades_by_config[config["config_id"]]=trades; results[config["config_id"]]={"parameters":config,"overall":_metrics(trades,len(rejected)),"by_sector":_group(trades,rejected,"sector"),"by_market_regime":_group(trades,rejected,"market_regime"),"by_walk_forward_period":_group(trades,rejected,"walk_forward_period"),"rejection_reasons":dict(sorted(Counter(row["reason"] for row in rejected).items()))}; ledger.extend(trades)
     baseline=results["wait3_stop1_targetr15_3_cost1x"]; qualifying=[]
     for config_id,result in results.items():
         overall,walks,sectors=result["overall"],result["by_walk_forward_period"],result["by_sector"]; double=results[config_id.replace("cost1x","cost2x")]["overall"] if "cost1x" in config_id else None; positive_walks=sum(value["expectancy"]>0 for value in walks.values()); profit=[max(0,value["expectancy"])*value["total_trades"] for value in sectors.values()]; concentration=max(profit)/sum(profit) if sum(profit) else 1
@@ -181,7 +221,22 @@ def run_audit(provider=None):
         # production-robust even if it passes the aggregate gates.
         regime_safe=all(value["expectancy"]>=0 for value in result["by_market_regime"].values() if value["total_trades"]>=30)
         if overall["total_trades"]>=100 and positive_walks>=2 and double and (double["profit_factor"] or 0)>1 and concentration<=.5 and overall["maximum_drawdown"]>=-15 and regime_safe: qualifying.append(config_id)
-    return {"audit_status":"completed","parameters":{"universe_size":len(histories),"start":start.isoformat(),"end":end.isoformat(),"signal_generation":"unchanged close-of-candle institutional analysis","entry":"signal-time EMA20 limit","risk_limit":"5% of entry","cost_interpretation":"slippage and transaction cost both multiplied","walk_forward":"three chronological equal signal-count periods","regime_definition":"Bull: SPY close and SMA50 above SMA200; Bear: both below; otherwise Sideways"},"provider_failures":failures,"candidate_signals":len(candidates),"configurations":results,"baseline_configuration":baseline,"production_recommendation":{"approved":bool(qualifying),"qualifying_configurations":qualifying,"decision":"No configuration meets every production-use gate." if not qualifying else "Only listed configurations meet every pre-defined gate."},"trades":ledger}
+    chronological_portfolio = {
+        "current_costs": calculate_chronological_portfolio(
+            trades_by_config["wait3_stop1_targetr15_3_cost1x"]
+        ),
+        "double_costs": calculate_chronological_portfolio(
+            trades_by_config["wait3_stop1_targetr15_3_cost2x"]
+        ),
+    }
+    baseline_risk = chronological_portfolio["current_costs"]
+    portfolio_risk_acceptable = (
+        baseline_risk["maximum_drawdown_r"] >= -15
+        and baseline_risk["maximum_total_open_risk_r"] <= 10
+        and baseline_risk["maximum_concurrent_positions"] <= 10
+        and baseline_risk["maximum_daily_new_risk_r"] <= 3
+    )
+    return {"audit_status":"completed","parameters":{"universe_size":len(histories),"start":start.isoformat(),"end":end.isoformat(),"signal_generation":"unchanged close-of-candle institutional analysis","entry":"signal-time EMA20 limit","risk_limit":"5% of entry","cost_interpretation":"slippage and transaction cost both multiplied","walk_forward":"three chronological equal signal-count periods","regime_definition":"Bull: SPY close and SMA50 above SMA200; Bear: both below; otherwise Sideways"},"provider_failures":failures,"candidate_signals":len(candidates),"configurations":results,"baseline_configuration":baseline,"chronological_portfolio":chronological_portfolio,"production_recommendation":{"approved":bool(qualifying and portfolio_risk_acceptable),"qualifying_configurations":qualifying,"portfolio_risk_acceptable":portfolio_risk_acceptable,"decision":"No configuration meets every production-use and portfolio-risk gate." if not (qualifying and portfolio_risk_acceptable) else "Only listed configurations meet every pre-defined gate."},"trades":ledger}
 
 
 def write_artifacts(results):

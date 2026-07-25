@@ -8,13 +8,13 @@ The audit rejected **12,709** invalid executable-entry attempts: 12,347 moved to
 
 ## Corrected out-of-sample results
 
-186 accepted trades remained after validation. Overall: 40.86% win rate, 0.9877% average return, 0.2732R expectancy, 1.4633 profit factor, and -18.1572R sequential maximum drawdown.
+186 accepted trades remained after validation. Overall: 40.86% win rate, 0.9877% average return, 0.2732R expectancy, 1.4633 profit factor, and -26.3098R chronological exit-leg maximum drawdown.
 
 | Band | Trades | TP1 | TP2 | Stop | Win rate | Expectancy / Avg R | Profit factor | Drawdown |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| SKIP | 76 | 25.00% | 19.74% | 55.26% | 42.11% | 0.4259R | 1.7374 | -9.5630R |
-| WATCH | 89 | 31.46% | 15.73% | 53.93% | 42.70% | 0.2197R | 1.3893 | -7.3862R |
-| BUY | 21 | 28.57% | 28.57% | 71.43% | 28.57% | -0.0531R | 0.9282 | -7.2073R |
+| SKIP | 76 | 25.00% | 19.74% | 55.26% | 42.11% | 0.4259R | 1.7374 | -16.2608R |
+| WATCH | 89 | 31.46% | 15.73% | 53.93% | 42.70% | 0.2197R | 1.3893 | -13.0953R |
+| BUY | 21 | 28.57% | 28.57% | 71.43% | 28.57% | -0.0531R | 0.9282 | -6.3877R |
 | STRONG BUY | 0 | — | — | — | — | — | — | — |
 
 BUY’s bootstrap expectancy interval is **-0.7070R to 0.6137R**. The executable-entry validation removed the previous apparent BUY advantage; it does not establish a positive BUY edge.

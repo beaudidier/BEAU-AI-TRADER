@@ -2,7 +2,7 @@
 
 ## Executable-entry result
 
-BUY has **no credible edge** after next-open entry recalculation and gap validation. It produced **21** accepted out-of-sample trades, **-0.0531R** expectancy, **0.9282** profit factor, and **-7.2073R** maximum drawdown. Its 95% bootstrap expectancy interval is **-0.7070R to 0.6137R**.
+BUY has **no credible edge** after next-open entry recalculation and gap validation. It produced **21** accepted out-of-sample trades, **-0.0531R** expectancy, **0.9282** profit factor, and **-6.3877R** chronological maximum drawdown. Its 95% bootstrap expectancy interval is **-0.7070R to 0.6137R**.
 
 The audit rejected **12,709** invalid gap attempts. This includes 12,347 entries too far above the original setup and 11,871 cases with Target 1 R/R below 1.5; multiple reasons can apply to one attempt.
 

@@ -1,0 +1,195 @@
+{
+  "analysis_only_limits": {
+    "enforced_in_production": false,
+    "maximum_concurrent_positions": 10,
+    "maximum_daily_new_risk_r": 3.0,
+    "maximum_total_open_risk_r": 10.0
+  },
+  "audit_status": "completed",
+  "comparisons": {
+    "calibration_out_of_sample": {
+      "corrected_drawdown_r": -26.3098,
+      "expectancy_after_r": 0.2732,
+      "old_drawdown_r": -18.1572
+    },
+    "locked_holdout": {
+      "corrected_drawdown_r": -33.4002,
+      "cumulative_r": 254.0085,
+      "expectancy_after_r": 0.3042,
+      "expectancy_before_r": 0.3042,
+      "maximum_concurrent_date": "2017-09-07",
+      "maximum_concurrent_positions": 63,
+      "maximum_daily_new_risk_date": "2017-04-20",
+      "maximum_daily_new_risk_r": 17.0,
+      "maximum_drawdown_r": -33.4002,
+      "maximum_total_open_risk_date": "2017-09-07",
+      "maximum_total_open_risk_r": 63.0,
+      "old_drawdown_r": -10.4094,
+      "profit_factor": 1.7644,
+      "worst_rolling_5_day_period": {
+        "end": "2020-02-28",
+        "realized_r": -25.3579,
+        "start": "2020-02-24"
+      },
+      "worst_simultaneous_loss": {
+        "date": "2018-10-11",
+        "gross_loss_r": -12.3999
+      },
+      "worst_trading_day": {
+        "date": "2018-10-11",
+        "realized_r": -12.3999
+      }
+    },
+    "pullback_baseline": {
+      "corrected_drawdown_r": -130.5873,
+      "cumulative_r": 86.9079,
+      "expectancy_after_r": 0.0739,
+      "expectancy_before_r": 0.0739,
+      "maximum_concurrent_date": "2024-01-22",
+      "maximum_concurrent_positions": 56,
+      "maximum_daily_new_risk_date": "2025-06-13",
+      "maximum_daily_new_risk_r": 10.0,
+      "maximum_drawdown_r": -130.5873,
+      "maximum_total_open_risk_date": "2024-01-23",
+      "maximum_total_open_risk_r": 52.0,
+      "old_drawdown_r": -36.445,
+      "worst_rolling_5_day_period": {
+        "end": "2023-09-27",
+        "realized_r": -18.6107,
+        "start": "2023-09-21"
+      },
+      "worst_simultaneous_loss": {
+        "date": "2024-12-18",
+        "gross_loss_r": -10.5423
+      },
+      "worst_trading_day": {
+        "date": "2024-12-18",
+        "realized_r": -9.8679
+      }
+    },
+    "regime_selected": {
+      "corrected_drawdown_r": -53.6149,
+      "cumulative_r": 99.8848,
+      "expectancy_after_r": 0.1806,
+      "expectancy_before_r": 0.1806,
+      "maximum_concurrent_date": "2024-01-23",
+      "maximum_concurrent_positions": 44,
+      "maximum_daily_new_risk_date": "2024-01-17",
+      "maximum_daily_new_risk_r": 8.0,
+      "maximum_drawdown_r": -53.6149,
+      "maximum_total_open_risk_date": "2024-01-23",
+      "maximum_total_open_risk_r": 44.0,
+      "old_drawdown_r": -12.1999,
+      "worst_rolling_5_day_period": {
+        "end": "2024-04-18",
+        "realized_r": -13.6276,
+        "start": "2024-04-12"
+      },
+      "worst_simultaneous_loss": {
+        "date": "2023-05-17",
+        "gross_loss_r": -4.1308
+      },
+      "worst_trading_day": {
+        "date": "2023-05-17",
+        "realized_r": -4.1308
+      }
+    },
+    "sector_no_limit": {
+      "corrected_drawdown_r": -33.4002,
+      "expectancy_after_r": 0.3042,
+      "expectancy_before_r": 0.3042,
+      "old_drawdown_r": -29.4789
+    },
+    "trade_plan_variants": {
+      "breakout": {
+        "corrected_drawdown_r": -77.5874,
+        "expectancy_after_r": -0.0905,
+        "old_drawdown_r": -47.9436
+      },
+      "next_open_atr": {
+        "corrected_drawdown_r": -28.4875,
+        "expectancy_after_r": 0.1381,
+        "old_drawdown_r": -15.1636
+      },
+      "pullback": {
+        "corrected_drawdown_r": -3.9571,
+        "expectancy_after_r": 0.5595,
+        "old_drawdown_r": -3.3237
+      }
+    }
+  },
+  "module_audit": [
+    {
+      "finding": "Execution was deterministic, but exit legs lacked their explicit market date.",
+      "module": "backtesting/execution.py",
+      "resolution": "Every partial and final exit leg now stores its source candle date."
+    },
+    {
+      "finding": "Single-ticker loop was already chronological.",
+      "module": "backtesting/runner.py",
+      "resolution": "No execution-rule change; report output is now sorted deterministically."
+    },
+    {
+      "finding": "Caller-provided equity points were trusted in their incoming order.",
+      "module": "backtesting/metrics.py and report.py",
+      "resolution": "Duplicate sessions collapse to their final value and sessions are sorted before drawdown."
+    },
+    {
+      "finding": "Trade-level R was accumulated in list order instead of dated exit-leg order.",
+      "module": "calibration/run_audit.py",
+      "resolution": "All calibration drawdowns now aggregate realised exit-leg R by session."
+    },
+    {
+      "finding": "Variant drawdowns depended on ticker iteration.",
+      "module": "calibration/trade_plan_variant_experiment.py",
+      "resolution": "All variant, band, and regime drawdowns now use dated exit legs."
+    },
+    {
+      "finding": "The 81-cell matrix accumulated trades in ticker order.",
+      "module": "calibration/pullback_robustness.py",
+      "resolution": "Every overall, sector, regime, period, and cost slice is chronological."
+    },
+    {
+      "finding": "Filter drawdowns accumulated ticker-ordered outcomes.",
+      "module": "calibration/regime_gated_pullback.py",
+      "resolution": "Every filter and subgroup now uses daily realised exit-leg R."
+    },
+    {
+      "finding": "The headline -10.4094R was a ticker-order sequence, not portfolio chronology.",
+      "module": "calibration/locked_holdout_validation.py",
+      "resolution": "The holdout now includes the full event ledger, daily P/L, equity, risk, concurrency, and sector exposure."
+    },
+    {
+      "finding": "The first audit sorted final trade outcomes but did not time partial exits.",
+      "module": "calibration/sector_concentration_audit.py",
+      "resolution": "Partial and final legs now land on their true sessions; simultaneous loss is same-session realised gross loss."
+    },
+    {
+      "finding": "Both consumed legacy drawdown summaries.",
+      "module": "calibration/integrity_audit.py and trade_evidence.py",
+      "resolution": "Both now consume and describe the corrected chronological artifacts."
+    },
+    {
+      "finding": "Forward metrics sorted completed trades by signal time.",
+      "module": "strategies/swing_strategy.py",
+      "resolution": "Completed outcomes are grouped by completion date before drawdown; signal rules are unchanged."
+    }
+  ],
+  "ordering": "timestamp, entry, partial exit, final exit; costs and slippage remain embedded in net realised leg R",
+  "production_behavior_changed": false,
+  "recommendation": {
+    "maximum_concurrent_positions_at_1r_each": 10,
+    "maximum_concurrent_risk_r": 10.0,
+    "maximum_daily_new_risk_r": 3.0,
+    "rationale": "At 1% account risk per trade, 10R caps simultaneous initial risk near 10%; validate this separately before enforcement."
+  },
+  "strategy_rules_changed": false,
+  "validation_verdict": {
+    "overall_strategy_validation_passed": false,
+    "portfolio_risk_acceptable": false,
+    "reason": "The unchanged edge remains positive, but unconstrained simultaneous risk and chronological drawdown exceed the analysis limits.",
+    "signal_edge_criteria_passed": true,
+    "signal_expectancy_still_positive": true,
+    "status": "PAPER_TRADING_ONLY"
+  }
+}

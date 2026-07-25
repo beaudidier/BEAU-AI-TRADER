@@ -16,23 +16,23 @@ This is a retrospective portfolio-admission audit of the frozen locked-holdout s
 - Confidence for Variant E is reconstructed only from candles available at signal close.
 - Entry and exit dates both count as active, which treats same-day overlap conservatively.
 - A literal percentage cap cannot start from an empty portfolio because its first position is 100%. During this unavoidable startup state, only additions that strictly reduce concentration are accepted. Once the active book reaches the cap, the cap is enforced directly.
-- Worst simultaneous loss is the ex-post sum of negative final R for trades open on the same session. It is a loss-cluster diagnostic, not a daily marked-to-market equity value.
+- Worst simultaneous loss is the gross negative R from exit legs realised on the same session; same-day winning legs do not offset it.
 - Variant-minus-baseline intervals use a paired moving-block bootstrap of chronologically realised trades (20-trade blocks, 10,000 samples).
 - The no-limit expectancy (0.3042R), profit factor (1.7644), win rate (55.93%), and trade count (835) exactly reproduce the locked result.
 
 ### Drawdown audit finding
 
-The locked holdout report stated **-10.4094R** maximum drawdown, but its ledger was accumulated in ticker-processing order. Reordering the same immutable outcomes by realised exit date produces the portfolio-chronological **-29.4789R** drawdown reported here. No trade outcome or production code was changed. Concentration variants are compared only against this corrected chronological baseline.
+The previous sector audit reported **-29.4789R** using final trade outcomes ordered by final exit date. The corrected engine places every TP1 and final exit leg on its actual session, aggregates same-day portfolio P/L, and reports **-33.4002R**. The older locked holdout's ticker-order figure was **-10.4094R**. No trade outcome or production strategy rule changed.
 
 ## Variant results
 
 | Variant | Trades | Rejected | Expectancy | Profit factor | Win rate | Average R | Max drawdown | Worst simultaneous loss | Max concurrent | 95% expectancy CI | Double-cost expectancy | Double-cost PF |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|
-| A. No sector limit | 835 | 0 | 0.3042R | 1.7644 | 55.93% | 0.3042R | -29.4789R | -24.2280R | 63 | 0.2225R to 0.3873R | 0.2638R | 1.6391 |
-| B. Maximum 30% in one sector | 784 | 51 | 0.3011R | 1.7495 | 55.48% | 0.3011R | -27.9308R | -24.2280R | 63 | 0.2143R to 0.3875R | 0.2651R | 1.6370 |
-| C. Maximum 40% in one sector | 811 | 24 | 0.3040R | 1.7610 | 55.86% | 0.3040R | -26.0827R | -24.2280R | 63 | 0.2209R to 0.3873R | 0.2615R | 1.6291 |
-| D. Maximum 50% in related rate-sensitive sectors | 829 | 6 | 0.3024R | 1.7545 | 55.61% | 0.3024R | -29.4789R | -24.2280R | 63 | 0.2188R to 0.3876R | 0.2624R | 1.6301 |
-| E. Highest-confidence signal per sector per day | 740 | 95 | 0.2873R | 1.7129 | 55.14% | 0.2873R | -24.7504R | -22.0996R | 54 | 0.2003R to 0.3736R | 0.2405R | 1.5723 |
+| A. No sector limit | 835 | 0 | 0.3042R | 1.7644 | 55.93% | 0.3042R | -33.4002R | -12.3999R | 63 | 0.2225R to 0.3873R | 0.2638R | 1.6391 |
+| B. Maximum 30% in one sector | 784 | 51 | 0.3011R | 1.7495 | 55.48% | 0.3011R | -31.8521R | -12.3999R | 63 | 0.2143R to 0.3875R | 0.2651R | 1.6370 |
+| C. Maximum 40% in one sector | 811 | 24 | 0.3040R | 1.7610 | 55.86% | 0.3040R | -30.0040R | -12.3999R | 63 | 0.2209R to 0.3873R | 0.2615R | 1.6291 |
+| D. Maximum 50% in related rate-sensitive sectors | 829 | 6 | 0.3024R | 1.7545 | 55.61% | 0.3024R | -33.4002R | -12.3999R | 63 | 0.2188R to 0.3876R | 0.2624R | 1.6301 |
+| E. Highest-confidence signal per sector per day | 740 | 95 | 0.2873R | 1.7129 | 55.14% | 0.2873R | -28.6717R | -12.3999R | 54 | 0.2003R to 0.3736R | 0.2405R | 1.5723 |
 
 ## Paired comparison with no sector limit
 
@@ -41,10 +41,10 @@ Positive drawdown improvement means a smaller loss. Intervals include the depend
 | Variant | Expectancy difference | 95% CI | Drawdown improvement | 95% CI |
 |---|---:|---|---:|---|
 | A. No sector limit | +0.0000R | +0.0000R to +0.0000R | +0.0000R | +0.0000R to +0.0000R |
-| B. Maximum 30% in one sector | -0.0031R | -0.0318R to +0.0211R | +1.5481R | -4.2648R to +4.4569R |
-| C. Maximum 40% in one sector | -0.0002R | -0.0189R to +0.0193R | +3.3962R | -2.5091R to +4.6568R |
+| B. Maximum 30% in one sector | -0.0031R | -0.0318R to +0.0211R | +1.5481R | -5.1282R to +6.0523R |
+| C. Maximum 40% in one sector | -0.0002R | -0.0189R to +0.0193R | +3.3962R | -3.1195R to +4.4291R |
 | D. Maximum 50% in related rate-sensitive sectors | -0.0018R | -0.0059R to +0.0002R | +0.0000R | -2.5001R to +0.0000R |
-| E. Highest-confidence signal per sector per day | -0.0169R | -0.0527R to +0.0157R | +4.7285R | -1.7092R to +9.8623R |
+| E. Highest-confidence signal per sector per day | -0.0169R | -0.0527R to +0.0157R | +4.7285R | +0.1457R to +11.0367R |
 
 ## Performance by market regime
 
@@ -53,7 +53,7 @@ Positive drawdown improvement means a smaller loss. Intervals include the depend
 | Regime | Trades | Expectancy | Profit factor | Win rate | Max drawdown | 95% expectancy CI |
 |---|---:|---:|---:|---:|---:|---|
 | Bear | 1 | -1.0298R | 0.0000 | 0.00% | -1.0298R | -1.0298R to -1.0298R |
-| Bull | 829 | 0.3045R | 1.7656 | 55.97% | -29.4789R | 0.2229R to 0.3891R |
+| Bull | 829 | 0.3045R | 1.7656 | 55.97% | -33.4002R | 0.2229R to 0.3891R |
 | Sideways | 5 | 0.5280R | 2.6841 | 60.00% | -1.5674R | -0.5488R to 1.6123R |
 
 ### B. Maximum 30% in one sector
@@ -61,7 +61,7 @@ Positive drawdown improvement means a smaller loss. Intervals include the depend
 | Regime | Trades | Expectancy | Profit factor | Win rate | Max drawdown | 95% expectancy CI |
 |---|---:|---:|---:|---:|---:|---|
 | Bear | 1 | -1.0298R | 0.0000 | 0.00% | -1.0298R | -1.0298R to -1.0298R |
-| Bull | 779 | 0.3040R | 1.7582 | 55.58% | -27.9308R | 0.2177R to 0.3897R |
+| Bull | 779 | 0.3040R | 1.7582 | 55.58% | -31.8521R | 0.2177R to 0.3897R |
 | Sideways | 4 | 0.0622R | 1.1588 | 50.00% | -1.5674R | -0.7837R to 0.9351R |
 
 ### C. Maximum 40% in one sector
@@ -69,7 +69,7 @@ Positive drawdown improvement means a smaller loss. Intervals include the depend
 | Regime | Trades | Expectancy | Profit factor | Win rate | Max drawdown | 95% expectancy CI |
 |---|---:|---:|---:|---:|---:|---|
 | Bear | 1 | -1.0298R | 0.0000 | 0.00% | -1.0298R | -1.0298R to -1.0298R |
-| Bull | 806 | 0.3069R | 1.7696 | 55.96% | -26.0827R | 0.2213R to 0.3892R |
+| Bull | 806 | 0.3069R | 1.7696 | 55.96% | -30.0040R | 0.2213R to 0.3892R |
 | Sideways | 4 | 0.0622R | 1.1588 | 50.00% | -1.5674R | -0.7837R to 0.9351R |
 
 ### D. Maximum 50% in related rate-sensitive sectors
@@ -77,7 +77,7 @@ Positive drawdown improvement means a smaller loss. Intervals include the depend
 | Regime | Trades | Expectancy | Profit factor | Win rate | Max drawdown | 95% expectancy CI |
 |---|---:|---:|---:|---:|---:|---|
 | Bear | 1 | -1.0298R | 0.0000 | 0.00% | -1.0298R | -1.0298R to -1.0298R |
-| Bull | 823 | 0.3027R | 1.7556 | 55.65% | -29.4789R | 0.2205R to 0.3862R |
+| Bull | 823 | 0.3027R | 1.7556 | 55.65% | -33.4002R | 0.2205R to 0.3862R |
 | Sideways | 5 | 0.5280R | 2.6841 | 60.00% | -1.5674R | -0.5488R to 1.6123R |
 
 ### E. Highest-confidence signal per sector per day
@@ -85,7 +85,7 @@ Positive drawdown improvement means a smaller loss. Intervals include the depend
 | Regime | Trades | Expectancy | Profit factor | Win rate | Max drawdown | 95% expectancy CI |
 |---|---:|---:|---:|---:|---:|---|
 | Bear | 1 | -1.0298R | 0.0000 | 0.00% | -1.0298R | -1.0298R to -1.0298R |
-| Bull | 734 | 0.2874R | 1.7137 | 55.18% | -24.7504R | 0.2003R to 0.3771R |
+| Bull | 734 | 0.2874R | 1.7137 | 55.18% | -28.6717R | 0.2003R to 0.3771R |
 | Sideways | 5 | 0.5280R | 2.6841 | 60.00% | -1.5674R | -0.5488R to 1.6123R |
 
 ## Utilities and Real Estate
@@ -118,17 +118,17 @@ The machine-readable artifact contains monthly exposure histories and per-sector
 | Variant | Leading sector | Peak share | Peak active positions | Trading days above 30% |
 |---|---|---:|---:|---:|
 | A. No sector limit | Consumer Staples | 100.00% | 10 | 185 |
-| B. Maximum 30% in one sector | Consumer Staples | 100.00% | 10 | 123 |
-| C. Maximum 40% in one sector | Consumer Staples | 100.00% | 10 | 166 |
-| D. Maximum 50% in related rate-sensitive sectors | Consumer Staples | 100.00% | 10 | 201 |
+| B. Maximum 30% in one sector | Consumer Staples | 100.00% | 10 | 127 |
+| C. Maximum 40% in one sector | Consumer Staples | 100.00% | 10 | 164 |
+| D. Maximum 50% in related rate-sensitive sectors | Consumer Staples | 100.00% | 10 | 200 |
 | E. Highest-confidence signal per sector per day | Real Estate | 100.00% | 10 | 29 |
 
 ## Interpretation
 
-- **B. Maximum 30% in one sector** rejected **51** signals, changed expectancy by **-0.0031R**, and improved maximum drawdown by **+1.5481R**. The paired expectancy-difference interval was **-0.0318R to +0.0211R**; the paired drawdown-improvement interval was **-4.2648R to +4.4569R**.
-- **C. Maximum 40% in one sector** rejected **24** signals, changed expectancy by **-0.0002R**, and improved maximum drawdown by **+3.3962R**. The paired expectancy-difference interval was **-0.0189R to +0.0193R**; the paired drawdown-improvement interval was **-2.5091R to +4.6568R**.
+- **B. Maximum 30% in one sector** rejected **51** signals, changed expectancy by **-0.0031R**, and improved maximum drawdown by **+1.5481R**. The paired expectancy-difference interval was **-0.0318R to +0.0211R**; the paired drawdown-improvement interval was **-5.1282R to +6.0523R**.
+- **C. Maximum 40% in one sector** rejected **24** signals, changed expectancy by **-0.0002R**, and improved maximum drawdown by **+3.3962R**. The paired expectancy-difference interval was **-0.0189R to +0.0193R**; the paired drawdown-improvement interval was **-3.1195R to +4.4291R**.
 - **D. Maximum 50% in related rate-sensitive sectors** rejected **6** signals, changed expectancy by **-0.0018R**, and improved maximum drawdown by **+0.0000R**. The paired expectancy-difference interval was **-0.0059R to +0.0002R**; the paired drawdown-improvement interval was **-2.5001R to +0.0000R**.
-- **E. Highest-confidence signal per sector per day** rejected **95** signals, changed expectancy by **-0.0169R**, and improved maximum drawdown by **+4.7285R**. The paired expectancy-difference interval was **-0.0527R to +0.0157R**; the paired drawdown-improvement interval was **-1.7092R to +9.8623R**.
+- **E. Highest-confidence signal per sector per day** rejected **95** signals, changed expectancy by **-0.0169R**, and improved maximum drawdown by **+4.7285R**. The paired expectancy-difference interval was **-0.0527R to +0.0157R**; the paired drawdown-improvement interval was **+0.1457R to +11.0367R**.
 
 **Conclusion:** Variant C provides the strongest exploratory balance: it rejected 24 trades, left expectancy effectively unchanged, and reduced the observed chronological drawdown by 3.3962R. Variant E had the smallest observed drawdown but gave up 0.0169R expectancy and rejected 95 trades. The paired intervals and the reuse of one holdout do not establish that either improvement will persist. Sector concentration controls are therefore **not statistically justified for production yet**.
 
@@ -138,7 +138,7 @@ The audit does not implement a sector cap. Any future control would need a separ
 
 - The ledger contains equal-risk R outcomes, not a fully capital-constrained brokerage portfolio.
 - The startup-safe cap convention is explicit but is one possible implementation of percentage limits.
-- Worst simultaneous loss uses eventual losing outcomes for positions that overlapped; daily mark-to-market loss may differ.
+- Worst simultaneous loss is realised gross loss by session; intraday and unrealised mark-to-market loss may differ.
 - Maximum drawdown is a chronological realised-R sequence without capital allocation or mark-to-market accounting.
 - Confidence reconstruction uses the current deterministic institutional engine on historical signal-close data. It is not a probability.
 - Five variants are compared on one locked historical window, so the apparent winner is not independently validated.

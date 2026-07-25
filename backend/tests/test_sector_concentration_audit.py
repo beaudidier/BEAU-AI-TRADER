@@ -60,8 +60,8 @@ class SectorConcentrationAuditTests(unittest.TestCase):
 
     def test_drawdown_uses_chronological_realised_order(self):
         metrics = _simple_metrics(self.ledger)
-        self.assertEqual(metrics["maximum_drawdown"], -29.4789)
-        self.assertNotEqual(
+        self.assertEqual(metrics["maximum_drawdown"], -33.4002)
+        self.assertEqual(
             metrics["maximum_drawdown"], self.locked["maximum_drawdown"]
         )
         self.assertEqual(_maximum_drawdown(np.array([1.0, -2.0, 0.5])), -2.0)
@@ -122,6 +122,7 @@ class SectorConcentrationAuditTests(unittest.TestCase):
                 f"t{index}",
                 ticker=f"T{index}",
                 sector="Technology" if index % 2 else "Utilities",
+                entry_date="2020-01-01",
                 exit_date=f"2020-01-{index + 2:02d}",
                 r_multiple=float(value),
             )

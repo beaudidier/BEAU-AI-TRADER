@@ -210,13 +210,28 @@ def build_dashboard(signals: list[dict[str, Any]], outcomes: list[dict[str, Any]
     combined = [{**signal, "outcome": outcome_by_signal.get(str(signal.get("id")), {"status": "waiting_for_entry"})} for signal in signals]
     completed_statuses = {"TP2_hit", "stopped", "completed"}
     completed = [item for item in combined if item["outcome"].get("status") in completed_statuses]
-    completed_chronological = sorted(completed, key=lambda item: str(item.get("signal_timestamp") or ""))
+    completed_chronological = sorted(
+        completed,
+        key=lambda item: (
+            str(item["outcome"].get("completed_at") or ""),
+            str(item.get("ticker") or ""),
+        ),
+    )
     values = [_number(item["outcome"].get("realized_r")) for item in completed_chronological]
     gains = sum(value for value in values if value > 0)
     losses = abs(sum(value for value in values if value < 0))
+    daily_realized: dict[str, float] = {}
+    for item in completed_chronological:
+        completed_at = str(item["outcome"].get("completed_at") or "")
+        daily_realized[completed_at] = (
+            daily_realized.get(completed_at, 0.0)
+            + _number(item["outcome"].get("realized_r"))
+        )
     equity = peak = drawdown = 0.0
-    for value in values:
-        equity += value; peak = max(peak, equity); drawdown = min(drawdown, equity - peak)
+    for completed_at in sorted(daily_realized):
+        equity += daily_realized[completed_at]
+        peak = max(peak, equity)
+        drawdown = min(drawdown, equity - peak)
     double_values = [_number(item["outcome"].get("double_cost_realized_r")) for item in completed_chronological if item["outcome"].get("double_cost_realized_r") is not None]
     double_gains = sum(value for value in double_values if value > 0)
     double_losses = abs(sum(value for value in double_values if value < 0))
