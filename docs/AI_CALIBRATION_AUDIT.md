@@ -2,60 +2,56 @@
 
 ## Executive verdict
 
-The current system has **not demonstrated predictive value** in this audit run. The audit runner requested rolling three-year daily histories for 30 liquid US stocks, but the Yahoo development provider returned insufficient history for all 30 symbols during the run. Therefore, there are zero calibration and zero out-of-sample trades. No confidence score should be interpreted as a probability, and the present thresholds and weights are not empirically justified.
+The reliable-data rerun completed with 30/30 validated liquid US symbols and SPY. The current score bands show **some ranking evidence in hit rates**: the 75–89 band reached TP1 93.94% of the time versus 64.29% for 60–74. However, returns and R multiples are not monotonic across bands, the 90–100 band produced zero out-of-sample observations, and the fixed current-ticker universe has survivorship bias. The score is not a probability and should not be presented as one.
 
-## Method
+## Dataset and execution controls
 
-- Universe: 30 liquid US stocks across technology, consumer, financials, health care, energy, industrials, staples, utilities, real estate, communication services, and materials.
-- Data: Yahoo Finance daily history, rolling three-year request.
-- Split: chronological 70% calibration / 30% out-of-sample by signal date; no random shuffling.
-- Signal: analysis uses only candles through the signal close. Entry uses the following candle's open.
-- Execution: 5 bps slippage and 5 bps transaction cost per side; one open trade per ticker; 30-day maximum holding window.
-- Intrabar ambiguity: when stop and a target occur in one candle, the stop is assumed first.
-- Results: [ai_calibration_results.json](../artifacts/ai_calibration_results.json) and [ai_calibration_trades.csv](../artifacts/ai_calibration_trades.csv).
+- Explicit range: 2023-07-16 through 2026-07-25 (end exclusive), daily OHLCV from Yahoo Finance.
+- Validation: every symbol and SPY had at least 600 valid candles (the cached dataset has 759), required OHLCV columns, chronological unique dates, positive numeric values, and a latest date before the exclusive end date.
+- Reliability: three individual download attempts per symbol, exact failures retained, CSV cache in `artifacts/calibration_dataset/`, and no audit unless at least 25 of 30 symbols validate. This run had no provider failures.
+- Split: chronological 70% calibration / 30% out-of-sample by signal date; never shuffled.
+- Signal/execution: indicators use only information available at the signal close; entry is the next daily open. One active trade per ticker is allowed. A simultaneous stop/target candle resolves to the stop first. Signals without a complete 30-session forward window are excluded. The simulation includes 5 bps slippage and 5 bps transaction cost on each side and a 30-day maximum hold.
+
+Artifacts: [results JSON](../artifacts/ai_calibration_results.json) and [trade CSV](../artifacts/ai_calibration_trades.csv).
 
 ## Out-of-sample results
 
-No out-of-sample trades were generated because all 30 provider requests were recorded as missing or insufficient. All displayed zeroes in the artifact mean “not measured”, not zero performance.
+316 OOS trades were generated. TP1 hit rate was 67.41%, TP2 hit rate 48.10%, stop-loss rate 21.52%, win rate 62.03%, average return 0.6679%, average R 0.1853, profit factor 1.6597, maximum drawdown -15.2058R, and average holding time 15.13 days. These are simulation results under the stated rules, not a live-trading claim.
 
 ## Results per confidence band
 
-| Band | Signals | Trades | Conclusion |
-| --- | ---: | ---: | --- |
-| 0–59 | 0 | 0 | Insufficient sample |
-| 60–74 | 0 | 0 | Insufficient sample |
-| 75–89 | 0 | 0 | Insufficient sample |
-| 90–100 | 0 | 0 | Insufficient sample |
+| Band | Trades | TP1 | TP2 | Stop | Win rate | Avg R | Profit factor |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0–59 | 77 | 38.96% | 29.87% | 37.66% | 54.55% | 0.7117 | 2.6625 |
+| 60–74 (WATCH) | 140 | 64.29% | 42.86% | 21.43% | 58.57% | 0.0015 | 1.0052 |
+| 75–89 (BUY) | 99 | 93.94% | 69.70% | 9.09% | 72.73% | 0.0357 | 1.2198 |
+| 90–100 (STRONG BUY) | 0 | — | — | — | — | — | — |
 
-TP rates, stop rates, win rate, return, R multiple, expectancy, profit factor, drawdown, holding time, MFE, and MAE are consequently unmeasured.
+BUY clearly outperformed WATCH on TP1, TP2, stop-loss rate, and win rate. It only modestly outperformed WATCH on average R, and neither comparison validates the score as a probability. The 0–59 band’s unusually high average R conflicts with the hit-rate ordering; that is a warning that the present exit/risk construction and small cross-sectional sample need deeper review.
 
-## Factor usefulness
+## Factor and regime usefulness
 
-Trend, momentum, volume, support/resistance, volatility, relative strength, market regime, ticker, and sector analysis could not be estimated. A factor must have materially sized out-of-sample samples before it can be called useful or discarded.
+The JSON artifact contains OOS performance grouped by every raw trend, momentum, volume, support/resistance, volatility, and relative-strength score, plus regime, ticker, and sector. At a high level, Risk-on observations (247 trades) had a 70.04% TP1 rate and 0.0915 average R; Defensive observations (69 trades) had a 57.97% TP1 rate and 0.5208 average R. These groups are not large enough to justify changing weights.
 
-## Bias and leakage findings
+## Bias and leakage audit
 
-- Look-ahead: the runner slices each symbol and benchmark at the signal close; the trade enters next open.
-- Same-candle ambiguity: conservatively resolved in favor of the stop.
-- Duplicate/overlap: one active trade per ticker is enforced.
-- Unrealistic fills: explicit slippage and transaction costs are applied.
-- Data leakage: no future values are passed into the analysis call.
-- Survivorship bias: present. The fixed liquid-current-ticker universe is not a historical constituent universe.
-- Provider failures: material and blocking in this run; all failures are retained in the JSON artifact.
-- Probability language: a score is a ranking/model score, not a calibrated probability. The product must not state that a score of 70 means a 70% chance of success.
+- No look-ahead: history is sliced through the signal close; execution begins next open.
+- Same-candle ambiguity: stop first, conservatively.
+- Duplicate/overlap control: one open trade per ticker.
+- Fill realism: fixed explicit costs and slippage are included; liquidity, spread variation, and gaps are not fully modeled.
+- Data leakage: no future OHLCV is passed to indicator/plan construction.
+- Survivorship bias remains: the 30 symbols are a current liquid universe, not historical index constituents.
+- Incomplete latest candle: rejected by dataset validation.
+- Probability language remains uncalibrated: a score of 70 is not 70% probability.
 
-## Are current thresholds justified?
+## Are thresholds justified?
 
-No. The 0–59, 60–74, 75–89, and 90–100 thresholds were not changed, but this run supplies no evidence to validate them. The current architecture also permits WATCH signals to be measured; whether they should be tradeable is a separate policy question.
+Not yet. The BUY threshold has better OOS hit-rate evidence than WATCH in this sample, but there are no STRONG BUY observations, returns are not monotonic, and no confidence intervals or external baseline were calculated. No thresholds, weights, or decision logic were changed.
 
-## Recommended changes (not implemented)
+## Remaining limitations and recommended next steps
 
-1. Re-run with a reliable, versioned historical-data snapshot and preserve raw input data alongside the audit artifacts.
-2. Use historical index membership to reduce survivorship bias.
-3. Require minimum out-of-sample sample sizes and confidence intervals before changing thresholds or weights.
-4. Compare each band against a simple buy-and-hold and random-entry baseline after reliable data is available.
-5. Calibrate language only after empirical hit rates are stable across regimes and sectors.
-
-## Limitations
-
-This is a preliminary engineering audit, not investment research. The Yahoo provider is development-only and the failed data run prevents any claim about accuracy, expectancy, or factor usefulness. Results will change with data quality, costs, market regime, ticker membership, and execution assumptions.
+1. Preserve/version the cached raw dataset before treating results as a baseline.
+2. Add historical universe membership to address survivorship bias.
+3. Add confidence intervals, benchmark returns, and larger multi-regime samples before calibration changes.
+4. Investigate why the low-score band has high realized R despite worse target/stop hit rates.
+5. Keep score language ordinal until robust calibration demonstrates stable empirical probabilities.

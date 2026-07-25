@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import csv
 import json
+import time
 from collections import defaultdict
 from datetime import date, timedelta
 from pathlib import Path
@@ -26,6 +27,9 @@ TRANSACTION_COST_BPS = 5
 MAX_HOLDING_DAYS = 30
 WARMUP_BARS = 200
 OUTPUT = Path(__file__).resolve().parents[2] / "artifacts"
+DATASET_CACHE = OUTPUT / "calibration_dataset"
+MINIMUM_CANDLES = 600
+DOWNLOAD_RETRIES = 3
 
 
 def _band(score: int) -> str:
@@ -61,17 +65,64 @@ def _simulate(data: pd.DataFrame, entry_index: int, entry: float, stop: float, t
     return {"tp1_hit": tp1, "tp2_hit": tp2, "stop_hit": stopped, "exit_price": exit_price, "holding_days": exit_index - entry_index + 1, "return_pct": ((exit_price - entry - cost) / entry) * 100, "r_multiple": (exit_price - entry - cost) / risk, "mfe_r": (high_seen - entry) / risk, "mae_r": (low_seen - entry) / risk}
 
 
+def _validate_history(data: pd.DataFrame | None, end: date) -> str | None:
+    if data is None: return "provider returned no data"
+    required = {"Open", "High", "Low", "Close", "Volume"}
+    if not required.issubset(data.columns): return f"missing required OHLCV columns: {sorted(required - set(data.columns))}"
+    if len(data) < MINIMUM_CANDLES: return f"only {len(data)} valid daily candles; minimum is {MINIMUM_CANDLES}"
+    if data.index.has_duplicates: return "duplicate daily dates"
+    if not data.index.is_monotonic_increasing: return "dates are not chronological"
+    values = data.loc[:, sorted(required)].apply(pd.to_numeric, errors="coerce")
+    if values.isna().any().any(): return "OHLCV contains missing or non-numeric values"
+    if (values <= 0).any().any(): return "OHLCV contains non-positive values"
+    if pd.Timestamp(data.index[-1]).date() >= end: return "latest candle may be incomplete"
+    return None
+
+
+def _load_history(provider, ticker: str, start: date, end: date) -> tuple[pd.DataFrame | None, str | None, str]:
+    DATASET_CACHE.mkdir(parents=True, exist_ok=True)
+    cache = DATASET_CACHE / f"{ticker}.csv"
+    if cache.exists():
+        try:
+            cached = pd.read_csv(cache, index_col=0, parse_dates=True)
+            error = _validate_history(cached, end)
+            if error is None: return cached, None, "cache"
+        except (OSError, ValueError, pd.errors.ParserError):
+            pass
+    reasons = []
+    for attempt in range(1, DOWNLOAD_RETRIES + 1):
+        try:
+            data = provider.get_history(ticker, interval="1d", start=start.isoformat(), end=end.isoformat())
+            error = _validate_history(data, end)
+            if error is None:
+                data.to_csv(cache)
+                return data, None, "provider"
+            reasons.append(f"attempt {attempt}: {error}")
+        except Exception as error:
+            reasons.append(f"attempt {attempt}: {type(error).__name__}: {error}")
+        if attempt < DOWNLOAD_RETRIES: time.sleep(attempt * 0.2)
+    return None, "; ".join(reasons), "provider"
+
+
 def run_audit(provider=None) -> dict:
-    provider = provider or get_market_data_provider(); end = date.today(); start = end - timedelta(days=3 * 365)
-    # Yahoo reliably serves this rolling window while explicit future-dated
-    # ranges can be rejected by the development provider.
-    benchmark = provider.get_history("SPY", period="3y", interval="1d")
-    trades: list[dict] = []; failures: list[dict] = []
+    provider = provider or get_market_data_provider(); end = date.today(); start = end - timedelta(days=3 * 365 + 10)
+    benchmark, benchmark_error, benchmark_source = _load_history(provider, "SPY", start, end)
+    trades: list[dict] = []; failures: list[dict] = []; histories: dict[str, pd.DataFrame] = {}
+    if benchmark_error: failures.append({"ticker": "SPY", "reason": benchmark_error, "source": benchmark_source})
     for ticker, sector in TICKERS.items():
-        data = provider.get_history(ticker, period="3y", interval="1d")
-        if data is None or len(data) < WARMUP_BARS + 30:
-            failures.append({"ticker": ticker, "reason": "missing or insufficient daily history"}); continue
-        for index in range(WARMUP_BARS, len(data) - 1):
+        data, error, source = _load_history(provider, ticker, start, end)
+        if error:
+            failures.append({"ticker": ticker, "reason": error, "source": source}); continue
+        histories[ticker] = data
+    parameters = {"tickers": len(TICKERS), "start": start.isoformat(), "end": end.isoformat(), "split": "chronological 70/30 by generated trade", "slippage_bps_per_side": SLIPPAGE_BPS, "transaction_cost_bps_per_side": TRANSACTION_COST_BPS, "max_holding_days": MAX_HOLDING_DAYS, "minimum_valid_symbols": 25, "minimum_candles_per_symbol": MINIMUM_CANDLES, "download_retries": DOWNLOAD_RETRIES}
+    if len(histories) < 25 or benchmark is None:
+        return {"audit_status": "blocked", "parameters": parameters, "provider_failures": failures, "validated_symbols": sorted(histories), "calibration": {"overall": _metrics([]), "bands": {band: _metrics([]) for band in ("0-59", "60-74", "75-89", "90-100")}}, "out_of_sample": {"overall": _metrics([]), "bands": {band: _metrics([]) for band in ("0-59", "60-74", "75-89", "90-100")}, "factors": {}, "market_regime": {}, "ticker": {}, "sector": {}}, "trades": []}
+    for ticker, sector in TICKERS.items():
+        data = histories.get(ticker)
+        if data is None: continue
+        # Require a complete 30-session forward window; partial observations
+        # near the dataset end would bias target and stop rates downward.
+        for index in range(WARMUP_BARS, len(data) - MAX_HOLDING_DAYS):
             history = data.iloc[:index + 1].copy(); benchmark_history = benchmark.loc[:history.index[-1]].copy() if benchmark is not None else None
             if benchmark_history is not None and len(benchmark_history) < WARMUP_BARS: continue
             try:
@@ -91,7 +142,7 @@ def run_audit(provider=None) -> dict:
     split = int(len(trades) * .7); calibration, oos = trades[:split], trades[split:]
     grouped = lambda rows, field: {key: _metrics([row for row in rows if str(row[field]) == key]) for key in sorted({str(row[field]) for row in rows})}
     bands = lambda rows: {band: _metrics([row for row in rows if row["band"] == band]) for band in ("0-59", "60-74", "75-89", "90-100")}
-    return {"parameters": {"tickers": len(TICKERS), "start": start.isoformat(), "end": end.isoformat(), "split": "chronological 70/30 by generated trade", "slippage_bps_per_side": SLIPPAGE_BPS, "transaction_cost_bps_per_side": TRANSACTION_COST_BPS, "max_holding_days": MAX_HOLDING_DAYS}, "provider_failures": failures, "calibration": {"overall": _metrics(calibration), "bands": bands(calibration)}, "out_of_sample": {"overall": _metrics(oos), "bands": bands(oos), "factors": {name: grouped(oos, f"{name}_score") for name in ("trend", "momentum", "volume", "support_resistance", "volatility", "relative_strength")}, "market_regime": grouped(oos, "market_regime"), "ticker": grouped(oos, "ticker"), "sector": grouped(oos, "sector")}, "trades": trades}
+    return {"audit_status": "completed", "parameters": parameters, "provider_failures": failures, "validated_symbols": sorted(histories), "calibration": {"overall": _metrics(calibration), "bands": bands(calibration)}, "out_of_sample": {"overall": _metrics(oos), "bands": bands(oos), "factors": {name: grouped(oos, f"{name}_score") for name in ("trend", "momentum", "volume", "support_resistance", "volatility", "relative_strength")}, "market_regime": grouped(oos, "market_regime"), "ticker": grouped(oos, "ticker"), "sector": grouped(oos, "sector")}, "trades": trades}
 
 
 def write_artifacts(results: dict) -> None:
