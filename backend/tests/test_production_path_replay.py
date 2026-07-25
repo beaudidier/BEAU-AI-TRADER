@@ -129,7 +129,7 @@ class ProductionPathReplayTests(unittest.TestCase):
 
     @patch("forward_validation.production_replay.calculate_institutional_analysis", return_value=_analysis())
     @patch("strategies.swing_strategy.calculate_institutional_analysis", return_value=_analysis())
-    def test_duplicates_and_provider_failures_are_accounted_for(self, _production_analysis, _standalone_analysis):
+    def test_duplicates_and_invalid_symbols_are_accounted_for(self, _production_analysis, _standalone_analysis):
         provider = FakeProvider({"SPY": _history(), "AAPL": _history(), "MSFT": None})
         result = run_production_path_replay(
             provider=provider,
@@ -138,7 +138,11 @@ class ProductionPathReplayTests(unittest.TestCase):
         )
         self.assertEqual(result["summary"]["duplicate_requests_prevented"], 1)
         self.assertEqual(result["summary"]["failed_count"], 1)
-        self.assertIn("MSFT", result["summary"]["provider_errors"])
+        self.assertEqual(result["summary"]["provider_errors"], {})
+        self.assertEqual(
+            result["summary"]["genuine_failures"]["MSFT"]["status"],
+            "invalid_symbol",
+        )
         self.assertEqual(provider.calls.count("AAPL"), 1)
 
     @patch("forward_validation.production_replay.calculate_institutional_analysis", return_value=_analysis())

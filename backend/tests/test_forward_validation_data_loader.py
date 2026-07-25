@@ -64,6 +64,7 @@ class ForwardValidationDataLoaderTests(unittest.TestCase):
 
         self.assertEqual(sorted(first.histories), ["AAPL", "MSFT"])
         self.assertEqual(first.failed_symbols, [])
+        self.assertEqual(first.symbol_outcomes["AAPL"]["status"], "completed")
         self.assertEqual(first.duplicate_requests_prevented, 1)
         self.assertEqual(first.provider_request_count, 3)
         self.assertEqual(first.retry_count, 1)
@@ -90,6 +91,18 @@ class ForwardValidationDataLoaderTests(unittest.TestCase):
         invalid = invalid.drop(columns=["Volume"])
         with self.assertRaisesRegex(ValueError, "Volume"):
             validate_completed_history(invalid, date(2026, 7, 24))
+
+    def test_failure_outcomes_are_classified(self):
+        result = ForwardValidationDataLoader(
+            lambda _symbol: None,
+            date(2026, 7, 24),
+            config=self.config,
+        ).load(["INVALID"])
+
+        self.assertEqual(result.failed_symbols, ["INVALID"])
+        self.assertEqual(
+            result.symbol_outcomes["INVALID"]["status"], "invalid_symbol"
+        )
 
     def test_incomplete_daily_candle_is_excluded(self):
         history = _history()

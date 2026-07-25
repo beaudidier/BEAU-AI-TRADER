@@ -74,13 +74,21 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
   const completedSegments = dashboard ? Math.ceil(dashboard.sample_progress.percentage / 10) : 0;
   const lastRun = dashboard?.runner.last_run;
   const activeUniverse = dashboard?.runner.active_universe;
+  const latestReplay = dashboard?.runner.latest_replay;
+  const validationHealth = latestReplay?.health ?? lastRun?.provider_health ?? dashboard?.runner.health ?? "waiting";
+  const excludedSymbols = latestReplay?.excluded_symbols ?? lastRun?.excluded_symbols ?? {};
+  const genuineFailures = latestReplay?.genuine_failures ?? lastRun?.genuine_failures ?? {};
   const operationalCards = dashboard ? [
     ["Active universe", activeUniverse ? `${activeUniverse.name} (${activeUniverse.expected_symbols})` : "S&P 500 (503)"],
-    ["Scan completion", `${(lastRun?.completion_percentage ?? 0).toFixed(2)}%`],
-    ["Failed symbols", String(lastRun?.symbols_failed.length ?? 0)],
-    ["Runtime", lastRun?.runtime_seconds != null ? `${lastRun.runtime_seconds.toFixed(1)}s` : "Not available yet"],
-    ["Provider health", lastRun?.provider_health ?? dashboard.runner.health],
-    ["Last complete market date", lastRun?.last_complete_market_date ?? "Not available yet"],
+    ["Coverage", `${(latestReplay?.completion_percentage ?? lastRun?.completion_percentage ?? 0).toFixed(2)}%`],
+    ["Eligible symbols", String(latestReplay?.eligible_symbols ?? lastRun?.eligible_symbols?.length ?? 0)],
+    ["Completed eligible", String(latestReplay?.completed_eligible_symbols ?? lastRun?.completed_eligible_symbols?.length ?? 0)],
+    ["Excluded symbols", String(Object.keys(excludedSymbols).length)],
+    ["Genuine failures", String(Object.keys(genuineFailures).length)],
+    ["Valid replay signals", String(latestReplay?.signals_found ?? 0)],
+    ["Runtime", latestReplay?.runtime_seconds != null ? `${latestReplay.runtime_seconds.toFixed(1)}s` : lastRun?.runtime_seconds != null ? `${lastRun.runtime_seconds.toFixed(1)}s` : "Not available yet"],
+    ["Validation health", validationHealth.toUpperCase()],
+    ["Last complete market date", latestReplay?.last_complete_market_date ?? lastRun?.last_complete_market_date ?? "Not available yet"],
   ] : [];
 
   return <div className="min-h-screen bg-slate-950 font-sans text-slate-100 lg:flex">
@@ -113,10 +121,10 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
           <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Runner health</p>
-                <p className="mt-2 text-lg font-semibold capitalize text-white">{dashboard.runner.health}</p>
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Validation health</p>
+                <p className="mt-2 text-lg font-semibold text-white">{validationHealth.toUpperCase()}</p>
               </div>
-              <span className={`h-3 w-3 rounded-full ${dashboard.runner.health === "failed" ? "bg-rose-500" : dashboard.runner.health === "degraded" ? "bg-amber-400" : dashboard.runner.health === "running" ? "animate-pulse bg-amber-300" : "bg-emerald-400"}`} />
+              <span className={`h-3 w-3 rounded-full ${validationHealth === "failed" ? "bg-rose-500" : validationHealth === "degraded" ? "bg-amber-400" : validationHealth === "running" || validationHealth === "waiting" ? "animate-pulse bg-amber-300" : "bg-emerald-400"}`} />
             </div>
             <dl className="mt-4 grid gap-3 text-xs sm:grid-cols-2">
               <div><dt className="text-slate-500">Last run</dt><dd className="mt-1 text-slate-300">{dateTime(dashboard.runner.last_run?.completed_at)}</dd></div>
@@ -127,12 +135,35 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
 
         {error && <div className="mt-5 flex items-center justify-between gap-4 rounded-lg border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200"><span>{error}</span><button type="button" onClick={() => void load()} className="shrink-0 font-semibold text-white hover:text-rose-100">Try again</button></div>}
         {message && <p className="mt-5 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-200">{message}</p>}
-        {lastRun && lastRun.status === "partial" && <p className="mt-5 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100">The latest S&amp;P 500 run is incomplete. Results are visible, but runner health remains degraded until every provider failure is recovered.</p>}
-        {lastRun && lastRun.status === "failed" && <p className="mt-5 rounded-lg border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">The latest S&amp;P 500 run completed fewer than 90% of symbols. Treat all results as incomplete until a successful retry finishes.</p>}
+        {validationHealth === "degraded" && <p className="mt-5 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100">The latest S&amp;P 500 validation completed between 90% and 95% of expected symbols. Results remain visible with degraded health.</p>}
+        {validationHealth === "failed" && <p className="mt-5 rounded-lg border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">The latest S&amp;P 500 validation completed fewer than 90% of expected symbols. Treat all results as incomplete until a successful retry finishes.</p>}
 
         {loading && !dashboard ? <div className="mt-5 rounded-xl border border-slate-800 bg-slate-900/40 p-6 text-sm text-slate-400">Loading forward-validation records…</div> : dashboard && <>
           <section className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {operationalCards.map(([label, value]) => <div key={label} className="rounded-xl border border-slate-800 bg-slate-900/40 p-5"><p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p><p className="mt-2 text-lg font-semibold capitalize text-white">{value}</p></div>)}
+          </section>
+
+          {latestReplay && <section className="mt-5 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-5">
+            <p className="text-xs font-medium uppercase tracking-wide text-emerald-300">Latest production-path replay · {latestReplay.replay_date}</p>
+            <p className="mt-2 text-lg font-semibold text-white">{latestReplay.signals_found} valid signals found across {latestReplay.completed_symbols} completed symbols.</p>
+            <p className="mt-1 text-sm text-emerald-100/70">{latestReplay.completion_percentage.toFixed(2)}% coverage · {latestReplay.health.toUpperCase()}</p>
+          </section>}
+
+          <section className="mt-5 grid gap-4 lg:grid-cols-2">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+              <h2 className="font-semibold text-white">Intentionally excluded symbols</h2>
+              <p className="mt-1 text-sm text-slate-400">Expected exclusions remain visible but are not provider failures.</p>
+              <div className="mt-4 space-y-3">
+                {Object.entries(excludedSymbols).length ? Object.entries(excludedSymbols).map(([ticker, outcome]) => <div key={ticker} className="rounded-lg border border-slate-800 bg-slate-950/50 p-3"><p className="text-sm font-semibold text-white">{ticker} <span className="ml-2 text-xs font-medium uppercase text-amber-300">{outcome.status.replaceAll("_", " ")}</span></p><p className="mt-1 text-xs leading-5 text-slate-400">{outcome.reason}</p></div>) : <p className="text-sm text-slate-500">No symbols were intentionally excluded.</p>}
+              </div>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+              <h2 className="font-semibold text-white">Genuine failures</h2>
+              <p className="mt-1 text-sm text-slate-400">Provider, timeout, stale, invalid, and incomplete-data failures are reported separately.</p>
+              <div className="mt-4 space-y-3">
+                {Object.entries(genuineFailures).length ? Object.entries(genuineFailures).map(([ticker, outcome]) => <div key={ticker} className="rounded-lg border border-rose-400/20 bg-rose-400/5 p-3"><p className="text-sm font-semibold text-white">{ticker} <span className="ml-2 text-xs font-medium uppercase text-rose-300">{outcome.status.replaceAll("_", " ")}</span></p><p className="mt-1 text-xs leading-5 text-slate-400">{outcome.reason}</p></div>) : <p className="text-sm text-emerald-300">No genuine failures in the latest replay.</p>}
+              </div>
+            </div>
           </section>
 
           <section className="mt-5 rounded-xl border border-slate-800 bg-slate-900/40 p-5">

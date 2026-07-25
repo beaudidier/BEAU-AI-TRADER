@@ -208,7 +208,7 @@ class ForwardValidationRunnerTests(unittest.TestCase):
         self.assertEqual(second["duplicates_prevented"], 1)
 
     @patch("forward_validation.runner.strategy_registry.require_usable", return_value=FakeStrategy())
-    def test_partial_provider_failure_is_recorded(self, _strategy):
+    def test_invalid_symbol_is_recorded_as_genuine_failure(self, _strategy):
         store = MemoryStore()
         provider = FakeProvider({"SPY": _history(), "AAPL": _history(), "MSFT": None})
         result = run_for_user(store, "user-1", provider=provider, now=self.now, symbols=["AAPL", "MSFT"])
@@ -216,7 +216,38 @@ class ForwardValidationRunnerTests(unittest.TestCase):
         self.assertEqual(result["provider_health"], "failed")
         self.assertEqual(result["symbols_completed"], ["AAPL"])
         self.assertEqual(result["symbols_failed"], ["MSFT"])
-        self.assertIn("MSFT", result["provider_errors"])
+        self.assertEqual(result["provider_errors"], {})
+        self.assertEqual(
+            result["genuine_failures"]["MSFT"]["status"], "invalid_symbol"
+        )
+
+    @patch("forward_validation.runner.strategy_registry.require_usable", return_value=FakeStrategy())
+    def test_insufficient_history_is_excluded_before_strategy_evaluation(self, _strategy):
+        store = MemoryStore()
+        provider = FakeProvider(
+            {
+                "SPY": _history(),
+                "AAPL": _history(),
+                "NEW": _history(rows=120),
+            }
+        )
+
+        result = run_for_user(
+            store,
+            "user-1",
+            provider=provider,
+            now=self.now,
+            symbols=["AAPL", "NEW"],
+        )
+
+        self.assertEqual(result["symbols_completed"], ["AAPL"])
+        self.assertEqual(result["symbols_failed"], [])
+        self.assertEqual(
+            result["excluded_symbols"]["NEW"]["status"],
+            "insufficient_history",
+        )
+        self.assertEqual(result["genuine_failures"], {})
+        self.assertEqual([signal["ticker"] for signal in store.signals], ["AAPL"])
 
     def test_non_trading_day_creates_a_skipped_run(self):
         store = MemoryStore()
@@ -277,9 +308,10 @@ class ForwardValidationRunnerTests(unittest.TestCase):
         ):
             self.assertEqual(len(configured_universe()), 10)
 
-    def test_completion_health_never_labels_partial_run_healthy(self):
+    def test_completion_health_uses_coverage_thresholds(self):
         self.assertEqual(_completion_health(503, 503), ("healthy", 100.0))
-        self.assertEqual(_completion_health(503, 480)[0], "degraded")
+        self.assertEqual(_completion_health(503, 500), ("healthy", 99.4))
+        self.assertEqual(_completion_health(100, 94)[0], "degraded")
         self.assertEqual(_completion_health(503, 452)[0], "failed")
 
 

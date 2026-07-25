@@ -46,8 +46,15 @@ from .runner import (
     universe_snapshot_diagnostics,
 )
 from .data_loader import ForwardValidationDataLoader, LoaderConfig
+from .health import (
+    MINIMUM_HISTORY_ROWS,
+    classify_data_error,
+    health_summary,
+    insufficient_history_outcome,
+    symbol_outcome,
+)
 
-REPLAY_VERSION = "production-path-replay-v2.0.0"
+REPLAY_VERSION = "production-path-replay-v2.1.0"
 SIGNAL_COMPARISON_FIELDS = (
     "ticker",
     "signal_timestamp",
@@ -332,6 +339,10 @@ def run_production_path_replay(
     provider_errors: dict[str, str] = {}
     completed: list[str] = []
     failed: list[str] = []
+    eligible: list[str] = []
+    excluded: dict[str, dict[str, str]] = {}
+    genuine_failures: dict[str, dict[str, str]] = {}
+    symbol_outcomes: dict[str, dict[str, str]] = {}
     rejection_reasons: dict[str, int] = {}
 
     for ticker in unique_requested:
@@ -344,6 +355,24 @@ def run_production_path_replay(
                         ticker, "No completed daily OHLCV history was returned."
                     )
                 )
+            if len(history) < MINIMUM_HISTORY_ROWS:
+                outcome = insufficient_history_outcome(len(history))
+                symbol_outcomes[ticker] = outcome
+                excluded[ticker] = outcome
+                results.append(
+                    {
+                        "ticker": ticker,
+                        "status": outcome["status"],
+                        "replay_date": session.isoformat(),
+                        "raw_data_timestamp": pd.Timestamp(
+                            history.index[-1]
+                        ).isoformat(),
+                        "reasons": [outcome["reason"]],
+                        "mismatches": [],
+                    }
+                )
+                continue
+            eligible.append(ticker)
             raw_timestamp = pd.Timestamp(history.index[-1])
             if raw_timestamp.date() != session:
                 raise ValueError(
@@ -363,6 +392,10 @@ def run_production_path_replay(
             )
             mismatches = _compare_production_and_standalone(production_signal, standalone)
             completed.append(ticker)
+            symbol_outcomes[ticker] = symbol_outcome(
+                "completed",
+                "The symbol passed data-quality gates and strategy evaluation completed.",
+            )
             if production_signal is None:
                 reason_text = " ".join(standalone["reasons"])
                 if "Market-regime score" in reason_text:
@@ -393,14 +426,17 @@ def run_production_path_replay(
                 }
             )
         except Exception as error:
-            reason = str(error) or type(error).__name__
-            provider_errors[ticker] = reason
+            outcome = classify_data_error(error)
+            symbol_outcomes[ticker] = outcome
+            genuine_failures[ticker] = outcome
+            if outcome["status"] == "provider_failure":
+                provider_errors[ticker] = outcome["reason"]
             failed.append(ticker)
             results.append(
                 {
                     "ticker": ticker,
-                    "status": "provider_error",
-                    "reasons": [reason],
+                    "status": outcome["status"],
+                    "reasons": [outcome["reason"]],
                     "mismatches": [],
                 }
             )
@@ -414,18 +450,15 @@ def run_production_path_replay(
         if item.get("mismatches")
     ]
     expected_count = len(unique_requested)
-    completion_percentage = (
-        round((len(completed) / expected_count) * 100, 2)
-        if expected_count
-        else 100.0
+    coverage = health_summary(
+        expected_count,
+        len(completed),
+        eligible_symbols=len(eligible),
+        excluded_symbols=len(excluded),
+        genuine_failures=len(genuine_failures),
     )
-    workflow_health = (
-        "healthy"
-        if len(completed) == expected_count
-        else "degraded"
-        if completion_percentage >= 90
-        else "failed"
-    )
+    completion_percentage = float(coverage["completion_percentage"])
+    workflow_health = str(coverage["health"])
     snapshot = universe_snapshot_diagnostics(
         ACTIVE_UNIVERSE if symbols is None else "custom"
     )
@@ -449,6 +482,15 @@ def run_production_path_replay(
             "completed_count": len(completed),
             "symbols_failed": failed,
             "failed_count": len(failed),
+            "eligible_symbols": sorted(eligible),
+            "eligible_count": len(eligible),
+            "completed_eligible_symbols": completed,
+            "completed_eligible_count": len(completed),
+            "excluded_symbols": excluded,
+            "excluded_count": len(excluded),
+            "genuine_failures": genuine_failures,
+            "genuine_failure_count": len(genuine_failures),
+            "symbol_outcomes": symbol_outcomes,
             "signals_found": signal_count,
             "rejected_setups": rejected_count,
             "duplicate_requests_prevented": duplicate_requests,
@@ -537,7 +579,10 @@ def render_report(result: dict[str, Any]) -> str:
         f"- Production runner: **{result['runner_version']}**",
         f"- Symbols requested: **{summary['requested_count']}**",
         f"- Symbols completed: **{summary['completed_count']}**",
-        f"- Symbols failed: **{summary['failed_count']}**",
+        f"- Eligible symbols: **{summary.get('eligible_count', summary['completed_count'])}**",
+        f"- Completed eligible symbols: **{summary.get('completed_eligible_count', summary['completed_count'])}**",
+        f"- Intentionally excluded symbols: **{summary.get('excluded_count', 0)}**",
+        f"- Genuine failures: **{summary.get('genuine_failure_count', summary['failed_count'])}**",
         f"- Completion: **{summary.get('completion_percentage', 0):.2f}%**",
         f"- Workflow health: **{str(summary.get('workflow_health', 'unknown')).upper()}**",
         f"- Runtime: **{summary.get('runtime_seconds', 0):.3f} seconds**",
@@ -558,7 +603,8 @@ def render_report(result: dict[str, Any]) -> str:
         "",
         f"- Requested: {', '.join(summary['symbols_requested']) or 'None'}",
         f"- Completed: {', '.join(summary['symbols_completed']) or 'None'}",
-        f"- Failed: {', '.join(summary['symbols_failed']) or 'None'}",
+        f"- Intentionally excluded: {', '.join(sorted(summary.get('excluded_symbols', {}))) or 'None'}",
+        f"- Genuine failures: {', '.join(summary['symbols_failed']) or 'None'}",
         "",
         "## Per-symbol audit",
         "",
@@ -592,10 +638,17 @@ def render_report(result: dict[str, Any]) -> str:
             lines.append(f"- {reason}")
         lines.append("")
 
-    lines.extend(["## Provider failures", ""])
-    if summary["provider_errors"]:
-        for ticker, reason in summary["provider_errors"].items():
-            lines.append(f"- {ticker}: {reason}")
+    lines.extend(["## Intentional exclusions", ""])
+    if summary.get("excluded_symbols"):
+        for ticker, outcome in summary["excluded_symbols"].items():
+            lines.append(f"- {ticker} — {outcome['status']}: {outcome['reason']}")
+    else:
+        lines.append("- None.")
+
+    lines.extend(["", "## Genuine failures", ""])
+    if summary.get("genuine_failures"):
+        for ticker, outcome in summary["genuine_failures"].items():
+            lines.append(f"- {ticker} — {outcome['status']}: {outcome['reason']}")
     else:
         lines.append("- None.")
 

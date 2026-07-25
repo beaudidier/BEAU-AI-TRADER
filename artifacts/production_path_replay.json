@@ -1,6 +1,6 @@
 {
   "benchmark_data_timestamp": "2026-07-23T00:00:00",
-  "generated_at": "2026-07-25T15:34:23.372556+00:00",
+  "generated_at": "2026-07-25T15:53:47.822773+00:00",
   "live_table_proof": {
     "checked": true,
     "method": "Replay ran without a database client; linked Supabase diagnostics were identical before and after, with post-replay estimated row counts shown",
@@ -55,7 +55,7 @@
   },
   "mismatches": [],
   "replay_date": "2026-07-23",
-  "replay_version": "production-path-replay-v2.0.0",
+  "replay_version": "production-path-replay-v2.1.0",
   "results": [
     {
       "diagnostics": {
@@ -5819,10 +5819,12 @@
     },
     {
       "mismatches": [],
+      "raw_data_timestamp": "2026-07-23T00:00:00",
       "reasons": [
-        "At least 200 valid daily candles are required."
+        "40 completed daily candles are available; the frozen strategy requires at least 200."
       ],
-      "status": "provider_error",
+      "replay_date": "2026-07-23",
+      "status": "insufficient_history",
       "ticker": "FDXF"
     },
     {
@@ -7117,10 +7119,12 @@
     },
     {
       "mismatches": [],
+      "raw_data_timestamp": "2026-07-23T00:00:00",
       "reasons": [
-        "At least 200 valid daily candles are required."
+        "27 completed daily candles are available; the frozen strategy requires at least 200."
       ],
-      "status": "provider_error",
+      "replay_date": "2026-07-23",
+      "status": "insufficient_history",
       "ticker": "HONA"
     },
     {
@@ -11835,10 +11839,12 @@
     },
     {
       "mismatches": [],
+      "raw_data_timestamp": "2026-07-23T00:00:00",
       "reasons": [
-        "At least 200 valid daily candles are required."
+        "185 completed daily candles are available; the frozen strategy requires at least 200."
       ],
-      "status": "provider_error",
+      "replay_date": "2026-07-23",
+      "status": "insufficient_history",
       "ticker": "Q"
     },
     {
@@ -15442,33 +15448,3066 @@
       "ticker": "ZTS"
     }
   ],
-  "runner_version": "forward-validation-runner-v2.0.0",
+  "runner_version": "forward-validation-runner-v2.1.0",
   "signal_timestamp": "2026-07-23T20:15:00+00:00",
   "strategy_version": "regime-gated-pullback-v1.0.0",
   "summary": {
-    "batches_completed": 26,
-    "cached_symbols": 0,
+    "batches_completed": 0,
+    "cached_symbols": 503,
     "completed_count": 500,
+    "completed_eligible_count": 500,
+    "completed_eligible_symbols": [
+      "A",
+      "AAPL",
+      "ABBV",
+      "ABNB",
+      "ABT",
+      "ACGL",
+      "ACN",
+      "ADBE",
+      "ADI",
+      "ADM",
+      "ADP",
+      "ADSK",
+      "AEE",
+      "AEP",
+      "AES",
+      "AFL",
+      "AIG",
+      "AIZ",
+      "AJG",
+      "AKAM",
+      "ALB",
+      "ALGN",
+      "ALL",
+      "ALLE",
+      "AMAT",
+      "AMCR",
+      "AMD",
+      "AME",
+      "AMGN",
+      "AMP",
+      "AMT",
+      "AMZN",
+      "ANET",
+      "AON",
+      "AOS",
+      "APA",
+      "APD",
+      "APH",
+      "APO",
+      "APP",
+      "APTV",
+      "ARE",
+      "ARES",
+      "ATO",
+      "AVB",
+      "AVGO",
+      "AVY",
+      "AWK",
+      "AXON",
+      "AXP",
+      "AZO",
+      "BA",
+      "BAC",
+      "BALL",
+      "BAX",
+      "BBY",
+      "BDX",
+      "BEN",
+      "BF-B",
+      "BG",
+      "BIIB",
+      "BKNG",
+      "BKR",
+      "BLDR",
+      "BLK",
+      "BMY",
+      "BNY",
+      "BR",
+      "BRK-B",
+      "BRO",
+      "BSX",
+      "BX",
+      "BXP",
+      "C",
+      "CAH",
+      "CARR",
+      "CASY",
+      "CAT",
+      "CB",
+      "CBOE",
+      "CBRE",
+      "CCI",
+      "CCL",
+      "CDNS",
+      "CDW",
+      "CEG",
+      "CF",
+      "CFG",
+      "CHD",
+      "CHRW",
+      "CHTR",
+      "CI",
+      "CIEN",
+      "CINF",
+      "CL",
+      "CLX",
+      "CMCSA",
+      "CME",
+      "CMG",
+      "CMI",
+      "CMS",
+      "CNC",
+      "CNP",
+      "COF",
+      "COHR",
+      "COIN",
+      "COO",
+      "COP",
+      "COR",
+      "COST",
+      "CPAY",
+      "CPRT",
+      "CPT",
+      "CRH",
+      "CRL",
+      "CRM",
+      "CRWD",
+      "CSCO",
+      "CSGP",
+      "CSX",
+      "CTAS",
+      "CTSH",
+      "CTVA",
+      "CVNA",
+      "CVS",
+      "CVX",
+      "D",
+      "DAL",
+      "DASH",
+      "DD",
+      "DDOG",
+      "DE",
+      "DECK",
+      "DELL",
+      "DG",
+      "DGX",
+      "DHI",
+      "DHR",
+      "DIS",
+      "DLR",
+      "DLTR",
+      "DOC",
+      "DOV",
+      "DOW",
+      "DPZ",
+      "DRI",
+      "DTE",
+      "DUK",
+      "DVA",
+      "DVN",
+      "DXCM",
+      "EA",
+      "EBAY",
+      "ECHO",
+      "ECL",
+      "ED",
+      "EFX",
+      "EG",
+      "EIX",
+      "EL",
+      "ELV",
+      "EME",
+      "EMR",
+      "EOG",
+      "EQIX",
+      "EQR",
+      "EQT",
+      "ERIE",
+      "ES",
+      "ESS",
+      "ETN",
+      "ETR",
+      "EVRG",
+      "EW",
+      "EXC",
+      "EXE",
+      "EXPD",
+      "EXPE",
+      "EXR",
+      "F",
+      "FANG",
+      "FAST",
+      "FCX",
+      "FDS",
+      "FDX",
+      "FE",
+      "FFIV",
+      "FICO",
+      "FIS",
+      "FISV",
+      "FITB",
+      "FIX",
+      "FLEX",
+      "FOX",
+      "FOXA",
+      "FRT",
+      "FSLR",
+      "FTNT",
+      "FTV",
+      "GD",
+      "GDDY",
+      "GE",
+      "GEHC",
+      "GEN",
+      "GEV",
+      "GILD",
+      "GIS",
+      "GL",
+      "GLW",
+      "GM",
+      "GNRC",
+      "GOOG",
+      "GOOGL",
+      "GPC",
+      "GPN",
+      "GRMN",
+      "GS",
+      "GWW",
+      "HAL",
+      "HAS",
+      "HBAN",
+      "HCA",
+      "HD",
+      "HIG",
+      "HII",
+      "HLT",
+      "HON",
+      "HOOD",
+      "HPE",
+      "HPQ",
+      "HRL",
+      "HSIC",
+      "HST",
+      "HSY",
+      "HUBB",
+      "HUM",
+      "HWM",
+      "IBKR",
+      "IBM",
+      "ICE",
+      "IDXX",
+      "IEX",
+      "IFF",
+      "INCY",
+      "INTC",
+      "INTU",
+      "INVH",
+      "IP",
+      "IQV",
+      "IR",
+      "IRM",
+      "ISRG",
+      "IT",
+      "ITW",
+      "IVZ",
+      "J",
+      "JBHT",
+      "JBL",
+      "JCI",
+      "JKHY",
+      "JNJ",
+      "JPM",
+      "KDP",
+      "KEY",
+      "KEYS",
+      "KHC",
+      "KIM",
+      "KKR",
+      "KLAC",
+      "KMB",
+      "KMI",
+      "KO",
+      "KR",
+      "KVUE",
+      "L",
+      "LDOS",
+      "LEN",
+      "LH",
+      "LHX",
+      "LII",
+      "LIN",
+      "LITE",
+      "LLY",
+      "LMT",
+      "LNT",
+      "LOW",
+      "LRCX",
+      "LULU",
+      "LUV",
+      "LVS",
+      "LYB",
+      "LYV",
+      "MA",
+      "MAA",
+      "MAR",
+      "MAS",
+      "MCD",
+      "MCHP",
+      "MCK",
+      "MCO",
+      "MDLZ",
+      "MDT",
+      "MET",
+      "META",
+      "MGM",
+      "MKC",
+      "MLM",
+      "MMM",
+      "MNST",
+      "MO",
+      "MOS",
+      "MPC",
+      "MPWR",
+      "MRK",
+      "MRNA",
+      "MRSH",
+      "MRVL",
+      "MS",
+      "MSCI",
+      "MSFT",
+      "MSI",
+      "MTB",
+      "MTD",
+      "MU",
+      "NCLH",
+      "NDAQ",
+      "NDSN",
+      "NEE",
+      "NEM",
+      "NFLX",
+      "NI",
+      "NKE",
+      "NOC",
+      "NOW",
+      "NRG",
+      "NSC",
+      "NTAP",
+      "NTRS",
+      "NUE",
+      "NVDA",
+      "NVR",
+      "NWS",
+      "NWSA",
+      "NXPI",
+      "O",
+      "ODFL",
+      "OKE",
+      "OMC",
+      "ON",
+      "ORCL",
+      "ORLY",
+      "OTIS",
+      "OXY",
+      "PANW",
+      "PAYX",
+      "PCAR",
+      "PCG",
+      "PEG",
+      "PEP",
+      "PFE",
+      "PFG",
+      "PG",
+      "PGR",
+      "PH",
+      "PHM",
+      "PKG",
+      "PLD",
+      "PLTR",
+      "PM",
+      "PNC",
+      "PNR",
+      "PNW",
+      "PODD",
+      "PPG",
+      "PPL",
+      "PRU",
+      "PSA",
+      "PSKY",
+      "PSX",
+      "PTC",
+      "PWR",
+      "PYPL",
+      "QCOM",
+      "RCL",
+      "REG",
+      "REGN",
+      "RF",
+      "RJF",
+      "RL",
+      "RMD",
+      "ROK",
+      "ROL",
+      "ROP",
+      "ROST",
+      "RSG",
+      "RTX",
+      "RVTY",
+      "SBAC",
+      "SBUX",
+      "SCHW",
+      "SHW",
+      "SJM",
+      "SLB",
+      "SMCI",
+      "SNA",
+      "SNDK",
+      "SNPS",
+      "SO",
+      "SOLV",
+      "SPG",
+      "SPGI",
+      "SRE",
+      "STE",
+      "STLD",
+      "STT",
+      "STX",
+      "STZ",
+      "SW",
+      "SWK",
+      "SWKS",
+      "SYF",
+      "SYK",
+      "SYY",
+      "T",
+      "TAP",
+      "TDG",
+      "TDY",
+      "TECH",
+      "TEL",
+      "TER",
+      "TFC",
+      "TGT",
+      "TJX",
+      "TKO",
+      "TMO",
+      "TMUS",
+      "TPL",
+      "TPR",
+      "TRGP",
+      "TRMB",
+      "TROW",
+      "TRV",
+      "TSCO",
+      "TSLA",
+      "TSN",
+      "TT",
+      "TTD",
+      "TTWO",
+      "TXN",
+      "TXT",
+      "TYL",
+      "UAL",
+      "UBER",
+      "UDR",
+      "UHS",
+      "ULTA",
+      "UNH",
+      "UNP",
+      "UPS",
+      "URI",
+      "USB",
+      "V",
+      "VEEV",
+      "VICI",
+      "VLO",
+      "VLTO",
+      "VMC",
+      "VRSK",
+      "VRSN",
+      "VRT",
+      "VRTX",
+      "VST",
+      "VTR",
+      "VTRS",
+      "VZ",
+      "WAB",
+      "WAT",
+      "WBD",
+      "WDAY",
+      "WDC",
+      "WEC",
+      "WELL",
+      "WFC",
+      "WM",
+      "WMB",
+      "WMT",
+      "WRB",
+      "WSM",
+      "WST",
+      "WTW",
+      "WY",
+      "WYNN",
+      "XEL",
+      "XOM",
+      "XYL",
+      "XYZ",
+      "YUM",
+      "ZBH",
+      "ZBRA",
+      "ZTS"
+    ],
     "completion_percentage": 99.4,
     "duplicate_requests_prevented": 0,
-    "failed_count": 3,
+    "eligible_count": 500,
+    "eligible_symbols": [
+      "A",
+      "AAPL",
+      "ABBV",
+      "ABNB",
+      "ABT",
+      "ACGL",
+      "ACN",
+      "ADBE",
+      "ADI",
+      "ADM",
+      "ADP",
+      "ADSK",
+      "AEE",
+      "AEP",
+      "AES",
+      "AFL",
+      "AIG",
+      "AIZ",
+      "AJG",
+      "AKAM",
+      "ALB",
+      "ALGN",
+      "ALL",
+      "ALLE",
+      "AMAT",
+      "AMCR",
+      "AMD",
+      "AME",
+      "AMGN",
+      "AMP",
+      "AMT",
+      "AMZN",
+      "ANET",
+      "AON",
+      "AOS",
+      "APA",
+      "APD",
+      "APH",
+      "APO",
+      "APP",
+      "APTV",
+      "ARE",
+      "ARES",
+      "ATO",
+      "AVB",
+      "AVGO",
+      "AVY",
+      "AWK",
+      "AXON",
+      "AXP",
+      "AZO",
+      "BA",
+      "BAC",
+      "BALL",
+      "BAX",
+      "BBY",
+      "BDX",
+      "BEN",
+      "BF-B",
+      "BG",
+      "BIIB",
+      "BKNG",
+      "BKR",
+      "BLDR",
+      "BLK",
+      "BMY",
+      "BNY",
+      "BR",
+      "BRK-B",
+      "BRO",
+      "BSX",
+      "BX",
+      "BXP",
+      "C",
+      "CAH",
+      "CARR",
+      "CASY",
+      "CAT",
+      "CB",
+      "CBOE",
+      "CBRE",
+      "CCI",
+      "CCL",
+      "CDNS",
+      "CDW",
+      "CEG",
+      "CF",
+      "CFG",
+      "CHD",
+      "CHRW",
+      "CHTR",
+      "CI",
+      "CIEN",
+      "CINF",
+      "CL",
+      "CLX",
+      "CMCSA",
+      "CME",
+      "CMG",
+      "CMI",
+      "CMS",
+      "CNC",
+      "CNP",
+      "COF",
+      "COHR",
+      "COIN",
+      "COO",
+      "COP",
+      "COR",
+      "COST",
+      "CPAY",
+      "CPRT",
+      "CPT",
+      "CRH",
+      "CRL",
+      "CRM",
+      "CRWD",
+      "CSCO",
+      "CSGP",
+      "CSX",
+      "CTAS",
+      "CTSH",
+      "CTVA",
+      "CVNA",
+      "CVS",
+      "CVX",
+      "D",
+      "DAL",
+      "DASH",
+      "DD",
+      "DDOG",
+      "DE",
+      "DECK",
+      "DELL",
+      "DG",
+      "DGX",
+      "DHI",
+      "DHR",
+      "DIS",
+      "DLR",
+      "DLTR",
+      "DOC",
+      "DOV",
+      "DOW",
+      "DPZ",
+      "DRI",
+      "DTE",
+      "DUK",
+      "DVA",
+      "DVN",
+      "DXCM",
+      "EA",
+      "EBAY",
+      "ECHO",
+      "ECL",
+      "ED",
+      "EFX",
+      "EG",
+      "EIX",
+      "EL",
+      "ELV",
+      "EME",
+      "EMR",
+      "EOG",
+      "EQIX",
+      "EQR",
+      "EQT",
+      "ERIE",
+      "ES",
+      "ESS",
+      "ETN",
+      "ETR",
+      "EVRG",
+      "EW",
+      "EXC",
+      "EXE",
+      "EXPD",
+      "EXPE",
+      "EXR",
+      "F",
+      "FANG",
+      "FAST",
+      "FCX",
+      "FDS",
+      "FDX",
+      "FE",
+      "FFIV",
+      "FICO",
+      "FIS",
+      "FISV",
+      "FITB",
+      "FIX",
+      "FLEX",
+      "FOX",
+      "FOXA",
+      "FRT",
+      "FSLR",
+      "FTNT",
+      "FTV",
+      "GD",
+      "GDDY",
+      "GE",
+      "GEHC",
+      "GEN",
+      "GEV",
+      "GILD",
+      "GIS",
+      "GL",
+      "GLW",
+      "GM",
+      "GNRC",
+      "GOOG",
+      "GOOGL",
+      "GPC",
+      "GPN",
+      "GRMN",
+      "GS",
+      "GWW",
+      "HAL",
+      "HAS",
+      "HBAN",
+      "HCA",
+      "HD",
+      "HIG",
+      "HII",
+      "HLT",
+      "HON",
+      "HOOD",
+      "HPE",
+      "HPQ",
+      "HRL",
+      "HSIC",
+      "HST",
+      "HSY",
+      "HUBB",
+      "HUM",
+      "HWM",
+      "IBKR",
+      "IBM",
+      "ICE",
+      "IDXX",
+      "IEX",
+      "IFF",
+      "INCY",
+      "INTC",
+      "INTU",
+      "INVH",
+      "IP",
+      "IQV",
+      "IR",
+      "IRM",
+      "ISRG",
+      "IT",
+      "ITW",
+      "IVZ",
+      "J",
+      "JBHT",
+      "JBL",
+      "JCI",
+      "JKHY",
+      "JNJ",
+      "JPM",
+      "KDP",
+      "KEY",
+      "KEYS",
+      "KHC",
+      "KIM",
+      "KKR",
+      "KLAC",
+      "KMB",
+      "KMI",
+      "KO",
+      "KR",
+      "KVUE",
+      "L",
+      "LDOS",
+      "LEN",
+      "LH",
+      "LHX",
+      "LII",
+      "LIN",
+      "LITE",
+      "LLY",
+      "LMT",
+      "LNT",
+      "LOW",
+      "LRCX",
+      "LULU",
+      "LUV",
+      "LVS",
+      "LYB",
+      "LYV",
+      "MA",
+      "MAA",
+      "MAR",
+      "MAS",
+      "MCD",
+      "MCHP",
+      "MCK",
+      "MCO",
+      "MDLZ",
+      "MDT",
+      "MET",
+      "META",
+      "MGM",
+      "MKC",
+      "MLM",
+      "MMM",
+      "MNST",
+      "MO",
+      "MOS",
+      "MPC",
+      "MPWR",
+      "MRK",
+      "MRNA",
+      "MRSH",
+      "MRVL",
+      "MS",
+      "MSCI",
+      "MSFT",
+      "MSI",
+      "MTB",
+      "MTD",
+      "MU",
+      "NCLH",
+      "NDAQ",
+      "NDSN",
+      "NEE",
+      "NEM",
+      "NFLX",
+      "NI",
+      "NKE",
+      "NOC",
+      "NOW",
+      "NRG",
+      "NSC",
+      "NTAP",
+      "NTRS",
+      "NUE",
+      "NVDA",
+      "NVR",
+      "NWS",
+      "NWSA",
+      "NXPI",
+      "O",
+      "ODFL",
+      "OKE",
+      "OMC",
+      "ON",
+      "ORCL",
+      "ORLY",
+      "OTIS",
+      "OXY",
+      "PANW",
+      "PAYX",
+      "PCAR",
+      "PCG",
+      "PEG",
+      "PEP",
+      "PFE",
+      "PFG",
+      "PG",
+      "PGR",
+      "PH",
+      "PHM",
+      "PKG",
+      "PLD",
+      "PLTR",
+      "PM",
+      "PNC",
+      "PNR",
+      "PNW",
+      "PODD",
+      "PPG",
+      "PPL",
+      "PRU",
+      "PSA",
+      "PSKY",
+      "PSX",
+      "PTC",
+      "PWR",
+      "PYPL",
+      "QCOM",
+      "RCL",
+      "REG",
+      "REGN",
+      "RF",
+      "RJF",
+      "RL",
+      "RMD",
+      "ROK",
+      "ROL",
+      "ROP",
+      "ROST",
+      "RSG",
+      "RTX",
+      "RVTY",
+      "SBAC",
+      "SBUX",
+      "SCHW",
+      "SHW",
+      "SJM",
+      "SLB",
+      "SMCI",
+      "SNA",
+      "SNDK",
+      "SNPS",
+      "SO",
+      "SOLV",
+      "SPG",
+      "SPGI",
+      "SRE",
+      "STE",
+      "STLD",
+      "STT",
+      "STX",
+      "STZ",
+      "SW",
+      "SWK",
+      "SWKS",
+      "SYF",
+      "SYK",
+      "SYY",
+      "T",
+      "TAP",
+      "TDG",
+      "TDY",
+      "TECH",
+      "TEL",
+      "TER",
+      "TFC",
+      "TGT",
+      "TJX",
+      "TKO",
+      "TMO",
+      "TMUS",
+      "TPL",
+      "TPR",
+      "TRGP",
+      "TRMB",
+      "TROW",
+      "TRV",
+      "TSCO",
+      "TSLA",
+      "TSN",
+      "TT",
+      "TTD",
+      "TTWO",
+      "TXN",
+      "TXT",
+      "TYL",
+      "UAL",
+      "UBER",
+      "UDR",
+      "UHS",
+      "ULTA",
+      "UNH",
+      "UNP",
+      "UPS",
+      "URI",
+      "USB",
+      "V",
+      "VEEV",
+      "VICI",
+      "VLO",
+      "VLTO",
+      "VMC",
+      "VRSK",
+      "VRSN",
+      "VRT",
+      "VRTX",
+      "VST",
+      "VTR",
+      "VTRS",
+      "VZ",
+      "WAB",
+      "WAT",
+      "WBD",
+      "WDAY",
+      "WDC",
+      "WEC",
+      "WELL",
+      "WFC",
+      "WM",
+      "WMB",
+      "WMT",
+      "WRB",
+      "WSM",
+      "WST",
+      "WTW",
+      "WY",
+      "WYNN",
+      "XEL",
+      "XOM",
+      "XYL",
+      "XYZ",
+      "YUM",
+      "ZBH",
+      "ZBRA",
+      "ZTS"
+    ],
+    "excluded_count": 3,
+    "excluded_symbols": {
+      "FDXF": {
+        "reason": "40 completed daily candles are available; the frozen strategy requires at least 200.",
+        "status": "insufficient_history"
+      },
+      "HONA": {
+        "reason": "27 completed daily candles are available; the frozen strategy requires at least 200.",
+        "status": "insufficient_history"
+      },
+      "Q": {
+        "reason": "185 completed daily candles are available; the frozen strategy requires at least 200.",
+        "status": "insufficient_history"
+      }
+    },
+    "failed_count": 0,
     "fits_github_actions_limit": true,
+    "genuine_failure_count": 0,
+    "genuine_failures": {},
     "last_complete_market_date": "2026-07-23",
     "mismatch_count": 0,
-    "provider_errors": {
-      "FDXF": "At least 200 valid daily candles are required.",
-      "HONA": "At least 200 valid daily candles are required.",
-      "Q": "At least 200 valid daily candles are required."
-    },
-    "provider_request_count": 27,
+    "provider_errors": {},
+    "provider_request_count": 0,
     "rejected_setups": 488,
     "rejection_reasons": {
       "risk_above_5_percent": 488
     },
     "requested_count": 503,
     "retry_count": 0,
-    "runtime_seconds": 60.014,
+    "runtime_seconds": 7.266,
     "signals_found": 12,
+    "symbol_outcomes": {
+      "A": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AAPL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ABBV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ABNB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ABT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ACGL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ACN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ADBE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ADI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ADM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ADP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ADSK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AEE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AEP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AES": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AFL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AIG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AIZ": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AJG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AKAM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ALB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ALGN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ALL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ALLE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AMAT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AMCR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AMD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AME": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AMGN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AMP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AMT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AMZN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ANET": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AON": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AOS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "APA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "APD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "APH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "APO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "APP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "APTV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ARE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ARES": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ATO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AVB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AVGO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AVY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AWK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AXON": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AXP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "AZO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BAC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BALL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BAX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BBY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BDX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BEN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BF-B": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BIIB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BKNG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BKR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BLDR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BLK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BMY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BNY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BRK-B": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BRO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BSX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "BXP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "C": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CAH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CARR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CASY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CAT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CBOE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CBRE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CCI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CCL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CDNS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CDW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CEG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CF": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CFG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CHD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CHRW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CHTR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CIEN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CINF": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CLX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CMCSA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CME": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CMG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CMI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CMS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CNC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CNP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "COF": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "COHR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "COIN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "COO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "COP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "COR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "COST": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CPAY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CPRT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CPT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CRH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CRL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CRM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CRWD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CSCO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CSGP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CSX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CTAS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CTSH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CTVA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CVNA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CVS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "CVX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "D": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DAL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DASH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DDOG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DECK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DELL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DGX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DHI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DHR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DIS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DLR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DLTR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DOC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DOV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DOW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DPZ": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DRI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DTE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DUK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DVA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DVN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "DXCM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EBAY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ECHO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ECL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ED": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EFX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EIX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ELV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EME": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EMR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EOG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EQIX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EQR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EQT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ERIE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ES": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ESS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ETN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ETR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EVRG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EXC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EXE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EXPD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EXPE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "EXR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "F": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FANG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FAST": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FCX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FDS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FDX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FDXF": {
+        "reason": "40 completed daily candles are available; the frozen strategy requires at least 200.",
+        "status": "insufficient_history"
+      },
+      "FE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FFIV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FICO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FIS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FISV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FITB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FIX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FLEX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FOX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FOXA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FRT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FSLR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FTNT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "FTV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GDDY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GEHC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GEN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GEV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GILD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GIS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GLW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GNRC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GOOG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GOOGL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GPC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GPN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GRMN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "GWW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HAL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HAS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HBAN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HCA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HIG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HII": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HLT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HON": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HONA": {
+        "reason": "27 completed daily candles are available; the frozen strategy requires at least 200.",
+        "status": "insufficient_history"
+      },
+      "HOOD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HPE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HPQ": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HRL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HSIC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HST": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HSY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HUBB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HUM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "HWM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IBKR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IBM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ICE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IDXX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IEX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IFF": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "INCY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "INTC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "INTU": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "INVH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IQV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IRM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ISRG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ITW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "IVZ": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "J": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "JBHT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "JBL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "JCI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "JKHY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "JNJ": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "JPM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KDP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KEY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KEYS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KHC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KIM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KKR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KLAC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KMB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KMI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "KVUE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "L": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LDOS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LEN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LHX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LII": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LIN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LITE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LLY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LMT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LNT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LOW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LRCX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LULU": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LUV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LVS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LYB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "LYV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MAA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MAR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MAS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MCD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MCHP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MCK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MCO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MDLZ": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MDT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MET": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "META": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MGM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MKC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MLM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MMM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MNST": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MOS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MPC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MPWR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MRK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MRNA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MRSH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MRVL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MSCI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MSFT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MSI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MTB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MTD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "MU": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NCLH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NDAQ": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NDSN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NEE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NEM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NFLX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NKE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NOC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NOW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NRG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NSC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NTAP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NTRS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NUE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NVDA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NVR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NWS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NWSA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "NXPI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "O": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ODFL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "OKE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "OMC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ON": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ORCL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ORLY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "OTIS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "OXY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PANW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PAYX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PCAR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PCG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PEG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PEP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PFE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PFG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PGR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PHM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PKG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PLD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PLTR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PNC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PNR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PNW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PODD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PPG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PPL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PRU": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PSA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PSKY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PSX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PTC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PWR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "PYPL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "Q": {
+        "reason": "185 completed daily candles are available; the frozen strategy requires at least 200.",
+        "status": "insufficient_history"
+      },
+      "QCOM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "RCL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "REG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "REGN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "RF": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "RJF": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "RL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "RMD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ROK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ROL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ROP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ROST": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "RSG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "RTX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "RVTY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SBAC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SBUX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SCHW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SHW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SJM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SLB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SMCI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SNA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SNDK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SNPS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SOLV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SPG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SPGI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SRE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "STE": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "STLD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "STT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "STX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "STZ": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SWK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SWKS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SYF": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SYK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "SYY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "T": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TAP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TDG": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TDY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TECH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TEL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TER": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TFC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TGT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TJX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TKO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TMO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TMUS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TPL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TPR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TRGP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TRMB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TROW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TRV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TSCO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TSLA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TSN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TTD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TTWO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TXN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TXT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "TYL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "UAL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "UBER": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "UDR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "UHS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ULTA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "UNH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "UNP": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "UPS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "URI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "USB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "V": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VEEV": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VICI": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VLO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VLTO": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VMC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VRSK": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VRSN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VRT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VRTX": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VST": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VTR": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VTRS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "VZ": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WAB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WAT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WBD": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WDAY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WDC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WEC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WELL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WFC": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WMB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WMT": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WRB": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WSM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WST": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WTW": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WY": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "WYNN": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "XEL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "XOM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "XYL": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "XYZ": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "YUM": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ZBH": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ZBRA": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      },
+      "ZTS": {
+        "reason": "The symbol passed data-quality gates and strategy evaluation completed.",
+        "status": "completed"
+      }
+    },
     "symbols_completed": [
       "A",
       "AAPL",
@@ -15971,11 +19010,7 @@
       "ZBRA",
       "ZTS"
     ],
-    "symbols_failed": [
-      "FDXF",
-      "HONA",
-      "Q"
-    ],
+    "symbols_failed": [],
     "symbols_requested": [
       "A",
       "AAPL",
@@ -16481,8 +19516,8 @@
       "ZBRA",
       "ZTS"
     ],
-    "total_batches": 26,
-    "workflow_health": "degraded",
+    "total_batches": 0,
+    "workflow_health": "healthy",
     "workflow_timed_out": false
   },
   "universe": {

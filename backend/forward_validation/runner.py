@@ -8,6 +8,7 @@ import os
 import time as monotonic_time
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta, timezone
+from pathlib import Path
 from typing import Any, Protocol
 from zoneinfo import ZoneInfo
 
@@ -22,8 +23,16 @@ from universe.universe_registry import PROVIDERS as UNIVERSE_PROVIDERS
 from universe.universe_registry import universe_symbols
 
 from .data_loader import ForwardValidationDataLoader, LoaderConfig
+from .health import (
+    EXCLUSION_OUTCOMES,
+    MINIMUM_HISTORY_ROWS,
+    classify_data_error,
+    health_summary,
+    insufficient_history_outcome,
+    symbol_outcome,
+)
 
-RUNNER_VERSION = "forward-validation-runner-v2.0.0"
+RUNNER_VERSION = "forward-validation-runner-v2.1.0"
 ACTIVE_UNIVERSE = "sp500"
 ACTIVE_MARKET = "stocks"
 SCHEDULE_HOUR_UTC = 22
@@ -31,6 +40,11 @@ SCHEDULE_MINUTE_UTC = 30
 MARKET_TIMEZONE = ZoneInfo("America/New_York")
 MARKET_CLOSE_BUFFER = time(16, 15)
 TERMINAL_STATUSES = {"expired", "TP2_hit", "stopped", "completed"}
+REPLAY_ARTIFACT = (
+    Path(__file__).resolve().parents[2]
+    / "artifacts"
+    / "production_path_replay.json"
+)
 
 
 class ForwardValidationStore(Protocol):
@@ -322,6 +336,11 @@ def _run_values(
         "symbols_completed": [],
         "symbols_failed": [],
         "provider_errors": {},
+        "eligible_symbols": [],
+        "completed_eligible_symbols": [],
+        "excluded_symbols": {},
+        "genuine_failures": {},
+        "symbol_outcomes": {},
         "signals_created": 0,
         "duplicates_prevented": 0,
         "outcomes_updated": 0,
@@ -344,12 +363,8 @@ def _run_values(
 
 
 def _completion_health(expected: int, completed: int) -> tuple[str, float]:
-    percentage = round((completed / expected) * 100, 2) if expected else 100.0
-    if completed == expected:
-        return "healthy", percentage
-    if percentage >= 90:
-        return "degraded", percentage
-    return "failed", percentage
+    summary = health_summary(expected, completed)
+    return str(summary["health"]), float(summary["completion_percentage"])
 
 
 def _resume_checkpoint(
@@ -409,6 +424,10 @@ def run_for_user(
     completed: list[str] = []
     failed: list[str] = []
     provider_errors: dict[str, str] = {}
+    eligible: list[str] = []
+    excluded: dict[str, dict[str, str]] = {}
+    genuine_failures: dict[str, dict[str, str]] = {}
+    symbol_outcomes: dict[str, dict[str, str]] = {}
     created = duplicates = outcomes_updated = 0
     cached_symbols: list[str] = []
     provider_request_count = retry_count = batches_completed = total_batches = 0
@@ -511,8 +530,22 @@ def run_for_user(
         )
         histories = loaded.histories
         completed = sorted(histories)
-        failed = loaded.failed_symbols.copy()
-        provider_errors.update(loaded.provider_errors)
+        symbol_outcomes = {
+            ticker: outcome
+            for ticker, outcome in loaded.symbol_outcomes.items()
+            if ticker in set(universe)
+        }
+        genuine_failures = {
+            ticker: outcome
+            for ticker, outcome in symbol_outcomes.items()
+            if outcome["status"] not in {"completed", *EXCLUSION_OUTCOMES}
+        }
+        failed = sorted(genuine_failures)
+        provider_errors = {
+            ticker: outcome["reason"]
+            for ticker, outcome in genuine_failures.items()
+            if outcome["status"] == "provider_failure"
+        }
         cached_symbols = sorted(
             set(benchmark_result.cached_symbols + loaded.cached_symbols)
         )
@@ -552,10 +585,21 @@ def run_for_user(
             history = histories.get(ticker)
             if history is None:
                 continue
+            if len(history) < MINIMUM_HISTORY_ROWS:
+                outcome = insufficient_history_outcome(len(history))
+                symbol_outcomes[ticker] = outcome
+                excluded[ticker] = outcome
+                genuine_failures.pop(ticker, None)
+                provider_errors.pop(ticker, None)
+                continue
+            eligible.append(ticker)
             ticker_timestamp = pd.Timestamp(history.index[-1]).isoformat()
             if ticker_timestamp != data_timestamp:
-                failed.append(ticker)
-                provider_errors[ticker] = "The symbol does not have the same completed session as SPY."
+                outcome = classify_data_error(
+                    "The symbol does not have the same completed session as SPY."
+                )
+                symbol_outcomes[ticker] = outcome
+                genuine_failures[ticker] = outcome
                 continue
             try:
                 signal = strategy.scan(
@@ -565,12 +609,18 @@ def run_for_user(
                     signal_timestamp=moment.isoformat(),
                 )
             except Exception as error:
-                failed.append(ticker)
-                provider_errors[ticker] = (
-                    f"Strategy calculation failed: "
-                    f"{str(error) or type(error).__name__}"
+                outcome = symbol_outcome(
+                    "incomplete_data",
+                    f"Strategy calculation could not use the completed data: "
+                    f"{str(error) or type(error).__name__}",
                 )
+                symbol_outcomes[ticker] = outcome
+                genuine_failures[ticker] = outcome
                 continue
+            symbol_outcomes[ticker] = symbol_outcome(
+                "completed",
+                "The symbol passed data-quality gates and strategy evaluation completed.",
+            )
             if signal is None:
                 rejection_reasons["frozen_strategy_rejected"] = (
                     rejection_reasons.get("frozen_strategy_rejected", 0) + 1
@@ -625,13 +675,37 @@ def run_for_user(
             )
             outcomes_updated += 1
 
-        failed = sorted(set(failed))
+        failed = sorted(genuine_failures)
         universe_completed = sorted(
-            set(universe) & set(completed) - set(failed)
+            ticker
+            for ticker in universe
+            if symbol_outcomes.get(ticker, {}).get("status") == "completed"
         )
-        health, completion_percentage = _completion_health(
-            int(snapshot["expected_symbols"]), len(universe_completed)
+        eligible = sorted(set(eligible))
+        excluded = {
+            ticker: outcome
+            for ticker, outcome in symbol_outcomes.items()
+            if outcome["status"] in EXCLUSION_OUTCOMES
+        }
+        genuine_failures = {
+            ticker: outcome
+            for ticker, outcome in symbol_outcomes.items()
+            if outcome["status"] not in {"completed", *EXCLUSION_OUTCOMES}
+        }
+        provider_errors = {
+            ticker: outcome["reason"]
+            for ticker, outcome in genuine_failures.items()
+            if outcome["status"] == "provider_failure"
+        }
+        coverage = health_summary(
+            int(snapshot["expected_symbols"]),
+            len(universe_completed),
+            eligible_symbols=len(eligible),
+            excluded_symbols=len(excluded),
+            genuine_failures=len(genuine_failures),
         )
+        health = str(coverage["health"])
+        completion_percentage = float(coverage["completion_percentage"])
         status = (
             "success"
             if health == "healthy"
@@ -658,6 +732,11 @@ def run_for_user(
                 "symbols_completed": universe_completed,
                 "symbols_failed": failed,
                 "provider_errors": provider_errors,
+                "eligible_symbols": eligible,
+                "completed_eligible_symbols": universe_completed,
+                "excluded_symbols": excluded,
+                "genuine_failures": genuine_failures,
+                "symbol_outcomes": symbol_outcomes,
                 "signals_created": created,
                 "duplicates_prevented": duplicates,
                 "outcomes_updated": outcomes_updated,
@@ -679,6 +758,10 @@ def run_for_user(
                     "total_batches": total_batches,
                     "symbols_completed": universe_completed,
                     "symbols_failed": failed,
+                    "eligible_symbols": eligible,
+                    "excluded_symbols": excluded,
+                    "genuine_failures": genuine_failures,
+                    "symbol_outcomes": symbol_outcomes,
                     "cached_symbols": cached_symbols,
                     "provider_request_count": provider_request_count,
                     "retry_count": retry_count,
@@ -697,6 +780,13 @@ def run_for_user(
                 "symbols_completed": sorted(set(completed) - set(failed)),
                 "symbols_failed": sorted(set(failed)),
                 "provider_errors": {**provider_errors, "runner": str(error) or type(error).__name__},
+                "eligible_symbols": sorted(set(eligible)),
+                "completed_eligible_symbols": sorted(
+                    set(completed) - set(failed)
+                ),
+                "excluded_symbols": excluded,
+                "genuine_failures": genuine_failures,
+                "symbol_outcomes": symbol_outcomes,
                 "signals_created": created,
                 "duplicates_prevented": duplicates,
                 "outcomes_updated": outcomes_updated,
@@ -732,6 +822,32 @@ def runner_health(runs: list[dict[str, Any]], now: datetime | None = None) -> di
     else:
         health = "healthy"
     snapshot = universe_snapshot_diagnostics()
+    latest_replay = None
+    try:
+        replay = json.loads(REPLAY_ARTIFACT.read_text(encoding="utf-8"))
+        replay_summary = replay["summary"]
+        latest_replay = {
+            "replay_date": replay["replay_date"],
+            "expected_symbols": replay_summary["requested_count"],
+            "completed_symbols": replay_summary["completed_count"],
+            "eligible_symbols": replay_summary.get(
+                "eligible_count", replay_summary["completed_count"]
+            ),
+            "completed_eligible_symbols": replay_summary.get(
+                "completed_eligible_count", replay_summary["completed_count"]
+            ),
+            "excluded_symbols": replay_summary.get("excluded_symbols", {}),
+            "genuine_failures": replay_summary.get("genuine_failures", {}),
+            "completion_percentage": replay_summary["completion_percentage"],
+            "health": replay_summary["workflow_health"],
+            "signals_found": replay_summary["signals_found"],
+            "runtime_seconds": replay_summary.get("runtime_seconds", 0),
+            "last_complete_market_date": replay_summary.get(
+                "last_complete_market_date", replay["replay_date"]
+            ),
+        }
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        latest_replay = None
     return {
         "health": health,
         "last_run": last,
@@ -739,6 +855,7 @@ def runner_health(runs: list[dict[str, Any]], now: datetime | None = None) -> di
         "next_scheduled_run": next_scheduled_run(now),
         "schedule": "22:30 UTC on US trading weekdays",
         "runner_version": RUNNER_VERSION,
+        "latest_replay": latest_replay,
         "active_universe": {
             "id": snapshot["universe_id"],
             "name": "S&P 500",

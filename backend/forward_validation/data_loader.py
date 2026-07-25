@@ -15,6 +15,7 @@ from typing import Callable
 import pandas as pd
 
 from engines.engine_utils import REQUIRED_MARKET_COLUMNS, safe_float
+from .health import classify_data_error, symbol_outcome
 
 HistoryFetcher = Callable[[str], pd.DataFrame | None]
 BatchHistoryFetcher = Callable[[list[str]], dict[str, pd.DataFrame]]
@@ -81,6 +82,7 @@ class LoadResult:
     histories: dict[str, pd.DataFrame]
     failed_symbols: list[str]
     provider_errors: dict[str, str]
+    symbol_outcomes: dict[str, dict[str, str]]
     cached_symbols: list[str]
     provider_request_count: int
     retry_count: int
@@ -405,6 +407,19 @@ class ForwardValidationDataLoader:
             histories=histories,
             failed_symbols=sorted(set(failed)),
             provider_errors=errors,
+            symbol_outcomes={
+                symbol: (
+                    symbol_outcome(
+                        "completed",
+                        "Completed daily OHLCV data passed all loader quality gates.",
+                    )
+                    if symbol in histories
+                    else classify_data_error(
+                        errors.get(symbol, "Market-data provider did not return data.")
+                    )
+                )
+                for symbol in requested
+            },
             cached_symbols=sorted(cached_symbols),
             provider_request_count=self.provider_request_count,
             retry_count=self.retry_count,

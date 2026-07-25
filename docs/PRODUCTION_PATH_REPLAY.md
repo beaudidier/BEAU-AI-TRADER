@@ -4,16 +4,19 @@
 
 - Replay date: **2026-07-23**
 - Frozen strategy: **regime-gated-pullback-v1.0.0**
-- Production runner: **forward-validation-runner-v2.0.0**
+- Production runner: **forward-validation-runner-v2.1.0**
 - Symbols requested: **503**
 - Symbols completed: **500**
-- Symbols failed: **3**
+- Eligible symbols: **500**
+- Completed eligible symbols: **500**
+- Intentionally excluded symbols: **3**
+- Genuine failures: **0**
 - Completion: **99.40%**
-- Workflow health: **DEGRADED**
-- Runtime: **60.014 seconds**
-- Provider requests: **27**
+- Workflow health: **HEALTHY**
+- Runtime: **7.266 seconds**
+- Provider requests: **0**
 - Provider retries: **0**
-- Cached symbols: **0**
+- Cached symbols: **503**
 - Signals found: **12**
 - Rejected setups: **488**
 - Duplicate requests prevented: **0**
@@ -27,7 +30,8 @@ This replay used real completed daily OHLCV data and the registered production `
 
 - Requested: A, AAPL, ABBV, ABNB, ABT, ACGL, ACN, ADBE, ADI, ADM, ADP, ADSK, AEE, AEP, AES, AFL, AIG, AIZ, AJG, AKAM, ALB, ALGN, ALL, ALLE, AMAT, AMCR, AMD, AME, AMGN, AMP, AMT, AMZN, ANET, AON, AOS, APA, APD, APH, APO, APP, APTV, ARE, ARES, ATO, AVB, AVGO, AVY, AWK, AXON, AXP, AZO, BA, BAC, BALL, BAX, BBY, BDX, BEN, BF-B, BG, BIIB, BKNG, BKR, BLDR, BLK, BMY, BNY, BR, BRK-B, BRO, BSX, BX, BXP, C, CAH, CARR, CASY, CAT, CB, CBOE, CBRE, CCI, CCL, CDNS, CDW, CEG, CF, CFG, CHD, CHRW, CHTR, CI, CIEN, CINF, CL, CLX, CMCSA, CME, CMG, CMI, CMS, CNC, CNP, COF, COHR, COIN, COO, COP, COR, COST, CPAY, CPRT, CPT, CRH, CRL, CRM, CRWD, CSCO, CSGP, CSX, CTAS, CTSH, CTVA, CVNA, CVS, CVX, D, DAL, DASH, DD, DDOG, DE, DECK, DELL, DG, DGX, DHI, DHR, DIS, DLR, DLTR, DOC, DOV, DOW, DPZ, DRI, DTE, DUK, DVA, DVN, DXCM, EA, EBAY, ECHO, ECL, ED, EFX, EG, EIX, EL, ELV, EME, EMR, EOG, EQIX, EQR, EQT, ERIE, ES, ESS, ETN, ETR, EVRG, EW, EXC, EXE, EXPD, EXPE, EXR, F, FANG, FAST, FCX, FDS, FDX, FDXF, FE, FFIV, FICO, FIS, FISV, FITB, FIX, FLEX, FOX, FOXA, FRT, FSLR, FTNT, FTV, GD, GDDY, GE, GEHC, GEN, GEV, GILD, GIS, GL, GLW, GM, GNRC, GOOG, GOOGL, GPC, GPN, GRMN, GS, GWW, HAL, HAS, HBAN, HCA, HD, HIG, HII, HLT, HON, HONA, HOOD, HPE, HPQ, HRL, HSIC, HST, HSY, HUBB, HUM, HWM, IBKR, IBM, ICE, IDXX, IEX, IFF, INCY, INTC, INTU, INVH, IP, IQV, IR, IRM, ISRG, IT, ITW, IVZ, J, JBHT, JBL, JCI, JKHY, JNJ, JPM, KDP, KEY, KEYS, KHC, KIM, KKR, KLAC, KMB, KMI, KO, KR, KVUE, L, LDOS, LEN, LH, LHX, LII, LIN, LITE, LLY, LMT, LNT, LOW, LRCX, LULU, LUV, LVS, LYB, LYV, MA, MAA, MAR, MAS, MCD, MCHP, MCK, MCO, MDLZ, MDT, MET, META, MGM, MKC, MLM, MMM, MNST, MO, MOS, MPC, MPWR, MRK, MRNA, MRSH, MRVL, MS, MSCI, MSFT, MSI, MTB, MTD, MU, NCLH, NDAQ, NDSN, NEE, NEM, NFLX, NI, NKE, NOC, NOW, NRG, NSC, NTAP, NTRS, NUE, NVDA, NVR, NWS, NWSA, NXPI, O, ODFL, OKE, OMC, ON, ORCL, ORLY, OTIS, OXY, PANW, PAYX, PCAR, PCG, PEG, PEP, PFE, PFG, PG, PGR, PH, PHM, PKG, PLD, PLTR, PM, PNC, PNR, PNW, PODD, PPG, PPL, PRU, PSA, PSKY, PSX, PTC, PWR, PYPL, Q, QCOM, RCL, REG, REGN, RF, RJF, RL, RMD, ROK, ROL, ROP, ROST, RSG, RTX, RVTY, SBAC, SBUX, SCHW, SHW, SJM, SLB, SMCI, SNA, SNDK, SNPS, SO, SOLV, SPG, SPGI, SRE, STE, STLD, STT, STX, STZ, SW, SWK, SWKS, SYF, SYK, SYY, T, TAP, TDG, TDY, TECH, TEL, TER, TFC, TGT, TJX, TKO, TMO, TMUS, TPL, TPR, TRGP, TRMB, TROW, TRV, TSCO, TSLA, TSN, TT, TTD, TTWO, TXN, TXT, TYL, UAL, UBER, UDR, UHS, ULTA, UNH, UNP, UPS, URI, USB, V, VEEV, VICI, VLO, VLTO, VMC, VRSK, VRSN, VRT, VRTX, VST, VTR, VTRS, VZ, WAB, WAT, WBD, WDAY, WDC, WEC, WELL, WFC, WM, WMB, WMT, WRB, WSM, WST, WTW, WY, WYNN, XEL, XOM, XYL, XYZ, YUM, ZBH, ZBRA, ZTS
 - Completed: A, AAPL, ABBV, ABNB, ABT, ACGL, ACN, ADBE, ADI, ADM, ADP, ADSK, AEE, AEP, AES, AFL, AIG, AIZ, AJG, AKAM, ALB, ALGN, ALL, ALLE, AMAT, AMCR, AMD, AME, AMGN, AMP, AMT, AMZN, ANET, AON, AOS, APA, APD, APH, APO, APP, APTV, ARE, ARES, ATO, AVB, AVGO, AVY, AWK, AXON, AXP, AZO, BA, BAC, BALL, BAX, BBY, BDX, BEN, BF-B, BG, BIIB, BKNG, BKR, BLDR, BLK, BMY, BNY, BR, BRK-B, BRO, BSX, BX, BXP, C, CAH, CARR, CASY, CAT, CB, CBOE, CBRE, CCI, CCL, CDNS, CDW, CEG, CF, CFG, CHD, CHRW, CHTR, CI, CIEN, CINF, CL, CLX, CMCSA, CME, CMG, CMI, CMS, CNC, CNP, COF, COHR, COIN, COO, COP, COR, COST, CPAY, CPRT, CPT, CRH, CRL, CRM, CRWD, CSCO, CSGP, CSX, CTAS, CTSH, CTVA, CVNA, CVS, CVX, D, DAL, DASH, DD, DDOG, DE, DECK, DELL, DG, DGX, DHI, DHR, DIS, DLR, DLTR, DOC, DOV, DOW, DPZ, DRI, DTE, DUK, DVA, DVN, DXCM, EA, EBAY, ECHO, ECL, ED, EFX, EG, EIX, EL, ELV, EME, EMR, EOG, EQIX, EQR, EQT, ERIE, ES, ESS, ETN, ETR, EVRG, EW, EXC, EXE, EXPD, EXPE, EXR, F, FANG, FAST, FCX, FDS, FDX, FE, FFIV, FICO, FIS, FISV, FITB, FIX, FLEX, FOX, FOXA, FRT, FSLR, FTNT, FTV, GD, GDDY, GE, GEHC, GEN, GEV, GILD, GIS, GL, GLW, GM, GNRC, GOOG, GOOGL, GPC, GPN, GRMN, GS, GWW, HAL, HAS, HBAN, HCA, HD, HIG, HII, HLT, HON, HOOD, HPE, HPQ, HRL, HSIC, HST, HSY, HUBB, HUM, HWM, IBKR, IBM, ICE, IDXX, IEX, IFF, INCY, INTC, INTU, INVH, IP, IQV, IR, IRM, ISRG, IT, ITW, IVZ, J, JBHT, JBL, JCI, JKHY, JNJ, JPM, KDP, KEY, KEYS, KHC, KIM, KKR, KLAC, KMB, KMI, KO, KR, KVUE, L, LDOS, LEN, LH, LHX, LII, LIN, LITE, LLY, LMT, LNT, LOW, LRCX, LULU, LUV, LVS, LYB, LYV, MA, MAA, MAR, MAS, MCD, MCHP, MCK, MCO, MDLZ, MDT, MET, META, MGM, MKC, MLM, MMM, MNST, MO, MOS, MPC, MPWR, MRK, MRNA, MRSH, MRVL, MS, MSCI, MSFT, MSI, MTB, MTD, MU, NCLH, NDAQ, NDSN, NEE, NEM, NFLX, NI, NKE, NOC, NOW, NRG, NSC, NTAP, NTRS, NUE, NVDA, NVR, NWS, NWSA, NXPI, O, ODFL, OKE, OMC, ON, ORCL, ORLY, OTIS, OXY, PANW, PAYX, PCAR, PCG, PEG, PEP, PFE, PFG, PG, PGR, PH, PHM, PKG, PLD, PLTR, PM, PNC, PNR, PNW, PODD, PPG, PPL, PRU, PSA, PSKY, PSX, PTC, PWR, PYPL, QCOM, RCL, REG, REGN, RF, RJF, RL, RMD, ROK, ROL, ROP, ROST, RSG, RTX, RVTY, SBAC, SBUX, SCHW, SHW, SJM, SLB, SMCI, SNA, SNDK, SNPS, SO, SOLV, SPG, SPGI, SRE, STE, STLD, STT, STX, STZ, SW, SWK, SWKS, SYF, SYK, SYY, T, TAP, TDG, TDY, TECH, TEL, TER, TFC, TGT, TJX, TKO, TMO, TMUS, TPL, TPR, TRGP, TRMB, TROW, TRV, TSCO, TSLA, TSN, TT, TTD, TTWO, TXN, TXT, TYL, UAL, UBER, UDR, UHS, ULTA, UNH, UNP, UPS, URI, USB, V, VEEV, VICI, VLO, VLTO, VMC, VRSK, VRSN, VRT, VRTX, VST, VTR, VTRS, VZ, WAB, WAT, WBD, WDAY, WDC, WEC, WELL, WFC, WM, WMB, WMT, WRB, WSM, WST, WTW, WY, WYNN, XEL, XOM, XYL, XYZ, YUM, ZBH, ZBRA, ZTS
-- Failed: FDXF, HONA, Q
+- Intentionally excluded: FDXF, HONA, Q
+- Genuine failures: None
 
 ## Per-symbol audit
 
@@ -218,7 +222,7 @@ This replay used real completed daily OHLCV data and the registered production `
 | FCX | rejected | 2026-07-23T00:00:00 | 90.0 | 70.0 | 61.787489 | 55.864407 | 51.580865 | 82.293417 | 102.768451 | — | MATCH |
 | FDS | rejected | 2026-07-23T00:00:00 | 90.0 | 51.0 | 246.928592 | 207.960007 | 190.628813 | 359.898541 | 472.745026 | — | MATCH |
 | FDX | rejected | 2026-07-23T00:00:00 | 90.0 | 64.0 | 315.915612 | 304.059998 | 290.812295 | 366.596118 | 417.118667 | — | MATCH |
-| FDXF | provider_error | — | — | — | — | — | — | — | — | — | MATCH |
+| FDXF | insufficient_history | 2026-07-23T00:00:00 | — | — | — | — | — | — | — | — | MATCH |
 | FE | rejected | 2026-07-23T00:00:00 | 90.0 | 73.0 | 48.330857 | 46.950001 | 45.601027 | 53.863013 | 59.371003 | — | MATCH |
 | FFIV | rejected | 2026-07-23T00:00:00 | 90.0 | 76.0 | 407.717268 | 381.670013 | 360.894241 | 501.974899 | 596.028671 | — | MATCH |
 | FICO | rejected | 2026-07-23T00:00:00 | 90.0 | 57.0 | 1225.849723 | 1113.170044 | 1034.554625 | 1610.278693 | 1994.094739 | — | MATCH |
@@ -261,7 +265,7 @@ This replay used real completed daily OHLCV data and the registered production `
 | HII | rejected | 2026-07-23T00:00:00 | 90.0 | 60.0 | 281.681986 | 263.619995 | 251.034849 | 343.398782 | 404.974737 | — | MATCH |
 | HLT | rejected | 2026-07-23T00:00:00 | 90.0 | 56.0 | 329.057739 | 316.350006 | 305.171884 | 377.323035 | 425.423803 | — | MATCH |
 | HON | rejected | 2026-07-23T00:00:00 | 90.0 | 77.0 | 229.853432 | 218.100006 | 205.970139 | 277.964799 | 325.961239 | — | MATCH |
-| HONA | provider_error | — | — | — | — | — | — | — | — | — | MATCH |
+| HONA | insufficient_history | 2026-07-23T00:00:00 | — | — | — | — | — | — | — | — | MATCH |
 | HOOD | rejected | 2026-07-23T00:00:00 | 90.0 | 68.0 | 104.956494 | 92.800003 | 83.133466 | 148.759985 | 192.510998 | — | MATCH |
 | HPE | rejected | 2026-07-23T00:00:00 | 90.0 | 68.0 | 46.327692 | 40.715 | 36.567563 | 65.917442 | 85.484029 | — | MATCH |
 | HPQ | rejected | 2026-07-23T00:00:00 | 90.0 | 76.0 | 24.087009 | 21.67 | 20.199346 | 31.898465 | 39.697878 | — | MATCH |
@@ -417,7 +421,7 @@ This replay used real completed daily OHLCV data and the registered production `
 | PTC | rejected | 2026-07-23T00:00:00 | 90.0 | 50.0 | 121.454212 | 111.169998 | 104.095427 | 156.353964 | 191.192988 | — | MATCH |
 | PWR | rejected | 2026-07-23T00:00:00 | 90.0 | 51.0 | 661.09871 | 608.780029 | 571.576256 | 841.135264 | 1020.84127 | — | MATCH |
 | PYPL | rejected | 2026-07-23T00:00:00 | 90.0 | 62.0 | 50.48621 | 42.209999 | 39.464767 | 72.604824 | 94.698196 | — | MATCH |
-| Q | provider_error | — | — | — | — | — | — | — | — | — | MATCH |
+| Q | insufficient_history | 2026-07-23T00:00:00 | — | — | — | — | — | — | — | — | MATCH |
 | QCOM | rejected | 2026-07-23T00:00:00 | 90.0 | 54.0 | 182.921938 | 164.770004 | 148.860812 | 251.318575 | 319.62375 | — | MATCH |
 | RCL | rejected | 2026-07-23T00:00:00 | 90.0 | 74.0 | 290.647738 | 277.799988 | 261.794774 | 348.789635 | 406.786209 | — | MATCH |
 | REG | signal | 2026-07-23T00:00:00 | 90.0 | 79.0 | 80.709508 | 78.839996 | 76.826215 | 88.59716 | 96.444457 | 2026-07-28 | MATCH |
@@ -1293,9 +1297,9 @@ This replay used real completed daily OHLCV data and the registered production `
 
 - Per-share risk 7.99% exceeded the frozen 5% maximum.
 
-### FDXF — provider_error
+### FDXF — insufficient_history
 
-- At least 200 valid daily candles are required.
+- 40 completed daily candles are available; the frozen strategy requires at least 200.
 
 ### FE — rejected
 
@@ -1467,9 +1471,9 @@ This replay used real completed daily OHLCV data and the registered production `
 
 - Per-share risk 10.44% exceeded the frozen 5% maximum.
 
-### HONA — provider_error
+### HONA — insufficient_history
 
-- At least 200 valid daily candles are required.
+- 27 completed daily candles are available; the frozen strategy requires at least 200.
 
 ### HOOD — rejected
 
@@ -2095,9 +2099,9 @@ This replay used real completed daily OHLCV data and the registered production `
 
 - Per-share risk 21.87% exceeded the frozen 5% maximum.
 
-### Q — provider_error
+### Q — insufficient_history
 
-- At least 200 valid daily candles are required.
+- 185 completed daily candles are available; the frozen strategy requires at least 200.
 
 ### QCOM — rejected
 
@@ -2575,11 +2579,15 @@ This replay used real completed daily OHLCV data and the registered production `
 
 - Per-share risk 10.69% exceeded the frozen 5% maximum.
 
-## Provider failures
+## Intentional exclusions
 
-- FDXF: At least 200 valid daily candles are required.
-- HONA: At least 200 valid daily candles are required.
-- Q: At least 200 valid daily candles are required.
+- FDXF — insufficient_history: 40 completed daily candles are available; the frozen strategy requires at least 200.
+- HONA — insufficient_history: 27 completed daily candles are available; the frozen strategy requires at least 200.
+- Q — insufficient_history: 185 completed daily candles are available; the frozen strategy requires at least 200.
+
+## Genuine failures
+
+- None.
 
 ## Rejection distribution
 
