@@ -12,6 +12,7 @@ import hashlib
 import json
 import math
 import os
+import time as monotonic_time
 from datetime import date, datetime, time, timezone
 from pathlib import Path
 from typing import Any
@@ -35,15 +36,18 @@ from strategies.swing_strategy import (
 )
 
 from .runner import (
+    ACTIVE_UNIVERSE,
     MARKET_CLOSE_BUFFER,
     MARKET_TIMEZONE,
     RUNNER_VERSION,
     completed_daily_history,
     configured_universe,
     signal_expiry_date,
+    universe_snapshot_diagnostics,
 )
+from .data_loader import ForwardValidationDataLoader, LoaderConfig
 
-REPLAY_VERSION = "production-path-replay-v1.0.0"
+REPLAY_VERSION = "production-path-replay-v2.0.0"
 SIGNAL_COMPARISON_FIELDS = (
     "ticker",
     "signal_timestamp",
@@ -227,6 +231,7 @@ def run_production_path_replay(
 ) -> dict[str, Any]:
     """Run production signal selection without constructing any writable store."""
 
+    started = monotonic_time.monotonic()
     market_provider = provider or get_market_data_provider()
     moment = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     requested = [
@@ -234,10 +239,89 @@ def run_production_path_replay(
         for symbol in (symbols if symbols is not None else configured_universe())
         if symbol and symbol.strip()
     ]
-    benchmark_full = completed_daily_history(market_provider, "SPY", moment)
+    probe_requests = 0
+    probe_retries = 0
+    if replay_date is not None:
+        session = replay_date
+    else:
+        benchmark_probe = None
+        probe_error: Exception | None = None
+        probe_config = LoaderConfig.from_environment()
+        for attempt in range(probe_config.max_retries + 1):
+            if attempt:
+                probe_retries += 1
+                monotonic_time.sleep(
+                    probe_config.initial_backoff_seconds * (2 ** (attempt - 1))
+                )
+            probe_requests += 1
+            try:
+                benchmark_probe = completed_daily_history(
+                    market_provider, "SPY", moment
+                )
+                if benchmark_probe is None or benchmark_probe.empty:
+                    raise ValueError(
+                        "A completed SPY benchmark history is required for replay."
+                    )
+                break
+            except Exception as error:
+                probe_error = error
+        if benchmark_probe is None or benchmark_probe.empty:
+            raise RuntimeError(
+                str(probe_error)
+                if probe_error is not None
+                else "A completed SPY benchmark history is required for replay."
+            )
+        session = pd.Timestamp(benchmark_probe.index[-1]).date()
+    unique_requested: list[str] = []
+    seen: set[str] = set()
+    duplicate_requests = 0
+    duplicate_results: list[dict[str, Any]] = []
+    for ticker in requested:
+        if ticker in seen:
+            duplicate_requests += 1
+            duplicate_results.append(
+                {
+                    "ticker": ticker,
+                    "status": "duplicate",
+                    "reasons": [
+                        "Duplicate ticker request was ignored before market data was fetched."
+                    ],
+                    "mismatches": [],
+                }
+            )
+            continue
+        seen.add(ticker)
+        unique_requested.append(ticker)
+
+    config = LoaderConfig.from_environment()
+
+    def fetch_history(ticker: str) -> pd.DataFrame | None:
+        return completed_daily_history(market_provider, ticker, moment)
+
+    def fetch_histories(tickers: list[str]) -> dict[str, pd.DataFrame]:
+        return market_provider.get_histories(
+            tickers,
+            period="2y",
+            interval="1d",
+        )
+
+    loader = ForwardValidationDataLoader(
+        fetch_history,
+        session,
+        batch_fetcher=(
+            fetch_histories
+            if callable(getattr(market_provider, "get_histories", None))
+            else None
+        ),
+        config=config,
+    )
+    loaded = loader.load(["SPY", *unique_requested])
+    benchmark_full = loaded.histories.get("SPY")
     if benchmark_full is None or benchmark_full.empty:
-        raise RuntimeError("A completed SPY benchmark history is required for replay.")
-    session = replay_date or pd.Timestamp(benchmark_full.index[-1]).date()
+        reason = loaded.provider_errors.get(
+            "SPY", "A completed SPY benchmark history is required for replay."
+        )
+        raise RuntimeError(reason)
     benchmark = _through_session(benchmark_full, session)
     if benchmark is None or benchmark.empty or pd.Timestamp(benchmark.index[-1]).date() != session:
         raise RuntimeError(f"SPY does not contain the requested completed replay session {session.isoformat()}.")
@@ -248,27 +332,18 @@ def run_production_path_replay(
     provider_errors: dict[str, str] = {}
     completed: list[str] = []
     failed: list[str] = []
-    seen: set[str] = set()
-    duplicate_requests = 0
+    rejection_reasons: dict[str, int] = {}
 
-    for ticker in requested:
-        if ticker in seen:
-            duplicate_requests += 1
-            results.append(
-                {
-                    "ticker": ticker,
-                    "status": "duplicate",
-                    "reasons": ["Duplicate ticker request was ignored before market data was fetched."],
-                    "mismatches": [],
-                }
-            )
-            continue
-        seen.add(ticker)
+    for ticker in unique_requested:
         try:
-            history_full = completed_daily_history(market_provider, ticker, moment)
+            history_full = loaded.histories.get(ticker)
             history = _through_session(history_full, session)
             if history is None or history.empty:
-                raise ValueError("No completed daily OHLCV history was returned.")
+                raise ValueError(
+                    loaded.provider_errors.get(
+                        ticker, "No completed daily OHLCV history was returned."
+                    )
+                )
             raw_timestamp = pd.Timestamp(history.index[-1])
             if raw_timestamp.date() != session:
                 raise ValueError(
@@ -288,6 +363,21 @@ def run_production_path_replay(
             )
             mismatches = _compare_production_and_standalone(production_signal, standalone)
             completed.append(ticker)
+            if production_signal is None:
+                reason_text = " ".join(standalone["reasons"])
+                if "Market-regime score" in reason_text:
+                    reason_key = "market_regime_below_65"
+                elif "exceeded the frozen 5%" in reason_text:
+                    reason_key = "risk_above_5_percent"
+                elif "ATR" in reason_text:
+                    reason_key = "invalid_atr"
+                elif "200 valid" in reason_text:
+                    reason_key = "insufficient_history"
+                else:
+                    reason_key = "invalid_stop_or_risk"
+                rejection_reasons[reason_key] = (
+                    rejection_reasons.get(reason_key, 0) + 1
+                )
             results.append(
                 {
                     "ticker": ticker,
@@ -315,6 +405,7 @@ def run_production_path_replay(
                 }
             )
 
+    results.extend(duplicate_results)
     signal_count = sum(item["status"] == "signal" for item in results)
     rejected_count = sum(item["status"] == "rejected" for item in results)
     mismatches = [
@@ -322,6 +413,26 @@ def run_production_path_replay(
         for item in results
         if item.get("mismatches")
     ]
+    expected_count = len(unique_requested)
+    completion_percentage = (
+        round((len(completed) / expected_count) * 100, 2)
+        if expected_count
+        else 100.0
+    )
+    workflow_health = (
+        "healthy"
+        if len(completed) == expected_count
+        else "degraded"
+        if completion_percentage >= 90
+        else "failed"
+    )
+    snapshot = universe_snapshot_diagnostics(
+        ACTIVE_UNIVERSE if symbols is None else "custom"
+    )
+    if symbols is not None:
+        snapshot["expected_symbols"] = expected_count
+        snapshot["snapshot_version"] = "explicit-symbols"
+    runtime_seconds = round(monotonic_time.monotonic() - started, 3)
     return {
         "replay_version": REPLAY_VERSION,
         "runner_version": RUNNER_VERSION,
@@ -330,6 +441,7 @@ def run_production_path_replay(
         "replay_date": session.isoformat(),
         "signal_timestamp": generated_signal_timestamp,
         "benchmark_data_timestamp": pd.Timestamp(benchmark.index[-1]).isoformat(),
+        "universe": snapshot,
         "summary": {
             "symbols_requested": requested,
             "requested_count": len(requested),
@@ -342,6 +454,23 @@ def run_production_path_replay(
             "duplicate_requests_prevented": duplicate_requests,
             "provider_errors": provider_errors,
             "mismatch_count": len(mismatches),
+            "cached_symbols": len(
+                set(loaded.cached_symbols) - {"SPY"}
+            ),
+            "provider_request_count": loaded.provider_request_count + probe_requests,
+            "retry_count": loaded.retry_count + probe_retries,
+            "runtime_seconds": runtime_seconds,
+            "batches_completed": loaded.batches_completed,
+            "total_batches": loaded.total_batches,
+            "completion_percentage": completion_percentage,
+            "workflow_health": workflow_health,
+            "workflow_timed_out": loaded.workflow_timed_out,
+            "fits_github_actions_limit": (
+                not loaded.workflow_timed_out
+                and runtime_seconds < config.maximum_workflow_seconds
+            ),
+            "last_complete_market_date": session.isoformat(),
+            "rejection_reasons": rejection_reasons,
         },
         "results": results,
         "mismatches": mismatches,
@@ -389,6 +518,7 @@ def attach_live_table_proof(
     result["live_table_proof"] = {
         "checked": True,
         "unchanged": all(item["unchanged"] for item in table_checks.values()),
+        "method": "Supabase row fingerprints",
         "tables": table_checks,
     }
     return result
@@ -408,11 +538,18 @@ def render_report(result: dict[str, Any]) -> str:
         f"- Symbols requested: **{summary['requested_count']}**",
         f"- Symbols completed: **{summary['completed_count']}**",
         f"- Symbols failed: **{summary['failed_count']}**",
+        f"- Completion: **{summary.get('completion_percentage', 0):.2f}%**",
+        f"- Workflow health: **{str(summary.get('workflow_health', 'unknown')).upper()}**",
+        f"- Runtime: **{summary.get('runtime_seconds', 0):.3f} seconds**",
+        f"- Provider requests: **{summary.get('provider_request_count', 0)}**",
+        f"- Provider retries: **{summary.get('retry_count', 0)}**",
+        f"- Cached symbols: **{summary.get('cached_symbols', 0)}**",
         f"- Signals found: **{summary['signals_found']}**",
         f"- Rejected setups: **{summary['rejected_setups']}**",
         f"- Duplicate requests prevented: **{summary['duplicate_requests_prevented']}**",
         f"- Production/standalone mismatches: **{summary['mismatch_count']}**",
         f"- Live production tables unchanged: **{'YES' if proof.get('unchanged') else 'NO' if proof.get('checked') else 'NOT CHECKED'}**",
+        f"- Fits configured GitHub Actions runtime limit: **{'YES' if summary.get('fits_github_actions_limit') else 'NO'}**",
         "",
         "This replay used real completed daily OHLCV data and the registered production `swing_trading` strategy. "
         "Every ticker history and SPY benchmark was cut off at the replay session before the signal calculation, so no later candle was available to either calculation.",
@@ -462,6 +599,13 @@ def render_report(result: dict[str, Any]) -> str:
     else:
         lines.append("- None.")
 
+    lines.extend(["", "## Rejection distribution", ""])
+    if summary.get("rejection_reasons"):
+        for reason, count in sorted(summary["rejection_reasons"].items()):
+            lines.append(f"- {reason}: **{count}**")
+    else:
+        lines.append("- None.")
+
     lines.extend(["", "## Production versus standalone comparison", ""])
     if result["mismatches"]:
         for mismatch in result["mismatches"]:
@@ -481,7 +625,10 @@ def render_report(result: dict[str, Any]) -> str:
         ]
     )
     if proof.get("checked"):
-        lines.append("| Table | Rows before | Rows after | Hash unchanged |")
+        method = proof.get("method", "Supabase row fingerprints")
+        lines.append(f"- Verification method: **{method}**")
+        lines.append("")
+        lines.append("| Table | Rows before | Rows after | Snapshot unchanged |")
         lines.append("|---|---:|---:|---|")
         for table_name, item in proof["tables"].items():
             lines.append(
@@ -543,6 +690,10 @@ def main() -> int:
                 "provider_failures": result["summary"]["failed_count"],
                 "mismatches": result["summary"]["mismatch_count"],
                 "live_tables_unchanged": result["live_table_proof"]["unchanged"],
+                "provider_requests": result["summary"].get("provider_request_count", 0),
+                "retries": result["summary"].get("retry_count", 0),
+                "runtime_seconds": result["summary"].get("runtime_seconds", 0),
+                "workflow_health": result["summary"].get("workflow_health"),
             },
             indent=2,
         )

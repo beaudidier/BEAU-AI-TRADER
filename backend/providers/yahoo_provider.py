@@ -12,6 +12,21 @@ _DOWNLOAD_LOCK = Lock()
 class YahooFinanceProvider(MarketDataProvider):
     """Yahoo Finance implementation of the provider-neutral market-data contract."""
 
+    @staticmethod
+    def _normalize_history(data: pd.DataFrame) -> pd.DataFrame | None:
+        if data.empty:
+            return None
+        required_columns = ["Open", "High", "Low", "Close", "Volume"]
+        if data.columns.has_duplicates:
+            return None
+        for column in required_columns:
+            if column in data.columns:
+                data[column] = data[column].squeeze()
+        if any(column not in data.columns for column in required_columns):
+            return None
+        data = data.dropna(subset=required_columns)
+        return None if data.empty else data
+
     def get_history(self, ticker: str, period: str = "6mo", interval: str = "1d", start: str | None = None, end: str | None = None) -> pd.DataFrame | None:
         try:
             options = {"tickers": ticker, "interval": interval, "progress": False, "auto_adjust": True, "group_by": "column"}
@@ -27,21 +42,59 @@ class YahooFinanceProvider(MarketDataProvider):
                 return None
             if isinstance(data.columns, pd.MultiIndex):
                 data.columns = data.columns.get_level_values(0)
-            if data.columns.has_duplicates:
-                return None
-            required_columns = ["Open", "High", "Low", "Close", "Volume"]
-            for column in required_columns:
-                if column in data.columns:
-                    data[column] = data[column].squeeze()
-            if any(column not in data.columns for column in required_columns):
-                return None
-            data = data.dropna(subset=required_columns)
-            if data.empty:
-                return None
-            return data
+            return self._normalize_history(data)
         except Exception as error:
             print(f"Fout bij ophalen van {ticker}: {error}")
             return None
+
+    def get_histories(
+        self,
+        tickers: list[str],
+        period: str = "6mo",
+        interval: str = "1d",
+        start: str | None = None,
+        end: str | None = None,
+    ) -> dict[str, pd.DataFrame]:
+        requested = list(dict.fromkeys(ticker.upper() for ticker in tickers if ticker))
+        if not requested:
+            return {}
+        try:
+            options = {
+                "tickers": requested,
+                "interval": interval,
+                "progress": False,
+                "auto_adjust": True,
+                "group_by": "column",
+                "threads": False,
+            }
+            if start is not None:
+                options.update({"start": start, "end": end})
+            else:
+                options["period"] = period
+            with _DOWNLOAD_LOCK:
+                data = yf.download(**options)
+            if data.empty:
+                return {}
+            if len(requested) == 1:
+                if isinstance(data.columns, pd.MultiIndex):
+                    data.columns = data.columns.get_level_values(0)
+                normalized = self._normalize_history(data)
+                return {requested[0]: normalized} if normalized is not None else {}
+            if not isinstance(data.columns, pd.MultiIndex):
+                return {}
+            ticker_level = 1 if set(requested) & set(data.columns.get_level_values(1)) else 0
+            result: dict[str, pd.DataFrame] = {}
+            for ticker in requested:
+                if ticker not in set(data.columns.get_level_values(ticker_level)):
+                    continue
+                history = data.xs(ticker, axis=1, level=ticker_level).copy()
+                normalized = self._normalize_history(history)
+                if normalized is not None:
+                    result[ticker] = normalized
+            return result
+        except Exception as error:
+            print(f"Fout bij batch ophalen: {type(error).__name__}")
+            return {}
 
     def get_quote(self, ticker: str) -> dict[str, Any] | None:
         try:

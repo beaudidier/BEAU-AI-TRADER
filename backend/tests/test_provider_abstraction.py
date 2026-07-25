@@ -87,6 +87,25 @@ class ProviderAbstractionTests(unittest.TestCase):
         self.assertTrue(all(result is not None for result in results))
         self.assertEqual(maximum_active, 1)
 
+    @patch("providers.yahoo_provider.yf.download")
+    def test_yahoo_provider_splits_bounded_batch_response(self, download):
+        columns = pd.MultiIndex.from_product(
+            [["Open", "High", "Low", "Close", "Volume"], ["AAPL", "MSFT"]],
+            names=["Price", "Ticker"],
+        )
+        download.return_value = pd.DataFrame(
+            [[100, 200, 101, 201, 99, 199, 100.5, 200.5, 1_000, 2_000]],
+            columns=columns,
+            index=pd.to_datetime(["2026-07-24"]),
+        )
+
+        result = YahooFinanceProvider().get_histories(["AAPL", "MSFT"])
+
+        self.assertEqual(sorted(result), ["AAPL", "MSFT"])
+        self.assertEqual(float(result["AAPL"]["Close"].iloc[-1]), 100.5)
+        self.assertEqual(float(result["MSFT"]["Close"].iloc[-1]), 200.5)
+        self.assertFalse(download.call_args.kwargs["threads"])
+
 
 if __name__ == "__main__":
     unittest.main()

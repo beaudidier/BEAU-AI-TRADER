@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import unittest
 from datetime import date, datetime, timezone
+from pathlib import Path
+import tempfile
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pandas as pd
 
+from forward_validation.data_loader import LoaderConfig
 from forward_validation.production_replay import (
     attach_live_table_proof,
     capture_live_table_fingerprints,
@@ -75,6 +78,27 @@ def _analysis(regime_score=70):
 
 class ProductionPathReplayTests(unittest.TestCase):
     now = datetime(2026, 7, 25, 14, 0, tzinfo=timezone.utc)
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.loader_patch = patch(
+            "forward_validation.production_replay.LoaderConfig.from_environment",
+            return_value=LoaderConfig(
+                batch_size=20,
+                concurrency_limit=1,
+                symbol_timeout_seconds=2,
+                max_retries=0,
+                initial_backoff_seconds=0,
+                request_pacing_seconds=0,
+                maximum_workflow_seconds=10,
+                cache_dir=Path(self.temporary.name),
+            ),
+        )
+        self.loader_patch.start()
+
+    def tearDown(self):
+        self.loader_patch.stop()
+        self.temporary.cleanup()
 
     @patch("forward_validation.production_replay.calculate_institutional_analysis", return_value=_analysis())
     @patch("strategies.swing_strategy.calculate_institutional_analysis", return_value=_analysis())

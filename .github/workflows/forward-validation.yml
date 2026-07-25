@@ -30,9 +30,25 @@ jobs:
       - name: Install backend dependencies
         run: pip install -r requirements.txt
 
+      - name: Restore completed market-data cache
+        uses: actions/cache@v4
+        with:
+          path: artifacts/forward_validation_cache
+          key: forward-validation-data-${{ runner.os }}-${{ github.run_number }}
+          restore-keys: |
+            forward-validation-data-${{ runner.os }}-
+
       - name: Run frozen forward-validation strategy
         env:
           PYTHONPATH: backend
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          FORWARD_VALIDATION_UNIVERSE: sp500
+          FORWARD_VALIDATION_BATCH_SIZE: "20"
+          FORWARD_VALIDATION_CONCURRENCY_LIMIT: "2"
+          FORWARD_VALIDATION_SYMBOL_TIMEOUT_SECONDS: "30"
+          FORWARD_VALIDATION_MAX_RETRIES: "2"
+          FORWARD_VALIDATION_INITIAL_BACKOFF_SECONDS: "0.5"
+          FORWARD_VALIDATION_REQUEST_PACING_SECONDS: "0.15"
+          FORWARD_VALIDATION_MAX_WORKFLOW_SECONDS: "1380"
         run: python -m forward_validation.runner

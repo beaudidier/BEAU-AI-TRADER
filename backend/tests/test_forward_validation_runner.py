@@ -3,15 +3,20 @@ from __future__ import annotations
 import unittest
 from copy import deepcopy
 from datetime import date, datetime, timezone
+from pathlib import Path
+import tempfile
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pandas as pd
 
+from forward_validation.data_loader import LoaderConfig
 from forward_validation.runner import (
     RUNNER_VERSION,
+    _completion_health,
     _one,
     completed_daily_history,
+    configured_universe,
     market_session_closed,
     next_scheduled_run,
     run_for_user,
@@ -129,6 +134,27 @@ class MemoryStore:
 class ForwardValidationRunnerTests(unittest.TestCase):
     now = datetime(2026, 7, 27, 22, 30, tzinfo=timezone.utc)
 
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.loader_patch = patch(
+            "forward_validation.runner.LoaderConfig.from_environment",
+            return_value=LoaderConfig(
+                batch_size=20,
+                concurrency_limit=1,
+                symbol_timeout_seconds=2,
+                max_retries=0,
+                initial_backoff_seconds=0,
+                request_pacing_seconds=0,
+                maximum_workflow_seconds=10,
+                cache_dir=Path(self.temporary.name),
+            ),
+        )
+        self.loader_patch.start()
+
+    def tearDown(self):
+        self.loader_patch.stop()
+        self.temporary.cleanup()
+
     def test_supabase_single_row_responses_are_normalized(self):
         self.assertEqual(_one(SimpleNamespace(data=[{"id": "run-1"}])), {"id": "run-1"})
         self.assertEqual(_one(SimpleNamespace(data=[])), {})
@@ -186,7 +212,8 @@ class ForwardValidationRunnerTests(unittest.TestCase):
         store = MemoryStore()
         provider = FakeProvider({"SPY": _history(), "AAPL": _history(), "MSFT": None})
         result = run_for_user(store, "user-1", provider=provider, now=self.now, symbols=["AAPL", "MSFT"])
-        self.assertEqual(result["status"], "partial")
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(result["provider_health"], "failed")
         self.assertEqual(result["symbols_completed"], ["AAPL"])
         self.assertEqual(result["symbols_failed"], ["MSFT"])
         self.assertIn("MSFT", result["provider_errors"])
@@ -239,8 +266,21 @@ class ForwardValidationRunnerTests(unittest.TestCase):
             {"status": "failed", "started_at": "2026-07-25T22:30:00+00:00"},
         ]
         health = runner_health(runs, self.now)
-        self.assertEqual(health["health"], "degraded")
+        self.assertEqual(health["health"], "failed")
         self.assertEqual(health["last_successful_run"]["status"], "success")
+
+    def test_sp500_is_default_and_demo_is_explicit_smoke_universe(self):
+        with patch.dict("os.environ", {}, clear=True):
+            self.assertEqual(len(configured_universe()), 503)
+        with patch.dict(
+            "os.environ", {"FORWARD_VALIDATION_UNIVERSE": "demo"}, clear=True
+        ):
+            self.assertEqual(len(configured_universe()), 10)
+
+    def test_completion_health_never_labels_partial_run_healthy(self):
+        self.assertEqual(_completion_health(503, 503), ("healthy", 100.0))
+        self.assertEqual(_completion_health(503, 480)[0], "degraded")
+        self.assertEqual(_completion_health(503, 452)[0], "failed")
 
 
 if __name__ == "__main__":

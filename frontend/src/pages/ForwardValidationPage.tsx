@@ -72,6 +72,16 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
   ] : [];
   const approval = dashboard?.metrics.approval;
   const completedSegments = dashboard ? Math.ceil(dashboard.sample_progress.percentage / 10) : 0;
+  const lastRun = dashboard?.runner.last_run;
+  const activeUniverse = dashboard?.runner.active_universe;
+  const operationalCards = dashboard ? [
+    ["Active universe", activeUniverse ? `${activeUniverse.name} (${activeUniverse.expected_symbols})` : "S&P 500 (503)"],
+    ["Scan completion", `${(lastRun?.completion_percentage ?? 0).toFixed(2)}%`],
+    ["Failed symbols", String(lastRun?.symbols_failed.length ?? 0)],
+    ["Runtime", lastRun?.runtime_seconds != null ? `${lastRun.runtime_seconds.toFixed(1)}s` : "Not available yet"],
+    ["Provider health", lastRun?.provider_health ?? dashboard.runner.health],
+    ["Last complete market date", lastRun?.last_complete_market_date ?? "Not available yet"],
+  ] : [];
 
   return <div className="min-h-screen bg-slate-950 font-sans text-slate-100 lg:flex">
     <Sidebar activePage="forward-validation" onNavigate={onNavigate} />
@@ -106,7 +116,7 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
                 <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Runner health</p>
                 <p className="mt-2 text-lg font-semibold capitalize text-white">{dashboard.runner.health}</p>
               </div>
-              <span className={`h-3 w-3 rounded-full ${dashboard.runner.health === "degraded" ? "bg-rose-400" : dashboard.runner.health === "running" ? "animate-pulse bg-amber-300" : "bg-emerald-400"}`} />
+              <span className={`h-3 w-3 rounded-full ${dashboard.runner.health === "failed" ? "bg-rose-500" : dashboard.runner.health === "degraded" ? "bg-amber-400" : dashboard.runner.health === "running" ? "animate-pulse bg-amber-300" : "bg-emerald-400"}`} />
             </div>
             <dl className="mt-4 grid gap-3 text-xs sm:grid-cols-2">
               <div><dt className="text-slate-500">Last run</dt><dd className="mt-1 text-slate-300">{dateTime(dashboard.runner.last_run?.completed_at)}</dd></div>
@@ -117,8 +127,14 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
 
         {error && <div className="mt-5 flex items-center justify-between gap-4 rounded-lg border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-200"><span>{error}</span><button type="button" onClick={() => void load()} className="shrink-0 font-semibold text-white hover:text-rose-100">Try again</button></div>}
         {message && <p className="mt-5 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-200">{message}</p>}
+        {lastRun && lastRun.status === "partial" && <p className="mt-5 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100">The latest S&amp;P 500 run is incomplete. Results are visible, but runner health remains degraded until every provider failure is recovered.</p>}
+        {lastRun && lastRun.status === "failed" && <p className="mt-5 rounded-lg border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">The latest S&amp;P 500 run completed fewer than 90% of symbols. Treat all results as incomplete until a successful retry finishes.</p>}
 
         {loading && !dashboard ? <div className="mt-5 rounded-xl border border-slate-800 bg-slate-900/40 p-6 text-sm text-slate-400">Loading forward-validation records…</div> : dashboard && <>
+          <section className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {operationalCards.map(([label, value]) => <div key={label} className="rounded-xl border border-slate-800 bg-slate-900/40 p-5"><p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p><p className="mt-2 text-lg font-semibold capitalize text-white">{value}</p></div>)}
+          </section>
+
           <section className="mt-5 rounded-xl border border-slate-800 bg-slate-900/40 p-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div><p className="text-xs font-medium uppercase tracking-wide text-slate-500">Approval sample</p><p className="mt-2 text-2xl font-semibold text-white">{dashboard.sample_progress.completed} <span className="text-base font-normal text-slate-500">of {dashboard.sample_progress.required} completed trades</span></p></div>

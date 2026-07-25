@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import time as monotonic_time
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta, timezone
 from typing import Any, Protocol
@@ -12,14 +13,19 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
-from config import WATCHLIST
 from engines.engine_utils import REQUIRED_MARKET_COLUMNS, safe_float
 from providers import get_market_data_provider
 from providers.provider import MarketDataProvider
 from strategies import strategy_registry
 from strategies.swing_strategy import ENTRY_WAIT, evaluate_signal
+from universe.universe_registry import PROVIDERS as UNIVERSE_PROVIDERS
+from universe.universe_registry import universe_symbols
 
-RUNNER_VERSION = "forward-validation-runner-v1.0.0"
+from .data_loader import ForwardValidationDataLoader, LoaderConfig
+
+RUNNER_VERSION = "forward-validation-runner-v2.0.0"
+ACTIVE_UNIVERSE = "sp500"
+ACTIVE_MARKET = "stocks"
 SCHEDULE_HOUR_UTC = 22
 SCHEDULE_MINUTE_UTC = 30
 MARKET_TIMEZONE = ZoneInfo("America/New_York")
@@ -129,9 +135,41 @@ class SupabaseForwardValidationStore:
 
 
 def configured_universe() -> list[str]:
-    configured = os.getenv("FORWARD_VALIDATION_UNIVERSE", "")
-    symbols = configured.split(",") if configured.strip() else WATCHLIST
-    return list(dict.fromkeys(symbol.strip().upper() for symbol in symbols if symbol.strip()))
+    configured = os.getenv("FORWARD_VALIDATION_UNIVERSE", ACTIVE_UNIVERSE).strip()
+    if "," in configured:
+        return list(
+            dict.fromkeys(
+                symbol.strip().upper()
+                for symbol in configured.split(",")
+                if symbol.strip()
+            )
+        )
+    return universe_symbols(ACTIVE_MARKET, configured or ACTIVE_UNIVERSE)
+
+
+def configured_universe_id() -> str:
+    configured = os.getenv("FORWARD_VALIDATION_UNIVERSE", ACTIVE_UNIVERSE).strip()
+    return "custom" if "," in configured else configured or ACTIVE_UNIVERSE
+
+
+def universe_snapshot_diagnostics(universe_id: str | None = None) -> dict[str, Any]:
+    selected = universe_id or configured_universe_id()
+    provider = UNIVERSE_PROVIDERS[ACTIVE_MARKET]
+    if selected == "custom":
+        symbols = configured_universe()
+        return {
+            "universe_id": selected,
+            "snapshot_version": "custom-runtime",
+            "expected_symbols": len(symbols),
+            "source_timestamp": None,
+        }
+    snapshot = provider.snapshot(selected)
+    return {
+        "universe_id": selected,
+        "snapshot_version": str(snapshot["snapshot_sha256"]),
+        "expected_symbols": int(snapshot["expected_count"]),
+        "source_timestamp": str(snapshot["source"]["timestamp"]),
+    }
 
 
 def _observed(day: date) -> date:
@@ -210,6 +248,16 @@ def next_scheduled_run(now: datetime | None = None) -> str:
     return candidate.isoformat()
 
 
+def latest_completed_market_date(now: datetime | None = None) -> date:
+    eastern = (now or datetime.now(timezone.utc)).astimezone(MARKET_TIMEZONE)
+    candidate = eastern.date()
+    if not is_us_trading_day(candidate) or eastern.time() < MARKET_CLOSE_BUFFER:
+        candidate -= timedelta(days=1)
+        while not is_us_trading_day(candidate):
+            candidate -= timedelta(days=1)
+    return candidate
+
+
 def completed_daily_history(
     provider: MarketDataProvider,
     ticker: str,
@@ -256,7 +304,14 @@ def _finite(value: Any) -> float | None:
     return result if math.isfinite(result) else None
 
 
-def _run_values(user_id: str, now: datetime, symbols: list[str], trigger: str) -> dict[str, Any]:
+def _run_values(
+    user_id: str,
+    now: datetime,
+    symbols: list[str],
+    trigger: str,
+    universe: dict[str, Any],
+    resumed_from_run_id: str | None,
+) -> dict[str, Any]:
     return {
         "user_id": user_id,
         "runner_version": RUNNER_VERSION,
@@ -270,7 +325,50 @@ def _run_values(user_id: str, now: datetime, symbols: list[str], trigger: str) -
         "signals_created": 0,
         "duplicates_prevented": 0,
         "outcomes_updated": 0,
+        "universe_id": universe["universe_id"],
+        "universe_snapshot_version": universe["snapshot_version"],
+        "expected_symbols": universe["expected_symbols"],
+        "scanned_symbols": 0,
+        "cached_symbols": 0,
+        "provider_request_count": 0,
+        "retry_count": 0,
+        "runtime_seconds": 0,
+        "batches_completed": 0,
+        "total_batches": 0,
+        "completion_percentage": 0,
+        "provider_health": "running",
+        "rejection_reasons": {},
+        "checkpoint": {},
+        "resumed_from_run_id": resumed_from_run_id,
     }
+
+
+def _completion_health(expected: int, completed: int) -> tuple[str, float]:
+    percentage = round((completed / expected) * 100, 2) if expected else 100.0
+    if completed == expected:
+        return "healthy", percentage
+    if percentage >= 90:
+        return "degraded", percentage
+    return "failed", percentage
+
+
+def _resume_checkpoint(
+    runs: list[dict[str, Any]],
+    universe_snapshot_version: str,
+) -> tuple[str | None, list[str]]:
+    for run in sorted(
+        runs, key=lambda item: str(item.get("started_at") or ""), reverse=True
+    ):
+        if (
+            run.get("runner_version") == RUNNER_VERSION
+            and run.get("universe_snapshot_version") == universe_snapshot_version
+            and run.get("status") in {"running", "partial", "failed"}
+        ):
+            checkpoint = run.get("checkpoint") or {}
+            return str(run.get("id") or "") or None, list(
+                checkpoint.get("symbols_completed") or []
+            )
+    return None, []
 
 
 def run_for_user(
@@ -282,10 +380,29 @@ def run_for_user(
     symbols: list[str] | None = None,
     trigger: str = "manual",
 ) -> dict[str, Any]:
+    workflow_started = monotonic_time.monotonic()
     provider = provider or get_market_data_provider()
     moment = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     universe = symbols or configured_universe()
-    run = store.create_run(_run_values(user_id, moment, universe, trigger))
+    universe_id = configured_universe_id() if symbols is None else "custom"
+    snapshot = universe_snapshot_diagnostics(universe_id)
+    if symbols is not None:
+        snapshot["snapshot_version"] = "explicit-symbols"
+        snapshot["expected_symbols"] = len(set(universe))
+    prior_runs = store.list_runs(user_id)
+    resumed_from_run_id, resume_completed = _resume_checkpoint(
+        prior_runs, snapshot["snapshot_version"]
+    )
+    run = store.create_run(
+        _run_values(
+            user_id,
+            moment,
+            universe,
+            trigger,
+            snapshot,
+            resumed_from_run_id,
+        )
+    )
     if not run.get("id"):
         raise RuntimeError("Forward-validation run could not be recorded.")
 
@@ -293,13 +410,20 @@ def run_for_user(
     failed: list[str] = []
     provider_errors: dict[str, str] = {}
     created = duplicates = outcomes_updated = 0
+    cached_symbols: list[str] = []
+    provider_request_count = retry_count = batches_completed = total_batches = 0
+    rejection_reasons: dict[str, int] = {}
+    runtime_seconds = 0.0
     data_timestamp: str | None = None
     status = "success"
     message = "Forward validation completed."
     try:
-        benchmark = completed_daily_history(provider, "SPY", moment)
-        closed, reason = market_session_closed(moment, benchmark)
-        if not closed:
+        eastern = moment.astimezone(MARKET_TIMEZONE)
+        closed, reason = market_session_closed(moment, None)
+        if (
+            not is_us_trading_day(eastern.date())
+            or eastern.time() < MARKET_CLOSE_BUFFER
+        ):
             status, message = "skipped", reason
             return store.finish_run(
                 str(run["id"]),
@@ -307,26 +431,98 @@ def run_for_user(
                     "status": status,
                     "completed_at": datetime.now(timezone.utc).isoformat(),
                     "provider_errors": {"session": reason},
+                    "provider_health": "waiting",
+                    "runtime_seconds": round(
+                        monotonic_time.monotonic() - workflow_started, 3
+                    ),
                     "message": reason,
                 },
             )
+
+        loader_config = LoaderConfig.from_environment()
+
+        def fetch_history(ticker: str) -> pd.DataFrame | None:
+            return completed_daily_history(provider, ticker, moment)
+
+        def fetch_histories(tickers: list[str]) -> dict[str, pd.DataFrame]:
+            return provider.get_histories(
+                tickers,
+                period="2y",
+                interval="1d",
+            )
+
+        benchmark_loader = ForwardValidationDataLoader(
+            fetch_history,
+            eastern.date(),
+            batch_fetcher=(
+                fetch_histories
+                if callable(getattr(provider, "get_histories", None))
+                else None
+            ),
+            config=loader_config,
+        )
+        benchmark_result = benchmark_loader.load(["SPY"])
+        benchmark = benchmark_result.histories.get("SPY")
+        closed, reason = market_session_closed(moment, benchmark)
+        if not closed:
+            raise RuntimeError(reason)
 
         data_timestamp = pd.Timestamp(benchmark.index[-1]).isoformat()
         signals = store.list_signals(user_id)
         outcomes = {str(item["signal_id"]): item for item in store.list_outcomes(user_id)}
         open_trades = store.list_open_paper_trades(user_id)
         required_symbols = list(dict.fromkeys([*universe, *(str(item["ticker"]) for item in signals), *(str(item["ticker"]) for item in open_trades)]))
-        histories: dict[str, pd.DataFrame] = {}
-        for ticker in required_symbols:
-            try:
-                history = completed_daily_history(provider, ticker, moment)
-                if history is None or history.empty:
-                    raise ValueError("No completed daily history was returned.")
-                histories[ticker] = history
-                completed.append(ticker)
-            except Exception as error:
-                failed.append(ticker)
-                provider_errors[ticker] = str(error) or type(error).__name__
+
+        def save_checkpoint(values: dict[str, object]) -> None:
+            store.finish_run(
+                str(run["id"]),
+                {
+                    "symbols_completed": values["symbols_completed"],
+                    "symbols_failed": values["symbols_failed"],
+                    "cached_symbols": len(values["cached_symbols"]),
+                    "provider_request_count": (
+                        benchmark_result.provider_request_count
+                        + int(values["provider_request_count"])
+                    ),
+                    "retry_count": (
+                        benchmark_result.retry_count + int(values["retry_count"])
+                    ),
+                    "runtime_seconds": values["runtime_seconds"],
+                    "batches_completed": values["batches_completed"],
+                    "total_batches": values["total_batches"],
+                    "checkpoint": values,
+                },
+            )
+
+        data_loader = ForwardValidationDataLoader(
+            fetch_history,
+            pd.Timestamp(benchmark.index[-1]).date(),
+            batch_fetcher=(
+                fetch_histories
+                if callable(getattr(provider, "get_histories", None))
+                else None
+            ),
+            config=loader_config,
+            checkpoint=save_checkpoint,
+        )
+        loaded = data_loader.load(
+            required_symbols,
+            resume_completed=resume_completed,
+        )
+        histories = loaded.histories
+        completed = sorted(histories)
+        failed = loaded.failed_symbols.copy()
+        provider_errors.update(loaded.provider_errors)
+        cached_symbols = sorted(
+            set(benchmark_result.cached_symbols + loaded.cached_symbols)
+        )
+        provider_request_count = (
+            benchmark_result.provider_request_count + loaded.provider_request_count
+        )
+        retry_count = benchmark_result.retry_count + loaded.retry_count
+        batches_completed = loaded.batches_completed
+        total_batches = loaded.total_batches
+        duplicates += loaded.duplicate_requests_prevented
 
         for signal in signals:
             signal_id = str(signal["id"])
@@ -361,13 +557,24 @@ def run_for_user(
                 failed.append(ticker)
                 provider_errors[ticker] = "The symbol does not have the same completed session as SPY."
                 continue
-            signal = strategy.scan(
-                ticker=ticker,
-                history=history,
-                benchmark=benchmark,
-                signal_timestamp=moment.isoformat(),
-            )
+            try:
+                signal = strategy.scan(
+                    ticker=ticker,
+                    history=history,
+                    benchmark=benchmark,
+                    signal_timestamp=moment.isoformat(),
+                )
+            except Exception as error:
+                failed.append(ticker)
+                provider_errors[ticker] = (
+                    f"Strategy calculation failed: "
+                    f"{str(error) or type(error).__name__}"
+                )
+                continue
             if signal is None:
+                rejection_reasons["frozen_strategy_rejected"] = (
+                    rejection_reasons.get("frozen_strategy_rejected", 0) + 1
+                )
                 continue
             if store.find_signal(user_id, ticker, signal["strategy_version"], signal["data_timestamp"]):
                 duplicates += 1
@@ -419,20 +626,64 @@ def run_for_user(
             outcomes_updated += 1
 
         failed = sorted(set(failed))
-        status = "partial" if failed else "success"
-        message = "Forward validation completed with partial market data." if failed else "Forward validation completed."
+        universe_completed = sorted(
+            set(universe) & set(completed) - set(failed)
+        )
+        health, completion_percentage = _completion_health(
+            int(snapshot["expected_symbols"]), len(universe_completed)
+        )
+        status = (
+            "success"
+            if health == "healthy"
+            else "partial"
+            if health == "degraded"
+            else "failed"
+        )
+        runtime_seconds = round(
+            monotonic_time.monotonic() - workflow_started, 3
+        )
+        message = (
+            "Forward validation completed."
+            if health == "healthy"
+            else "Forward validation completed with incomplete market data."
+            if health == "degraded"
+            else "Forward validation failed the minimum market-data coverage threshold."
+        )
         return store.finish_run(
             str(run["id"]),
             {
                 "status": status,
                 "completed_at": datetime.now(timezone.utc).isoformat(),
                 "data_timestamp": data_timestamp,
-                "symbols_completed": sorted(set(completed) - set(failed)),
+                "symbols_completed": universe_completed,
                 "symbols_failed": failed,
                 "provider_errors": provider_errors,
                 "signals_created": created,
                 "duplicates_prevented": duplicates,
                 "outcomes_updated": outcomes_updated,
+                "scanned_symbols": len(universe_completed),
+                "cached_symbols": len(cached_symbols),
+                "provider_request_count": provider_request_count,
+                "retry_count": retry_count,
+                "runtime_seconds": runtime_seconds,
+                "batches_completed": batches_completed,
+                "total_batches": total_batches,
+                "completion_percentage": completion_percentage,
+                "provider_health": health,
+                "last_complete_market_date": pd.Timestamp(
+                    benchmark.index[-1]
+                ).date().isoformat(),
+                "rejection_reasons": rejection_reasons,
+                "checkpoint": {
+                    "batches_completed": batches_completed,
+                    "total_batches": total_batches,
+                    "symbols_completed": universe_completed,
+                    "symbols_failed": failed,
+                    "cached_symbols": cached_symbols,
+                    "provider_request_count": provider_request_count,
+                    "retry_count": retry_count,
+                    "runtime_seconds": runtime_seconds,
+                },
                 "message": message,
             },
         )
@@ -449,6 +700,17 @@ def run_for_user(
                 "signals_created": created,
                 "duplicates_prevented": duplicates,
                 "outcomes_updated": outcomes_updated,
+                "scanned_symbols": len(set(universe) & set(completed) - set(failed)),
+                "cached_symbols": len(cached_symbols),
+                "provider_request_count": provider_request_count,
+                "retry_count": retry_count,
+                "runtime_seconds": round(
+                    monotonic_time.monotonic() - workflow_started, 3
+                ),
+                "batches_completed": batches_completed,
+                "total_batches": total_batches,
+                "provider_health": "failed",
+                "rejection_reasons": rejection_reasons,
                 "message": "Forward validation could not complete.",
             },
         )
@@ -458,15 +720,18 @@ def run_for_user(
 def runner_health(runs: list[dict[str, Any]], now: datetime | None = None) -> dict[str, Any]:
     ordered = sorted(runs, key=lambda item: str(item.get("started_at") or ""), reverse=True)
     last = ordered[0] if ordered else None
-    successful = next((item for item in ordered if item.get("status") in {"success", "partial"}), None)
+    successful = next((item for item in ordered if item.get("status") == "success"), None)
     if last is None:
         health = "waiting"
-    elif last.get("status") in {"failed"}:
-        health = "degraded"
+    elif last.get("status") in {"failed"} or last.get("provider_health") == "failed":
+        health = "failed"
     elif last.get("status") in {"running"}:
         health = "running"
+    elif last.get("status") == "partial" or last.get("provider_health") == "degraded":
+        health = "degraded"
     else:
         health = "healthy"
+    snapshot = universe_snapshot_diagnostics()
     return {
         "health": health,
         "last_run": last,
@@ -474,6 +739,12 @@ def runner_health(runs: list[dict[str, Any]], now: datetime | None = None) -> di
         "next_scheduled_run": next_scheduled_run(now),
         "schedule": "22:30 UTC on US trading weekdays",
         "runner_version": RUNNER_VERSION,
+        "active_universe": {
+            "id": snapshot["universe_id"],
+            "name": "S&P 500",
+            "expected_symbols": snapshot["expected_symbols"],
+            "snapshot_version": snapshot["snapshot_version"],
+        },
     }
 
 
