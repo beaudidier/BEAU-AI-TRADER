@@ -1,0 +1,524 @@
+{
+  "approval": {
+    "checks": {
+      "expectancy_interval_not_materially_negative": true,
+      "materially_lower_drawdown": true,
+      "maximum_open_risk_at_most_10R": true,
+      "maximum_positions_at_most_10": true,
+      "positive_expectancy": true,
+      "profit_factor_above_one": true,
+      "profitable_under_double_costs": true
+    },
+    "material_drawdown_threshold_r": -40.2112,
+    "materially_negative_expectancy_threshold_r": -0.05,
+    "passed": true
+  },
+  "baselines": {
+    "buy_and_hold": {
+      "average_symbol_return_percent": 96.6319,
+      "equal_weight_annualized_return_percent": 14.3894,
+      "equal_weight_maximum_drawdown_percent": -18.1555,
+      "equal_weight_total_return_percent": 96.6319,
+      "symbols": 110,
+      "units": "percent return; not R-multiples",
+      "winning_symbols_percent": 88.18
+    },
+    "matched_random_entries": {
+      "average_return_percent": 0.5589,
+      "matching": "Same ticker, trade count, and holding duration; deterministic random entry date with current costs and adverse slippage.",
+      "median_return_percent": 0.6916,
+      "observations": 247,
+      "seed": 20260774,
+      "units": "percent return; not R-multiples",
+      "win_rate_percent": 57.09
+    }
+  },
+  "data": {
+    "candidate_signal_end": "2026-06-04",
+    "candidate_signal_start": "2022-04-26",
+    "candidate_signals": 113410,
+    "candidate_source": "cached audit ledger",
+    "milestone_47_results_sha256": "9de96bf056d7cc30abed951617d0c311d408a59ba31d47a026fe879d340b578d",
+    "overlap_with_milestone_47": false,
+    "selection_period_end": "2021-07-10",
+    "source_end": "2026-07-23",
+    "source_ledger": "artifacts/regime_gated_pullback_trades.csv",
+    "source_ledger_sha256": "be093e3e91fec5ed284e3fdc3acf074cac05e8b8631c47a29596287f94279345",
+    "source_start": "2021-07-12",
+    "symbols": 110
+  },
+  "decision": "The frozen portfolio constraints pass the locked holdout, but remain research-only pending explicit production approval.",
+  "frozen_portfolio_constraints": {
+    "maximum_concurrent_positions": 10,
+    "maximum_daily_new_risk_r": 1.0,
+    "maximum_total_open_risk_r": 10.0,
+    "signal_ranking": "signal-time confidence"
+  },
+  "frozen_strategy": {
+    "entry_wait": 3,
+    "market_regime_filter": "existing market-regime engine",
+    "name": "Regime-Gated Pullback",
+    "stop_atr": 1.5,
+    "target_1_r": 2.0,
+    "target_2_r": 4.0,
+    "tp1_portion": 0.5
+  },
+  "holdout_status": "completed",
+  "methodology": {
+    "baseline_units": "Buy-and-hold and matched-random baselines are percent returns and are not directly interchangeable with strategy R.",
+    "bootstrap": "5,000 deterministic trade-level resamples of net R.",
+    "chronology": "Actual entries, partial exits, final exits, costs, and slippage processed chronologically; same-session entries precede exits.",
+    "confidence": "Institutional confidence reconstructed only from ticker and SPY candles available at the signal close.",
+    "material_drawdown_reduction": "At least 25% less severe than the unconstrained chronological holdout drawdown.",
+    "materially_negative_ci": "The expectancy interval lower bound must be at least -0.05R."
+  },
+  "production_constraints_enabled": false,
+  "results": {
+    "comparator_10_positions_10R_3R_daily": {
+      "current_costs": {
+        "accepted_trades": 281,
+        "average_r": 0.1568,
+        "bootstrap_expectancy_95_ci": [
+          0.0071,
+          0.3089
+        ],
+        "expectancy_r": 0.1568,
+        "maximum_concurrent_positions": 10,
+        "maximum_drawdown_r": -36.9233,
+        "maximum_open_risk_r": 10.0,
+        "period_profit_concentration": {
+          "leader": "2024",
+          "leader_share_percent": 39.79,
+          "shares_percent": {
+            "2022": 0.67,
+            "2023": 20.1,
+            "2024": 39.79,
+            "2025": 27.81,
+            "2026": 11.64
+          }
+        },
+        "profit_factor": 1.3268,
+        "rejected_trades": 272,
+        "sector_exposure": {
+          "average_active_share_percent": {
+            "Communication Services": 9.36,
+            "Consumer Discretionary": 10.74,
+            "Consumer Staples": 19.17,
+            "Energy": 3.11,
+            "Financials": 9.41,
+            "Health Care": 15.94,
+            "Industrials": 7.47,
+            "Materials": 3.76,
+            "Real Estate": 8.75,
+            "Technology": 2.7,
+            "Utilities": 9.6
+          },
+          "peak_date": "2022-07-22",
+          "peak_sector": "Health Care",
+          "peak_single_sector_share_percent": 100.0
+        },
+        "sector_profit_concentration": {
+          "leader": "Consumer Staples",
+          "leader_share_percent": 15.47,
+          "shares_percent": {
+            "Communication Services": 10.1,
+            "Consumer Discretionary": 5.95,
+            "Consumer Staples": 15.47,
+            "Energy": 7.58,
+            "Financials": 10.69,
+            "Health Care": 14.23,
+            "Industrials": 6.87,
+            "Materials": 3.44,
+            "Real Estate": 10.72,
+            "Technology": 4.32,
+            "Utilities": 10.64
+          }
+        },
+        "total_r": 44.0716,
+        "trades_per_year": 55.87,
+        "win_rate_percent": 47.69,
+        "worst_rolling_5_day_period": {
+          "end": "2024-12-19",
+          "realized_r": -7.2203,
+          "start": "2024-12-13"
+        },
+        "worst_trading_day": {
+          "date": "2024-12-18",
+          "realized_r": -4.1281
+        }
+      },
+      "double_costs": {
+        "accepted_trades": 272,
+        "average_r": 0.0767,
+        "bootstrap_expectancy_95_ci": [
+          -0.0731,
+          0.2249
+        ],
+        "expectancy_r": 0.0767,
+        "maximum_concurrent_positions": 10,
+        "maximum_drawdown_r": -38.01,
+        "maximum_open_risk_r": 10.0,
+        "period_profit_concentration": {
+          "leader": "2024",
+          "leader_share_percent": 41.36,
+          "shares_percent": {
+            "2022": 0.93,
+            "2023": 20.3,
+            "2024": 41.36,
+            "2025": 27.17,
+            "2026": 10.24
+          }
+        },
+        "profit_factor": 1.1497,
+        "rejected_trades": 257,
+        "sector_exposure": {
+          "average_active_share_percent": {
+            "Communication Services": 10.87,
+            "Consumer Discretionary": 9.28,
+            "Consumer Staples": 19.39,
+            "Energy": 2.9,
+            "Financials": 8.5,
+            "Health Care": 17.36,
+            "Industrials": 7.93,
+            "Materials": 4.51,
+            "Real Estate": 6.94,
+            "Technology": 3.12,
+            "Utilities": 9.2
+          },
+          "peak_date": "2022-07-22",
+          "peak_sector": "Health Care",
+          "peak_single_sector_share_percent": 100.0
+        },
+        "sector_profit_concentration": {
+          "leader": "Consumer Staples",
+          "leader_share_percent": 17.18,
+          "shares_percent": {
+            "Communication Services": 8.39,
+            "Consumer Discretionary": 6.12,
+            "Consumer Staples": 17.18,
+            "Energy": 5.2,
+            "Financials": 11.04,
+            "Health Care": 14.38,
+            "Industrials": 7.39,
+            "Materials": 4.84,
+            "Real Estate": 9.48,
+            "Technology": 5.46,
+            "Utilities": 10.52
+          }
+        },
+        "total_r": 20.8591,
+        "trades_per_year": 54.08,
+        "win_rate_percent": 45.22,
+        "worst_rolling_5_day_period": {
+          "end": "2024-12-20",
+          "realized_r": -7.4358,
+          "start": "2024-12-16"
+        },
+        "worst_trading_day": {
+          "date": "2024-12-18",
+          "realized_r": -4.2535
+        }
+      }
+    },
+    "frozen_10_positions_10R_1R_daily": {
+      "current_costs": {
+        "accepted_trades": 247,
+        "average_r": 0.1604,
+        "bootstrap_expectancy_95_ci": [
+          0.0069,
+          0.3193
+        ],
+        "expectancy_r": 0.1604,
+        "maximum_concurrent_positions": 10,
+        "maximum_drawdown_r": -25.9138,
+        "maximum_open_risk_r": 10.0,
+        "period_profit_concentration": {
+          "leader": "2024",
+          "leader_share_percent": 47.39,
+          "shares_percent": {
+            "2022": 0.56,
+            "2023": 20.4,
+            "2024": 47.39,
+            "2025": 21.46,
+            "2026": 10.2
+          }
+        },
+        "profit_factor": 1.3484,
+        "rejected_trades": 306,
+        "sector_exposure": {
+          "average_active_share_percent": {
+            "Communication Services": 9.29,
+            "Consumer Discretionary": 12.39,
+            "Consumer Staples": 19.69,
+            "Energy": 3.94,
+            "Financials": 6.68,
+            "Health Care": 11.53,
+            "Industrials": 8.43,
+            "Materials": 6.2,
+            "Real Estate": 8.83,
+            "Technology": 3.27,
+            "Utilities": 9.75
+          },
+          "peak_date": "2022-07-22",
+          "peak_sector": "Health Care",
+          "peak_single_sector_share_percent": 100.0
+        },
+        "sector_profit_concentration": {
+          "leader": "Consumer Staples",
+          "leader_share_percent": 15.21,
+          "shares_percent": {
+            "Communication Services": 8.27,
+            "Consumer Discretionary": 8.64,
+            "Consumer Staples": 15.21,
+            "Energy": 9.78,
+            "Financials": 7.76,
+            "Health Care": 9.64,
+            "Industrials": 6.95,
+            "Materials": 8.12,
+            "Real Estate": 11.78,
+            "Technology": 5.04,
+            "Utilities": 8.8
+          }
+        },
+        "total_r": 39.6143,
+        "trades_per_year": 49.11,
+        "win_rate_percent": 48.18,
+        "worst_rolling_5_day_period": {
+          "end": "2023-10-02",
+          "realized_r": -4.4996,
+          "start": "2023-09-26"
+        },
+        "worst_trading_day": {
+          "date": "2023-09-28",
+          "realized_r": -2.4267
+        }
+      },
+      "double_costs": {
+        "accepted_trades": 245,
+        "average_r": 0.0978,
+        "bootstrap_expectancy_95_ci": [
+          -0.0607,
+          0.2618
+        ],
+        "expectancy_r": 0.0978,
+        "maximum_concurrent_positions": 10,
+        "maximum_drawdown_r": -24.9742,
+        "maximum_open_risk_r": 10.0,
+        "period_profit_concentration": {
+          "leader": "2024",
+          "leader_share_percent": 46.15,
+          "shares_percent": {
+            "2022": 1.02,
+            "2023": 22.75,
+            "2024": 46.15,
+            "2025": 20.35,
+            "2026": 9.74
+          }
+        },
+        "profit_factor": 1.1955,
+        "rejected_trades": 284,
+        "sector_exposure": {
+          "average_active_share_percent": {
+            "Communication Services": 10.85,
+            "Consumer Discretionary": 11.3,
+            "Consumer Staples": 18.63,
+            "Energy": 2.89,
+            "Financials": 6.08,
+            "Health Care": 16.11,
+            "Industrials": 8.97,
+            "Materials": 6.14,
+            "Real Estate": 6.19,
+            "Technology": 3.43,
+            "Utilities": 9.41
+          },
+          "peak_date": "2022-07-22",
+          "peak_sector": "Health Care",
+          "peak_single_sector_share_percent": 100.0
+        },
+        "sector_profit_concentration": {
+          "leader": "Consumer Staples",
+          "leader_share_percent": 16.49,
+          "shares_percent": {
+            "Communication Services": 10.08,
+            "Consumer Discretionary": 10.36,
+            "Consumer Staples": 16.49,
+            "Energy": 5.44,
+            "Financials": 8.34,
+            "Health Care": 12.02,
+            "Industrials": 5.58,
+            "Materials": 7.56,
+            "Real Estate": 9.0,
+            "Technology": 5.12,
+            "Utilities": 10.03
+          }
+        },
+        "total_r": 23.9569,
+        "trades_per_year": 48.71,
+        "win_rate_percent": 46.12,
+        "worst_rolling_5_day_period": {
+          "end": "2023-09-27",
+          "realized_r": -4.7815,
+          "start": "2023-09-21"
+        },
+        "worst_trading_day": {
+          "date": "2023-09-21",
+          "realized_r": -3.7226
+        }
+      }
+    },
+    "unconstrained": {
+      "current_costs": {
+        "accepted_trades": 553,
+        "average_r": 0.1806,
+        "bootstrap_expectancy_95_ci": [
+          0.0742,
+          0.2885
+        ],
+        "expectancy_r": 0.1806,
+        "maximum_concurrent_positions": 44,
+        "maximum_drawdown_r": -53.6149,
+        "maximum_open_risk_r": 44.0,
+        "period_profit_concentration": {
+          "leader": "2024",
+          "leader_share_percent": 51.62,
+          "shares_percent": {
+            "2022": 0.33,
+            "2023": 16.63,
+            "2024": 51.62,
+            "2025": 24.02,
+            "2026": 7.39
+          }
+        },
+        "profit_factor": 1.3778,
+        "rejected_trades": 0,
+        "sector_exposure": {
+          "average_active_share_percent": {
+            "Communication Services": 9.69,
+            "Consumer Discretionary": 8.79,
+            "Consumer Staples": 20.37,
+            "Energy": 2.65,
+            "Financials": 8.36,
+            "Health Care": 13.07,
+            "Industrials": 7.69,
+            "Materials": 5.22,
+            "Real Estate": 10.02,
+            "Technology": 4.34,
+            "Utilities": 9.81
+          },
+          "peak_date": "2022-07-22",
+          "peak_sector": "Health Care",
+          "peak_single_sector_share_percent": 100.0
+        },
+        "sector_profit_concentration": {
+          "leader": "Consumer Staples",
+          "leader_share_percent": 17.49,
+          "shares_percent": {
+            "Communication Services": 9.02,
+            "Consumer Discretionary": 4.86,
+            "Consumer Staples": 17.49,
+            "Energy": 4.11,
+            "Financials": 10.27,
+            "Health Care": 9.76,
+            "Industrials": 7.07,
+            "Materials": 6.53,
+            "Real Estate": 10.96,
+            "Technology": 6.75,
+            "Utilities": 13.17
+          }
+        },
+        "total_r": 99.8848,
+        "trades_per_year": 109.95,
+        "win_rate_percent": 47.74,
+        "worst_rolling_5_day_period": {
+          "end": "2024-04-18",
+          "realized_r": -13.6276,
+          "start": "2024-04-12"
+        },
+        "worst_trading_day": {
+          "date": "2023-05-17",
+          "realized_r": -4.1308
+        }
+      },
+      "double_costs": {
+        "accepted_trades": 529,
+        "average_r": 0.1113,
+        "bootstrap_expectancy_95_ci": [
+          0.0023,
+          0.2246
+        ],
+        "expectancy_r": 0.1113,
+        "maximum_concurrent_positions": 42,
+        "maximum_drawdown_r": -57.9167,
+        "maximum_open_risk_r": 42.0,
+        "period_profit_concentration": {
+          "leader": "2024",
+          "leader_share_percent": 52.96,
+          "shares_percent": {
+            "2022": 0.45,
+            "2023": 16.02,
+            "2024": 52.96,
+            "2025": 24.33,
+            "2026": 6.23
+          }
+        },
+        "profit_factor": 1.2188,
+        "rejected_trades": 0,
+        "sector_exposure": {
+          "average_active_share_percent": {
+            "Communication Services": 10.33,
+            "Consumer Discretionary": 7.91,
+            "Consumer Staples": 20.3,
+            "Energy": 2.43,
+            "Financials": 7.69,
+            "Health Care": 15.19,
+            "Industrials": 8.17,
+            "Materials": 5.19,
+            "Real Estate": 8.58,
+            "Technology": 4.44,
+            "Utilities": 9.78
+          },
+          "peak_date": "2022-07-22",
+          "peak_sector": "Health Care",
+          "peak_single_sector_share_percent": 100.0
+        },
+        "sector_profit_concentration": {
+          "leader": "Consumer Staples",
+          "leader_share_percent": 17.79,
+          "shares_percent": {
+            "Communication Services": 7.31,
+            "Consumer Discretionary": 5.08,
+            "Consumer Staples": 17.79,
+            "Energy": 2.97,
+            "Financials": 10.79,
+            "Health Care": 10.6,
+            "Industrials": 6.97,
+            "Materials": 6.63,
+            "Real Estate": 10.78,
+            "Technology": 6.77,
+            "Utilities": 14.32
+          }
+        },
+        "total_r": 58.8658,
+        "trades_per_year": 105.18,
+        "win_rate_percent": 45.75,
+        "worst_rolling_5_day_period": {
+          "end": "2024-04-18",
+          "realized_r": -15.4033,
+          "start": "2024-04-12"
+        },
+        "worst_trading_day": {
+          "date": "2024-04-16",
+          "realized_r": -5.3244
+        }
+      }
+    }
+  },
+  "strategy_execution_counts": {
+    "double_cost_eligible_signals": 81620,
+    "double_cost_strategy_rejections": 112881,
+    "double_cost_unconstrained_trades": 529,
+    "eligible_signals": 81620,
+    "strategy_rejections": 112857,
+    "unconstrained_trades": 553
+  }
+}
