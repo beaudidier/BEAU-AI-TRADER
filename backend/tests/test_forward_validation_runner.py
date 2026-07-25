@@ -3,12 +3,14 @@ from __future__ import annotations
 import unittest
 from copy import deepcopy
 from datetime import date, datetime, timezone
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pandas as pd
 
 from forward_validation.runner import (
     RUNNER_VERSION,
+    _one,
     market_session_closed,
     next_scheduled_run,
     run_for_user,
@@ -125,6 +127,11 @@ class MemoryStore:
 
 class ForwardValidationRunnerTests(unittest.TestCase):
     now = datetime(2026, 7, 27, 22, 30, tzinfo=timezone.utc)
+
+    def test_supabase_single_row_responses_are_normalized(self):
+        self.assertEqual(_one(SimpleNamespace(data=[{"id": "run-1"}])), {"id": "run-1"})
+        self.assertEqual(_one(SimpleNamespace(data=[])), {})
+        self.assertEqual(_one(SimpleNamespace(data={"id": "run-1"})), {"id": "run-1"})
 
     def test_market_close_requires_trading_day_completed_candle(self):
         closed, reason = market_session_closed(

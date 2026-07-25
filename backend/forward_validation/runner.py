@@ -45,7 +45,10 @@ def _data(response: Any) -> list[dict[str, Any]]:
 
 
 def _one(response: Any) -> dict[str, Any]:
-    return response.data or {}
+    data = response.data
+    if isinstance(data, list):
+        return data[0] if data else {}
+    return data or {}
 
 
 @dataclass
@@ -487,8 +490,18 @@ def run_scheduled() -> dict[str, Any]:
         "users_requested": len(users),
         "users_completed": sum(item["status"] != "failed" for item in results),
         "users_failed": sum(item["status"] == "failed" for item in results),
+        "failure_types": sorted(
+            {
+                str(item["error"])
+                for item in results
+                if item["status"] == "failed" and item.get("error")
+            }
+        ),
     }
 
 
 if __name__ == "__main__":
-    print(json.dumps(run_scheduled(), indent=2))
+    summary = run_scheduled()
+    print(json.dumps(summary, indent=2))
+    if summary["users_failed"]:
+        raise SystemExit(1)
