@@ -44,7 +44,7 @@ class ForwardValidationEngineTests(unittest.TestCase):
             index=[first, first + pd.Timedelta(days=1)],
         )
         result = evaluate_signal(_signal(base.index[-1].isoformat()), pd.concat([base, future]))
-        self.assertEqual(result["status"], "COMPLETED")
+        self.assertEqual(result["status"], "TP2_hit")
         self.assertTrue(result["tp1_hit"])
         self.assertTrue(result["tp2_hit"])
         self.assertFalse(result["stop_hit"])
@@ -55,21 +55,33 @@ class ForwardValidationEngineTests(unittest.TestCase):
         first = base.index[-1] + pd.Timedelta(days=1)
         future = pd.DataFrame({"Open": [100], "High": [113], "Low": [96], "Close": [100], "Volume": [1_000_000]}, index=[first])
         result = evaluate_signal(_signal(base.index[-1].isoformat()), pd.concat([base, future]))
-        self.assertEqual(result["status"], "COMPLETED")
+        self.assertEqual(result["status"], "stopped")
         self.assertTrue(result["stop_hit"])
         self.assertFalse(result["tp1_hit"])
+
+    def test_tracks_open_tp1_state_and_excursions(self):
+        base = _history()
+        first = base.index[-1] + pd.Timedelta(days=1)
+        future = pd.DataFrame({"Open": [100], "High": [107], "Low": [99], "Close": [106], "Volume": [1_000_000]}, index=[first])
+        result = evaluate_signal(_signal(base.index[-1].isoformat()), pd.concat([base, future]))
+        self.assertEqual(result["status"], "TP1_hit")
+        self.assertTrue(result["tp1_hit"])
+        self.assertFalse(result["tp2_hit"])
+        self.assertEqual(result["remaining_fraction"], 0.5)
+        self.assertGreater(result["mfe_r"], 0)
+        self.assertLess(result["mae_r"], 0)
 
     def test_expires_after_three_unfilled_candles(self):
         base = _history()
         dates = pd.date_range(base.index[-1] + pd.Timedelta(days=1), periods=3)
         future = pd.DataFrame({"Open": [105] * 3, "High": [106] * 3, "Low": [104] * 3, "Close": [105] * 3, "Volume": [1_000_000] * 3}, index=dates)
         result = evaluate_signal(_signal(base.index[-1].isoformat()), pd.concat([base, future]))
-        self.assertEqual(result["status"], "EXPIRED")
+        self.assertEqual(result["status"], "expired")
         self.assertIsNone(result["entry_price"])
 
     def test_approval_requires_one_hundred_completed_forward_trades(self):
         signals = [{"id": str(index), "ticker": "TEST", "signal_timestamp": str(index)} for index in range(100)]
-        outcomes = [{"signal_id": str(index), "status": "COMPLETED", "realized_r": .25, "double_cost_realized_r": .1} for index in range(100)]
+        outcomes = [{"signal_id": str(index), "status": "completed", "realized_r": .25, "double_cost_realized_r": .1} for index in range(100)]
         dashboard = build_dashboard(signals, outcomes)
         self.assertEqual(dashboard["metrics"]["total_sample_size"], 100)
         self.assertTrue(dashboard["metrics"]["approval"]["approved"])

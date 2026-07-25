@@ -13,10 +13,12 @@ from paper_trading.validation import validate_long_paper_trade
 from providers import get_market_data_provider
 from engines.institutional_engine import calculate_institutional_analysis
 from learning.learning_engine import build_learning_context, build_learning_dashboard, build_learning_trade_update
-from config import WATCHLIST
 from forward_validation import build_dashboard as build_forward_validation_dashboard
-from forward_validation import evaluate_signal
-from strategies import strategy_registry
+from forward_validation.runner import (
+    SupabaseForwardValidationStore,
+    run_for_user as run_forward_validation_for_user,
+    runner_health,
+)
 
 
 router = APIRouter(prefix="/me", tags=["SaaS user data"])
@@ -204,90 +206,67 @@ def _learning_context(payload: PaperTradeOpen, recommendation: str) -> dict[str,
     return build_learning_context(payload.ticker, payload.confidence_score, recommendation, analysis, company)
 
 
-def _completed_daily_history(ticker: str):
-    """Return daily data with any still-forming UTC-date candle removed."""
-
-    history = get_market_data_provider().get_history(ticker, period="2y", interval="1d")
-    if history is None or history.empty:
-        return history
-    latest = history.index[-1]
-    if latest.date() >= datetime.now(timezone.utc).date():
-        history = history.iloc[:-1]
-    return history
+def _forward_validation_store(user: CurrentUser) -> SupabaseForwardValidationStore:
+    return SupabaseForwardValidationStore(_client(user))
 
 
-def _forward_validation_records(client, user_id: str):
-    signals = _data(client.table("forward_validation_signals").select("*").eq("user_id", user_id).order("signal_timestamp", desc=True).execute())
-    outcomes = _data(client.table("forward_validation_outcomes").select("*").eq("user_id", user_id).execute())
-    return signals, outcomes
-
-
-def _refresh_forward_validation(client, user_id: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    signals, outcomes = _forward_validation_records(client, user_id)
-    current = {str(item["signal_id"]): item for item in outcomes}
-    for signal in signals:
-        try:
-            history = _completed_daily_history(signal["ticker"])
-            if history is None or history.empty:
-                continue
-            update = evaluate_signal(signal, history)
-            update["user_id"] = user_id
-            existing = current.get(str(signal["id"]))
-            if existing:
-                saved = _one(client.table("forward_validation_outcomes").update(update).eq("signal_id", signal["id"]).eq("user_id", user_id).execute())
-            else:
-                saved = _one(client.table("forward_validation_outcomes").insert({"signal_id": signal["id"], **update}).execute())
-            current[str(signal["id"])] = saved or {"signal_id": signal["id"], **update}
-        except Exception:
-            # One unavailable symbol must not prevent the rest of the paper ledger from updating.
-            continue
-    return signals, list(current.values())
+def _forward_validation_dashboard(store: SupabaseForwardValidationStore, user_id: str) -> dict[str, Any]:
+    signals = store.list_signals(user_id)
+    outcomes = store.list_outcomes(user_id)
+    dashboard = build_forward_validation_dashboard(signals, outcomes)
+    dashboard["runner"] = runner_health(store.list_runs(user_id))
+    completed = dashboard["metrics"]["total_sample_size"]
+    dashboard["sample_progress"] = {
+        "completed": completed,
+        "required": 100,
+        "percentage": min(100, round(completed)),
+    }
+    return dashboard
 
 
 @router.get("/forward-validation/dashboard")
 def get_forward_validation_dashboard(user: CurrentUser = Depends(get_current_user)):
     """Return immutable signals, paper outcomes, and frozen-strategy approval metrics."""
 
-    signals, outcomes = _forward_validation_records(_client(user), user.id)
-    return build_forward_validation_dashboard(signals, outcomes)
+    return _forward_validation_dashboard(_forward_validation_store(user), user.id)
+
+
+@router.post("/forward-validation/run")
+def run_forward_validation(user: CurrentUser = Depends(get_current_user)):
+    """Run the frozen paper-only strategy after a completed US market session."""
+
+    store = _forward_validation_store(user)
+    try:
+        run = run_forward_validation_for_user(store, user.id, trigger="manual")
+    except Exception as error:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Forward validation could not finish. Stored signals and trades remain unchanged.",
+        ) from error
+    return {"run": run, "dashboard": _forward_validation_dashboard(store, user.id)}
 
 
 @router.post("/forward-validation/scan")
 def scan_forward_validation_signals(user: CurrentUser = Depends(get_current_user)):
-    """Capture new frozen-strategy signals for the existing demo US-stock universe."""
+    """Compatibility endpoint backed by the automated runner."""
 
-    client = _client(user)
-    benchmark = _completed_daily_history("SPY")
-    if benchmark is None or benchmark.empty:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Market conditions are unavailable right now.")
-    strategy = strategy_registry.require_usable("swing_trading")
-    created, duplicates, disallowed, unavailable = [], [], [], []
-    for ticker in WATCHLIST:
-        try:
-            history = _completed_daily_history(ticker)
-            if history is None or history.empty:
-                unavailable.append(ticker); continue
-            signal = strategy.scan(ticker=ticker, history=history, benchmark=benchmark)
-            if signal is None:
-                disallowed.append(ticker); continue
-            existing = _one(client.table("forward_validation_signals").select("*").eq("user_id", user.id).eq("ticker", ticker).eq("strategy_version", signal["strategy_version"]).eq("data_timestamp", signal["data_timestamp"]).maybe_single().execute())
-            if existing:
-                duplicates.append(ticker); continue
-            saved = _one(client.table("forward_validation_signals").insert({"user_id": user.id, **signal}).execute())
-            if saved:
-                client.table("forward_validation_outcomes").insert({"signal_id": saved["id"], "user_id": user.id}).execute()
-                created.append(saved)
-        except Exception:
-            unavailable.append(ticker)
-    return {"created": created, "created_count": len(created), "duplicate_count": len(duplicates), "regime_disallowed_count": len(disallowed), "unavailable_count": len(unavailable)}
+    result = run_forward_validation(user)
+    run = result["run"]
+    return {
+        "created": [],
+        "created_count": run.get("signals_created", 0),
+        "duplicate_count": run.get("duplicates_prevented", 0),
+        "regime_disallowed_count": 0,
+        "unavailable_count": len(run.get("symbols_failed") or []),
+        "run": run,
+    }
 
 
 @router.post("/forward-validation/refresh")
 def refresh_forward_validation(user: CurrentUser = Depends(get_current_user)):
-    """Update paper-only outcomes from newly completed daily candles."""
+    """Compatibility endpoint that runs outcome evaluation and returns the dashboard."""
 
-    signals, outcomes = _refresh_forward_validation(_client(user), user.id)
-    return build_forward_validation_dashboard(signals, outcomes)
+    return run_forward_validation(user)["dashboard"]
 
 
 @router.get("/paper-trading/portfolio")

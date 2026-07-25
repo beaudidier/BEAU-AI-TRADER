@@ -28,6 +28,7 @@ export const userApi = {
   learningDashboard: (ticker?: string) => authenticatedFetch(`/me/learning/dashboard${ticker ? `?ticker=${encodeURIComponent(ticker)}` : ""}`),
   backtests: () => authenticatedFetch("/me/backtests"),
   forwardValidationDashboard: () => authenticatedFetch("/me/forward-validation/dashboard"),
+  runForwardValidation: () => authenticatedFetch("/me/forward-validation/run", { method: "POST" }),
   scanForwardValidation: () => authenticatedFetch("/me/forward-validation/scan", { method: "POST" }),
   refreshForwardValidation: () => authenticatedFetch("/me/forward-validation/refresh", { method: "POST" }),
 };

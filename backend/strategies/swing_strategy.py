@@ -110,7 +110,7 @@ def _replay(signal: dict[str, Any], history: pd.DataFrame, cost_multiplier: int)
     target_1 = entry + TARGET_1_R * risk_per_share
     target_2 = entry + TARGET_2_R * risk_per_share
     if future.empty:
-        return {"status": "ACTIVE", "entry_price": None, "entry_timestamp": None, "completed_at": None, "tp1_hit": False, "tp2_hit": False, "stop_hit": False, "open_pl": 0.0, "realized_r": 0.0, "holding_days": 0, "costs": 0.0, "slippage": 0.0, "remaining_fraction": 1.0}
+        return {"status": "waiting_for_entry", "entry_price": None, "entry_timestamp": None, "completed_at": None, "tp1_hit": False, "tp2_hit": False, "stop_hit": False, "open_pl": 0.0, "open_r": 0.0, "realized_r": 0.0, "mfe_r": 0.0, "mae_r": 0.0, "holding_days": 0, "costs": 0.0, "slippage": 0.0, "remaining_fraction": 1.0}
 
     entry_position = None
     for position in range(min(ENTRY_WAIT, len(future))):
@@ -119,8 +119,8 @@ def _replay(signal: dict[str, Any], history: pd.DataFrame, cost_multiplier: int)
             entry_position = position
             break
     if entry_position is None:
-        status = "EXPIRED" if len(future) >= ENTRY_WAIT else "ACTIVE"
-        return {"status": status, "entry_price": None, "entry_timestamp": None, "completed_at": future.index[min(len(future), ENTRY_WAIT) - 1].isoformat() if status == "EXPIRED" else None, "tp1_hit": False, "tp2_hit": False, "stop_hit": False, "open_pl": 0.0, "realized_r": 0.0, "holding_days": 0, "costs": 0.0, "slippage": 0.0, "remaining_fraction": 1.0}
+        status = "expired" if len(future) >= ENTRY_WAIT else "waiting_for_entry"
+        return {"status": status, "entry_price": None, "entry_timestamp": None, "completed_at": future.index[min(len(future), ENTRY_WAIT) - 1].isoformat() if status == "expired" else None, "tp1_hit": False, "tp2_hit": False, "stop_hit": False, "open_pl": 0.0, "open_r": 0.0, "realized_r": 0.0, "mfe_r": 0.0, "mae_r": 0.0, "holding_days": 0, "costs": 0.0, "slippage": 0.0, "remaining_fraction": 1.0}
 
     candles = future.iloc[entry_position:]
     entry_cost = transaction_cost(entry, 1, TRANSACTION_COST_BPS * cost_multiplier)
@@ -131,6 +131,8 @@ def _replay(signal: dict[str, Any], history: pd.DataFrame, cost_multiplier: int)
     slippage = entry_slippage
     tp1_hit = tp2_hit = stop_hit = False
     final_timestamp = None
+    mfe_r = mae_r = 0.0
+    processed_days = 0
 
     def close_leg(fraction: float, reference: float) -> None:
         nonlocal realized_r, costs, slippage
@@ -144,6 +146,9 @@ def _replay(signal: dict[str, Any], history: pd.DataFrame, cost_multiplier: int)
 
     for offset, (timestamp, candle) in enumerate(candles.iloc[:MAX_HOLDING_DAYS].iterrows(), start=1):
         low, high = _number(candle["Low"]), _number(candle["High"])
+        processed_days = offset
+        mfe_r = max(mfe_r, (high - entry) / risk_per_share)
+        mae_r = min(mae_r, (low - entry) / risk_per_share)
         if low <= stop:
             close_leg(remaining, stop)
             remaining = 0.0; stop_hit = True; final_timestamp = timestamp
@@ -160,14 +165,17 @@ def _replay(signal: dict[str, Any], history: pd.DataFrame, cost_multiplier: int)
             remaining = 0.0; final_timestamp = timestamp
             break
 
-    holding_days = min(len(candles), MAX_HOLDING_DAYS)
+    holding_days = processed_days
     if remaining:
         latest = _number(candles.iloc[-1]["Close"])
-        open_pl = (latest - entry) * remaining - entry_cost * remaining + realized_r * risk_per_share
-        status = "OPEN"
+        unrealized_pl = (latest - entry) * remaining - entry_cost * remaining
+        open_pl = unrealized_pl + realized_r * risk_per_share
+        open_r = realized_r + unrealized_pl / risk_per_share
+        status = "TP1_hit" if tp1_hit else "entered"
     else:
         open_pl = 0.0
-        status = "COMPLETED"
+        open_r = 0.0
+        status = "TP2_hit" if tp2_hit else "stopped" if stop_hit else "completed"
     return {
         "status": status,
         "entry_price": round(entry, 6),
@@ -177,7 +185,10 @@ def _replay(signal: dict[str, Any], history: pd.DataFrame, cost_multiplier: int)
         "tp2_hit": tp2_hit,
         "stop_hit": stop_hit,
         "open_pl": round(open_pl, 6),
+        "open_r": round(open_r, 6),
         "realized_r": round(realized_r, 6),
+        "mfe_r": round(mfe_r, 6),
+        "mae_r": round(mae_r, 6),
         "holding_days": holding_days,
         "costs": round(costs, 6),
         "slippage": round(slippage, 6),
@@ -190,14 +201,15 @@ def evaluate_signal(signal: dict[str, Any], history: pd.DataFrame) -> dict[str, 
 
     current = _replay(signal, history, 1)
     doubled = _replay(signal, history, 2)
-    current["double_cost_realized_r"] = doubled["realized_r"] if doubled["status"] == "COMPLETED" else None
+    current["double_cost_realized_r"] = doubled["realized_r"] if doubled["status"] in {"TP2_hit", "stopped", "completed"} else None
     return current
 
 
 def build_dashboard(signals: list[dict[str, Any]], outcomes: list[dict[str, Any]]) -> dict[str, Any]:
     outcome_by_signal = {str(item.get("signal_id")): item for item in outcomes}
-    combined = [{**signal, "outcome": outcome_by_signal.get(str(signal.get("id")), {"status": "ACTIVE"})} for signal in signals]
-    completed = [item for item in combined if item["outcome"].get("status") == "COMPLETED"]
+    combined = [{**signal, "outcome": outcome_by_signal.get(str(signal.get("id")), {"status": "waiting_for_entry"})} for signal in signals]
+    completed_statuses = {"TP2_hit", "stopped", "completed"}
+    completed = [item for item in combined if item["outcome"].get("status") in completed_statuses]
     completed_chronological = sorted(completed, key=lambda item: str(item.get("signal_timestamp") or ""))
     values = [_number(item["outcome"].get("realized_r")) for item in completed_chronological]
     gains = sum(value for value in values if value > 0)
@@ -229,9 +241,9 @@ def build_dashboard(signals: list[dict[str, Any]], outcomes: list[dict[str, Any]
     }
     return {
         "strategy": STRATEGY_METADATA,
-        "active_signals": [item for item in combined if item["outcome"].get("status") == "ACTIVE"],
-        "expired_signals": [item for item in combined if item["outcome"].get("status") == "EXPIRED"],
-        "open_paper_trades": [item for item in combined if item["outcome"].get("status") == "OPEN"],
+        "active_signals": [item for item in combined if item["outcome"].get("status") in {"waiting_for_entry", "data_error"}],
+        "expired_signals": [item for item in combined if item["outcome"].get("status") == "expired"],
+        "open_paper_trades": [item for item in combined if item["outcome"].get("status") in {"entered", "TP1_hit"}],
         "completed_trades": completed,
         "metrics": metrics,
     }

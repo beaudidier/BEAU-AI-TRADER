@@ -8,7 +8,13 @@ except ImportError:  # Allows public market endpoints to run before SaaS depende
 
     class BaseSettings(BaseModel):
         def __init__(self, **values):
-            values = {"supabase_url": os.getenv("SUPABASE_URL"), "supabase_anon_key": os.getenv("SUPABASE_ANON_KEY"), "supabase_jwt_secret": os.getenv("SUPABASE_JWT_SECRET"), **values}
+            values = {
+                "supabase_url": os.getenv("SUPABASE_URL"),
+                "supabase_anon_key": os.getenv("SUPABASE_ANON_KEY"),
+                "supabase_jwt_secret": os.getenv("SUPABASE_JWT_SECRET"),
+                "supabase_service_role_key": os.getenv("SUPABASE_SERVICE_ROLE_KEY"),
+                **values,
+            }
             super().__init__(**values)
 
     def SettingsConfigDict(**_kwargs): return {}
@@ -18,6 +24,7 @@ class Settings(BaseSettings):
     supabase_url: str | None = None
     supabase_anon_key: str | None = None
     supabase_jwt_secret: str | None = None
+    supabase_service_role_key: str | None = None
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
