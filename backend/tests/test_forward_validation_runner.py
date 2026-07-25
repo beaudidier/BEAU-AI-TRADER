@@ -11,6 +11,7 @@ import pandas as pd
 from forward_validation.runner import (
     RUNNER_VERSION,
     _one,
+    completed_daily_history,
     market_session_closed,
     next_scheduled_run,
     run_for_user,
@@ -132,6 +133,18 @@ class ForwardValidationRunnerTests(unittest.TestCase):
         self.assertEqual(_one(SimpleNamespace(data=[{"id": "run-1"}])), {"id": "run-1"})
         self.assertEqual(_one(SimpleNamespace(data=[])), {})
         self.assertEqual(_one(SimpleNamespace(data={"id": "run-1"})), {"id": "run-1"})
+
+    def test_incomplete_latest_ohlcv_row_is_removed(self):
+        history = _history("2026-07-24")
+        history.loc[history.index[-1], ["Open", "High", "Low", "Close"]] = float("nan")
+        provider = FakeProvider({"AAPL": history})
+        completed = completed_daily_history(
+            provider,
+            "AAPL",
+            datetime(2026, 7, 25, 14, 0, tzinfo=timezone.utc),
+        )
+        self.assertEqual(completed.index[-1], history.index[-2])
+        self.assertEqual(len(completed), len(history) - 1)
 
     def test_market_close_requires_trading_day_completed_candle(self):
         closed, reason = market_session_closed(

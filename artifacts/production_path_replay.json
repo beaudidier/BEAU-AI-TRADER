@@ -1,0 +1,397 @@
+{
+  "benchmark_data_timestamp": "2026-07-23T00:00:00",
+  "generated_at": "2026-07-25T13:55:05.624716+00:00",
+  "live_table_proof": {
+    "checked": true,
+    "tables": {
+      "forward_validation_outcomes": {
+        "after": {
+          "row_count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "before": {
+          "row_count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "unchanged": true
+      },
+      "forward_validation_runs": {
+        "after": {
+          "row_count": 6,
+          "sha256": "9190ebbbffa64727c4dd5195151507b72b8d6872956d342616cc52392b3d33d7"
+        },
+        "before": {
+          "row_count": 6,
+          "sha256": "9190ebbbffa64727c4dd5195151507b72b8d6872956d342616cc52392b3d33d7"
+        },
+        "unchanged": true
+      },
+      "forward_validation_signals": {
+        "after": {
+          "row_count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "before": {
+          "row_count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "unchanged": true
+      },
+      "paper_trades": {
+        "after": {
+          "row_count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "before": {
+          "row_count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "unchanged": true
+      }
+    },
+    "unchanged": true
+  },
+  "mismatches": [],
+  "replay_date": "2026-07-23",
+  "replay_version": "production-path-replay-v1.0.0",
+  "results": [
+    {
+      "diagnostics": {
+        "atr": 80.644885,
+        "benchmark_rows": 500,
+        "candidate_target_1": 1520.427825,
+        "candidate_target_2": 2078.691259,
+        "confidence": 70.0,
+        "ema20": 961.683548,
+        "expected_entry_fill": 962.16439,
+        "history_rows": 500,
+        "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+        "market_regime_score": 90.0,
+        "raw_data_timestamp": "2026-07-23T00:00:00",
+        "risk_per_share": 279.131717,
+        "risk_percent": 29.010814,
+        "stop_loss": 683.032673,
+        "swing_low_20": 804.0
+      },
+      "expiry_date": null,
+      "mismatches": [],
+      "production_signal": null,
+      "raw_data_timestamp": "2026-07-23T00:00:00",
+      "reasons": [
+        "Per-share risk 29.01% exceeded the frozen 5% maximum."
+      ],
+      "replay_date": "2026-07-23",
+      "standalone_signal": null,
+      "status": "rejected",
+      "ticker": "MU"
+    },
+    {
+      "diagnostics": {
+        "atr": 7.265219,
+        "benchmark_rows": 500,
+        "candidate_target_1": 259.782594,
+        "candidate_target_2": 313.702874,
+        "confidence": 71.0,
+        "ema20": 205.759435,
+        "expected_entry_fill": 205.862315,
+        "history_rows": 500,
+        "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+        "market_regime_score": 90.0,
+        "raw_data_timestamp": "2026-07-23T00:00:00",
+        "risk_per_share": 26.96014,
+        "risk_percent": 13.0962,
+        "stop_loss": 178.902175,
+        "swing_low_20": 189.800003
+      },
+      "expiry_date": null,
+      "mismatches": [],
+      "production_signal": null,
+      "raw_data_timestamp": "2026-07-23T00:00:00",
+      "reasons": [
+        "Per-share risk 13.10% exceeded the frozen 5% maximum."
+      ],
+      "replay_date": "2026-07-23",
+      "standalone_signal": null,
+      "status": "rejected",
+      "ticker": "NVDA"
+    },
+    {
+      "diagnostics": {
+        "atr": 36.867167,
+        "benchmark_rows": 500,
+        "candidate_target_1": 774.28561,
+        "candidate_target_2": 1020.536523,
+        "confidence": 72.0,
+        "ema20": 527.770812,
+        "expected_entry_fill": 528.034698,
+        "history_rows": 500,
+        "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+        "market_regime_score": 90.0,
+        "raw_data_timestamp": "2026-07-23T00:00:00",
+        "risk_per_share": 123.125456,
+        "risk_percent": 23.317683,
+        "stop_loss": 404.909241,
+        "swing_low_20": 460.209991
+      },
+      "expiry_date": null,
+      "mismatches": [],
+      "production_signal": null,
+      "raw_data_timestamp": "2026-07-23T00:00:00",
+      "reasons": [
+        "Per-share risk 23.32% exceeded the frozen 5% maximum."
+      ],
+      "replay_date": "2026-07-23",
+      "standalone_signal": null,
+      "status": "rejected",
+      "ticker": "AMD"
+    },
+    {
+      "diagnostics": {
+        "atr": 19.071299,
+        "benchmark_rows": 500,
+        "candidate_target_1": 582.580982,
+        "candidate_target_2": 779.546275,
+        "confidence": 56.0,
+        "ema20": 385.422977,
+        "expected_entry_fill": 385.615688,
+        "history_rows": 500,
+        "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+        "market_regime_score": 90.0,
+        "raw_data_timestamp": "2026-07-23T00:00:00",
+        "risk_per_share": 98.482647,
+        "risk_percent": 25.539066,
+        "stop_loss": 287.133041,
+        "swing_low_20": 315.73999
+      },
+      "expiry_date": null,
+      "mismatches": [],
+      "production_signal": null,
+      "raw_data_timestamp": "2026-07-23T00:00:00",
+      "reasons": [
+        "Per-share risk 25.54% exceeded the frozen 5% maximum."
+      ],
+      "replay_date": "2026-07-23",
+      "standalone_signal": null,
+      "status": "rejected",
+      "ticker": "TSLA"
+    },
+    {
+      "diagnostics": {
+        "atr": 7.917631,
+        "benchmark_rows": 500,
+        "candidate_target_1": 425.108587,
+        "candidate_target_2": 533.931943,
+        "confidence": 73.0,
+        "ema20": 316.127168,
+        "expected_entry_fill": 316.285231,
+        "history_rows": 500,
+        "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+        "market_regime_score": 90.0,
+        "raw_data_timestamp": "2026-07-23T00:00:00",
+        "risk_per_share": 54.411678,
+        "risk_percent": 17.203357,
+        "stop_loss": 261.873553,
+        "swing_low_20": 273.75
+      },
+      "expiry_date": null,
+      "mismatches": [],
+      "production_signal": null,
+      "raw_data_timestamp": "2026-07-23T00:00:00",
+      "reasons": [
+        "Per-share risk 17.20% exceeded the frozen 5% maximum."
+      ],
+      "replay_date": "2026-07-23",
+      "standalone_signal": null,
+      "status": "rejected",
+      "ticker": "AAPL"
+    },
+    {
+      "diagnostics": {
+        "atr": 12.096572,
+        "benchmark_rows": 500,
+        "candidate_target_1": 508.820346,
+        "candidate_target_2": 627.330474,
+        "confidence": 39.0,
+        "ema20": 390.115161,
+        "expected_entry_fill": 390.310218,
+        "history_rows": 500,
+        "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+        "market_regime_score": 90.0,
+        "raw_data_timestamp": "2026-07-23T00:00:00",
+        "risk_per_share": 59.255064,
+        "risk_percent": 15.18153,
+        "stop_loss": 331.055154,
+        "swing_low_20": 349.200012
+      },
+      "expiry_date": null,
+      "mismatches": [],
+      "production_signal": null,
+      "raw_data_timestamp": "2026-07-23T00:00:00",
+      "reasons": [
+        "Per-share risk 15.18% exceeded the frozen 5% maximum."
+      ],
+      "replay_date": "2026-07-23",
+      "standalone_signal": null,
+      "status": "rejected",
+      "ticker": "MSFT"
+    },
+    {
+      "diagnostics": {
+        "atr": 25.153565,
+        "benchmark_rows": 500,
+        "candidate_target_1": 871.286648,
+        "candidate_target_2": 1117.177984,
+        "confidence": 49.0,
+        "ema20": 625.082771,
+        "expected_entry_fill": 625.395312,
+        "history_rows": 500,
+        "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+        "market_regime_score": 90.0,
+        "raw_data_timestamp": "2026-07-23T00:00:00",
+        "risk_per_share": 122.945668,
+        "risk_percent": 19.658873,
+        "stop_loss": 502.449645,
+        "swing_low_20": 540.179993
+      },
+      "expiry_date": null,
+      "mismatches": [],
+      "production_signal": null,
+      "raw_data_timestamp": "2026-07-23T00:00:00",
+      "reasons": [
+        "Per-share risk 19.66% exceeded the frozen 5% maximum."
+      ],
+      "replay_date": "2026-07-23",
+      "standalone_signal": null,
+      "status": "rejected",
+      "ticker": "META"
+    },
+    {
+      "diagnostics": {
+        "atr": 7.500152,
+        "benchmark_rows": 500,
+        "candidate_target_1": 306.655507,
+        "candidate_target_2": 368.225994,
+        "confidence": 55.0,
+        "ema20": 244.962537,
+        "expected_entry_fill": 245.085019,
+        "history_rows": 500,
+        "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+        "market_regime_score": 90.0,
+        "raw_data_timestamp": "2026-07-23T00:00:00",
+        "risk_per_share": 30.785244,
+        "risk_percent": 12.561047,
+        "stop_loss": 214.299775,
+        "swing_low_20": 225.550003
+      },
+      "expiry_date": null,
+      "mismatches": [],
+      "production_signal": null,
+      "raw_data_timestamp": "2026-07-23T00:00:00",
+      "reasons": [
+        "Per-share risk 12.56% exceeded the frozen 5% maximum."
+      ],
+      "replay_date": "2026-07-23",
+      "standalone_signal": null,
+      "status": "rejected",
+      "ticker": "AMZN"
+    },
+    {
+      "diagnostics": {
+        "atr": 12.220906,
+        "benchmark_rows": 500,
+        "candidate_target_1": 463.290235,
+        "candidate_target_2": 574.437968,
+        "confidence": 63.0,
+        "ema20": 351.966518,
+        "expected_entry_fill": 352.142501,
+        "history_rows": 500,
+        "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+        "market_regime_score": 90.0,
+        "raw_data_timestamp": "2026-07-23T00:00:00",
+        "risk_per_share": 55.573867,
+        "risk_percent": 15.781641,
+        "stop_loss": 296.568634,
+        "swing_low_20": 314.899994
+      },
+      "expiry_date": null,
+      "mismatches": [],
+      "production_signal": null,
+      "raw_data_timestamp": "2026-07-23T00:00:00",
+      "reasons": [
+        "Per-share risk 15.78% exceeded the frozen 5% maximum."
+      ],
+      "replay_date": "2026-07-23",
+      "standalone_signal": null,
+      "status": "rejected",
+      "ticker": "GOOGL"
+    },
+    {
+      "diagnostics": {
+        "atr": 6.65733,
+        "benchmark_rows": 500,
+        "candidate_target_1": 195.060775,
+        "candidate_target_2": 260.845287,
+        "confidence": 34.0,
+        "ema20": 129.211657,
+        "expected_entry_fill": 129.276263,
+        "history_rows": 500,
+        "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+        "market_regime_score": 90.0,
+        "raw_data_timestamp": "2026-07-23T00:00:00",
+        "risk_per_share": 32.892256,
+        "risk_percent": 25.443384,
+        "stop_loss": 96.384007,
+        "swing_low_20": 106.370003
+      },
+      "expiry_date": null,
+      "mismatches": [],
+      "production_signal": null,
+      "raw_data_timestamp": "2026-07-23T00:00:00",
+      "reasons": [
+        "Per-share risk 25.44% exceeded the frozen 5% maximum."
+      ],
+      "replay_date": "2026-07-23",
+      "standalone_signal": null,
+      "status": "rejected",
+      "ticker": "PLTR"
+    }
+  ],
+  "runner_version": "forward-validation-runner-v1.0.0",
+  "signal_timestamp": "2026-07-23T20:15:00+00:00",
+  "strategy_version": "regime-gated-pullback-v1.0.0",
+  "summary": {
+    "completed_count": 10,
+    "duplicate_requests_prevented": 0,
+    "failed_count": 0,
+    "mismatch_count": 0,
+    "provider_errors": {},
+    "rejected_setups": 10,
+    "requested_count": 10,
+    "signals_found": 0,
+    "symbols_completed": [
+      "MU",
+      "NVDA",
+      "AMD",
+      "TSLA",
+      "AAPL",
+      "MSFT",
+      "META",
+      "AMZN",
+      "GOOGL",
+      "PLTR"
+    ],
+    "symbols_failed": [],
+    "symbols_requested": [
+      "MU",
+      "NVDA",
+      "AMD",
+      "TSLA",
+      "AAPL",
+      "MSFT",
+      "META",
+      "AMZN",
+      "GOOGL",
+      "PLTR"
+    ]
+  }
+}

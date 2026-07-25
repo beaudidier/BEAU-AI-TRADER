@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from config import WATCHLIST
+from engines.engine_utils import REQUIRED_MARKET_COLUMNS, safe_float
 from providers import get_market_data_provider
 from providers.provider import MarketDataProvider
 from strategies import strategy_registry
@@ -219,6 +220,13 @@ def completed_daily_history(
         return history
     result = history.copy()
     result.index = pd.to_datetime(result.index).tz_localize(None)
+    if all(column in result.columns for column in REQUIRED_MARKET_COLUMNS):
+        complete_rows = result.loc[:, list(REQUIRED_MARKET_COLUMNS)].apply(
+            lambda column: column.map(lambda value: safe_float(value) is not None)
+        ).all(axis=1)
+        result = result.loc[complete_rows]
+    if result.empty:
+        return result
     eastern = now.astimezone(MARKET_TIMEZONE)
     latest_day = pd.Timestamp(result.index[-1]).date()
     if latest_day >= eastern.date() and eastern.time() < MARKET_CLOSE_BUFFER:
