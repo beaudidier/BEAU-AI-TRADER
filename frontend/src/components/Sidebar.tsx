@@ -1,4 +1,4 @@
-export type AppPage = "dashboard" | "backtesting" | "paper-trading" | "forward-validation" | "latest-signals" | "learning" | "validation" | "evidence";
+export type AppPage = "dashboard" | "backtesting" | "paper-trading" | "forward-validation" | "latest-signals" | "learning" | "validation" | "evidence" | "beta-guide" | "feedback" | "beta-invites";
 
 const navigationItems: Array<[string, string, AppPage]> = [
   ["▦", "Dashboard", "dashboard"],
@@ -9,6 +9,9 @@ const navigationItems: Array<[string, string, AppPage]> = [
   ["◌", "Learning", "learning"],
   ["✓", "AI Accuracy", "validation"],
   ["▤", "Historical evidence", "evidence"],
+  ["?", "Beta guide", "beta-guide"],
+  ["✎", "Feedback", "feedback"],
+  ["⌁", "Beta invites", "beta-invites"],
 ];
 
 type SidebarProps = {

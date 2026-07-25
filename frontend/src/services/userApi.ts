@@ -1,11 +1,10 @@
 import { supabase } from "../lib/supabase";
-
-const apiBaseUrl = "http://127.0.0.1:8000";
+import { API_BASE_URL } from "../config";
 
 async function authenticatedFetch(path: string, options: RequestInit = {}) {
   const { data } = await supabase?.auth.getSession() ?? { data: { session: null } };
   if (!data.session) throw new Error("Your session has expired. Please sign in again.");
-  const response = await fetch(`${apiBaseUrl}${path}`, { ...options, headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session.access_token}`, ...options.headers } });
+  const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session.access_token}`, ...options.headers } });
   if (!response.ok) {
     let message = "Unable to complete this request.";
     try {
@@ -47,4 +46,13 @@ export const userApi = {
   runForwardValidation: () => authenticatedFetch("/me/forward-validation/run", { method: "POST" }),
   scanForwardValidation: () => authenticatedFetch("/me/forward-validation/scan", { method: "POST" }),
   refreshForwardValidation: () => authenticatedFetch("/me/forward-validation/refresh", { method: "POST" }),
+  privateBeta: () => authenticatedFetch("/me/private-beta"),
+  feedback: () => authenticatedFetch("/me/feedback"),
+  submitFeedback: (payload: unknown) => authenticatedFetch("/me/feedback", { method: "POST", body: JSON.stringify(payload) }),
+  signalReviews: () => authenticatedFetch("/me/signal-reviews"),
+  submitSignalReview: (payload: unknown) => authenticatedFetch("/me/signal-reviews", { method: "POST", body: JSON.stringify(payload) }),
+  recordFrontendError: (payload: unknown) => authenticatedFetch("/me/monitoring/frontend", { method: "POST", body: JSON.stringify(payload) }),
+  betaInvites: () => authenticatedFetch("/me/beta-invites"),
+  createBetaInvite: (payload: unknown) => authenticatedFetch("/me/beta-invites", { method: "POST", body: JSON.stringify(payload) }),
+  revokeBetaInvite: (id: string) => authenticatedFetch(`/me/beta-invites/${id}/revoke`, { method: "POST" }),
 };

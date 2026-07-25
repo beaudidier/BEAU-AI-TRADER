@@ -1,4 +1,5 @@
 import math
+import os
 from datetime import date, timedelta
 
 import pandas as pd
@@ -23,6 +24,7 @@ from backtesting.runner import run_backtest
 from coach.coach_engine import analyze_completed_trade
 from saas.middleware import RateLimitReadyMiddleware
 from saas.router import router as saas_router
+from saas.invites import router as beta_invites_router
 from briefing import build_daily_briefing
 from universe.universe_registry import (
     all_universe_health,
@@ -38,6 +40,7 @@ _previous_debug_scores: dict[str, dict] = {}
 app = FastAPI(title="BEAU AI TRADER API")
 app.add_middleware(RateLimitReadyMiddleware)
 app.include_router(saas_router)
+app.include_router(beta_invites_router)
 
 
 class BacktestRequest(BaseModel):
@@ -78,7 +81,14 @@ TIMEFRAMES = {
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        origin.strip()
+        for origin in os.getenv(
+            "CORS_ORIGINS",
+            "http://127.0.0.1:5173,http://localhost:5173",
+        ).split(",")
+        if origin.strip()
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

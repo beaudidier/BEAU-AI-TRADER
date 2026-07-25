@@ -6,6 +6,8 @@ import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from pydantic import BaseModel, Field
 
+from monitoring import sanitize_monitoring_text
+
 from .auth import CurrentUser, get_current_user, get_user_client
 from .entitlements import entitlement_for, require_limit
 from coach.coach_engine import analyze_completed_trade
@@ -67,6 +69,48 @@ class PaperTradeOpen(BaseModel):
     risk_reward_target_1: float
 
 
+FeedbackCategory = Literal[
+    "strategy logic",
+    "entry/stop/target",
+    "chart",
+    "risk",
+    "data quality",
+    "usability",
+    "bug",
+    "missing context",
+]
+
+
+class BetaFeedbackCreate(BaseModel):
+    page: str = Field(min_length=1, max_length=80)
+    ticker: str | None = Field(default=None, min_length=1, max_length=20)
+    category: FeedbackCategory
+    severity: Literal["low", "medium", "high", "critical"]
+    message: str = Field(min_length=10, max_length=5000)
+    screenshot_reference: str | None = Field(default=None, max_length=500)
+
+
+class ProfessionalSignalReviewCreate(BaseModel):
+    signal_id: str | None = Field(default=None, max_length=100)
+    ticker: str = Field(min_length=1, max_length=20)
+    would_take_setup: bool
+    entry_logical: bool
+    stop_structurally_correct: bool
+    targets_realistic: bool
+    relevant_context_missing: bool
+    market_regime_makes_sense: bool
+    setup_confidence: int = Field(ge=1, le=10)
+    notes: str | None = Field(default=None, max_length=5000)
+
+
+class FrontendErrorCreate(BaseModel):
+    message: str = Field(min_length=1, max_length=1000)
+    path: str | None = Field(default=None, max_length=500)
+    source: str | None = Field(default=None, max_length=200)
+    line: int | None = Field(default=None, ge=0)
+    column: int | None = Field(default=None, ge=0)
+
+
 def _data(response): return response.data or []
 def _one(response):
     if response is None:
@@ -84,6 +128,114 @@ def me(user: CurrentUser = Depends(get_current_user)):
     profile = _one(client.table("profiles").select("*").eq("id", user.id).maybe_single().execute())
     subscription = _one(client.table("subscriptions").select("*").eq("user_id", user.id).order("created_at", desc=True).limit(1).maybe_single().execute())
     return {"user": {"id": user.id, "email": user.email}, "profile": profile, "subscription": subscription, "entitlements": entitlement_for(subscription.get("plan"))}
+
+
+@router.get("/private-beta")
+def private_beta_status(user: CurrentUser = Depends(get_current_user)):
+    membership = _one(
+        _client(user)
+        .table("private_beta_memberships")
+        .select("role, active, invited_at")
+        .eq("user_id", user.id)
+        .maybe_single()
+        .execute()
+    )
+    return {
+        "access": membership,
+        "notice": (
+            "Private beta. Paper trading and forward validation only. "
+            "No live-money execution."
+        ),
+    }
+
+
+@router.get("/feedback")
+def list_beta_feedback(user: CurrentUser = Depends(get_current_user)):
+    return _data(
+        _client(user)
+        .table("beta_feedback")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", desc=True)
+        .limit(50)
+        .execute()
+    )
+
+
+@router.post("/feedback", status_code=status.HTTP_201_CREATED)
+def create_beta_feedback(
+    payload: BetaFeedbackCreate,
+    user: CurrentUser = Depends(get_current_user),
+):
+    values = payload.model_dump()
+    values["user_id"] = user.id
+    values["page"] = payload.page.strip()
+    values["message"] = payload.message.strip()
+    values["ticker"] = (
+        payload.ticker.strip().upper() if payload.ticker else None
+    )
+    values["screenshot_reference"] = (
+        payload.screenshot_reference.strip()
+        if payload.screenshot_reference
+        else None
+    )
+    return _one(_client(user).table("beta_feedback").insert(values).execute())
+
+
+@router.get("/signal-reviews")
+def list_signal_reviews(user: CurrentUser = Depends(get_current_user)):
+    return _data(
+        _client(user)
+        .table("professional_signal_reviews")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", desc=True)
+        .limit(50)
+        .execute()
+    )
+
+
+@router.post("/signal-reviews", status_code=status.HTTP_201_CREATED)
+def create_signal_review(
+    payload: ProfessionalSignalReviewCreate,
+    user: CurrentUser = Depends(get_current_user),
+):
+    values = payload.model_dump()
+    values.update(
+        {
+            "user_id": user.id,
+            "ticker": payload.ticker.strip().upper(),
+            "notes": payload.notes.strip() if payload.notes else None,
+        }
+    )
+    return _one(
+        _client(user)
+        .table("professional_signal_reviews")
+        .insert(values)
+        .execute()
+    )
+
+
+@router.post("/monitoring/frontend", status_code=status.HTTP_202_ACCEPTED)
+def record_frontend_error(
+    payload: FrontendErrorCreate,
+    user: CurrentUser = Depends(get_current_user),
+):
+    values = {
+        "user_id": user.id,
+        "event_type": "frontend_error",
+        "severity": "error",
+        "path": payload.path,
+        "method": "BROWSER",
+        "message": sanitize_monitoring_text(payload.message),
+        "context": {
+            "source": payload.source,
+            "line": payload.line,
+            "column": payload.column,
+        },
+    }
+    _client(user).table("beta_monitoring_events").insert(values).execute()
+    return {"recorded": True}
 
 
 @router.patch("/profile")

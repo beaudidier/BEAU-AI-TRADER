@@ -39,9 +39,14 @@ export default function LatestSignalCard({ signal }: LatestSignalCardProps) {
           <h2 className="mt-3 text-2xl font-semibold text-white">{signal.ticker}</h2>
           <p className="mt-1 text-sm text-slate-400">{signal.company_name} · {signal.sector}</p>
         </div>
-        <Link to={`/workspace/${encodeURIComponent(signal.ticker)}`} className="rounded-lg bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
-          Open workspace
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link to={`/feedback?ticker=${encodeURIComponent(signal.ticker)}`} className="rounded-lg border border-emerald-400/30 px-4 py-2.5 text-sm font-semibold text-emerald-300 transition hover:bg-emerald-400/10">
+            Review signal
+          </Link>
+          <Link to={`/workspace/${encodeURIComponent(signal.ticker)}`} className="rounded-lg bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+            Open workspace
+          </Link>
+        </div>
       </div>
 
       {signal.setup_status === "waiting_for_entry" && (

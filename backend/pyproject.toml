@@ -1,0 +1,18 @@
+[project]
+name = "beau-ai-trader-api"
+version = "0.51.0"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.139.2",
+  "numpy==2.3.2",
+  "pandas==2.3.1",
+  "pydantic-settings==2.11.0",
+  "PyJWT==2.10.1",
+  "supabase==2.28.0",
+  "ta==0.11.0",
+  "uvicorn==0.35.0",
+  "yfinance==0.2.65",
+]
+
+[tool.vercel]
+entrypoint = "api:app"

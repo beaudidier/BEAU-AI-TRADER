@@ -52,3 +52,12 @@ jobs:
           FORWARD_VALIDATION_REQUEST_PACING_SECONDS: "0.15"
           FORWARD_VALIDATION_MAX_WORKFLOW_SECONDS: "1380"
         run: python -m forward_validation.runner
+
+      - name: Record scheduler failure
+        if: failure()
+        continue-on-error: true
+        env:
+          PYTHONPATH: backend
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python -m monitoring scheduler-failure

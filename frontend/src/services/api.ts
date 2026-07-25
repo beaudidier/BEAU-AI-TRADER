@@ -1,6 +1,5 @@
 import type { BacktestRequest, BacktestResult, BacktestTrade, CoachAnalysis, DailyBriefing, InstitutionalAnalysis, ScanJob, Stock, StockChartData, Timeframe, TradePlan, TradingStrategy, ValidationDashboard } from "../types/stock";
-
-const API_BASE_URL = "http://127.0.0.1:8000";
+import { API_BASE_URL } from "../config";
 
 export async function getStrategies(): Promise<TradingStrategy[]> {
   const response = await fetch(`${API_BASE_URL}/strategies`);

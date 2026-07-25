@@ -52,12 +52,24 @@ def get_current_user(authorization: str | None = Header(default=None)) -> Curren
             user_id = payload.get("sub")
             if not user_id:
                 raise jwt.InvalidTokenError("Token has no subject")
-            return CurrentUser(id=user_id, email=payload.get("email"), access_token=access_token)
+            current_user = CurrentUser(
+                id=user_id,
+                email=payload.get("email"),
+                access_token=access_token,
+            )
+            _require_private_beta_access(current_user)
+            return current_user
 
         user = _supabase_client().auth.get_user(access_token).user
         if not user:
             raise ValueError("Supabase did not return a user")
-        return CurrentUser(id=user.id, email=user.email, access_token=access_token)
+        current_user = CurrentUser(
+            id=user.id,
+            email=user.email,
+            access_token=access_token,
+        )
+        _require_private_beta_access(current_user)
+        return current_user
     except ((jwt.PyJWTError if jwt else ValueError), ValueError, AuthApiError) as error:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired access token") from error
 
@@ -66,3 +78,24 @@ def get_user_client(user: CurrentUser) -> Client:
     """Create a database client scoped to the verified caller JWT so RLS applies."""
 
     return _supabase_client(user.access_token)
+
+
+def _require_private_beta_access(user: CurrentUser) -> None:
+    """Restrict production access to active invited members when enabled."""
+
+    if not getattr(get_settings(), "private_beta_enforced", False):
+        return
+    membership = (
+        _supabase_client(user.access_token)
+        .table("private_beta_memberships")
+        .select("active")
+        .eq("user_id", user.id)
+        .eq("active", True)
+        .maybe_single()
+        .execute()
+    )
+    if not membership.data:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This private beta is available to invited testers only.",
+        )
