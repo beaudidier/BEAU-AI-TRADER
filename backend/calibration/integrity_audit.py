@@ -19,6 +19,7 @@ import numpy as np
 import pandas as pd
 
 from atr import add_atr
+from backtesting.execution import entry_fill_price, exit_fill_price, transaction_cost
 from calibration.run_audit import (
     DATASET_CACHE,
     MAX_HOLDING_DAYS,
@@ -37,6 +38,14 @@ from support_resistance import calculate_support_resistance
 BOOTSTRAP_SAMPLES = 10_000
 RANDOM_SEED = 20260725
 BANDS = ("0-59", "60-74", "75-89", "90-100")
+PREVIOUS_OOS = {
+    "overall": {"win_rate": 62.0, "average_return": 0.5422, "average_r_multiple": 0.1455, "profit_factor": 1.4691, "maximum_drawdown": -15.2058},
+    "bands": {
+        "0-59": {"win_rate": 51.39, "average_return": 2.9325, "average_r_multiple": 0.6346, "profit_factor": 2.3692, "maximum_drawdown": -5.3408},
+        "60-74": {"win_rate": 57.03, "average_return": -0.4793, "average_r_multiple": -0.0439, "profit_factor": 0.8683, "maximum_drawdown": -17.2594},
+        "75-89": {"win_rate": 76.0, "average_return": 0.1286, "average_r_multiple": 0.0359, "profit_factor": 1.2112, "maximum_drawdown": -3.1503},
+    },
+}
 
 
 def _load_history(ticker: str) -> pd.DataFrame:
@@ -49,7 +58,18 @@ def _number(value: object) -> float:
 
 def _trade_rows() -> list[dict]:
     with (OUTPUT / "ai_calibration_trades.csv").open(newline="") as handle:
-        return list(csv.DictReader(handle))
+        ledger_rows = list(csv.DictReader(handle))
+    trades: dict[str, dict] = {}
+    for row in ledger_rows:
+        trade_id = row["trade_id"]
+        if trade_id not in trades:
+            trades[trade_id] = {
+                key: value for key, value in row.items()
+                if not key.startswith("leg_") and key != "leg_number"
+            }
+            trades[trade_id]["exit_legs"] = []
+        trades[trade_id]["exit_legs"].append({key[4:]: value for key, value in row.items() if key.startswith("leg_")})
+    return sorted(trades.values(), key=lambda row: (row["signal_date"], row["ticker"]))
 
 
 def _summary(returns: list[float]) -> dict:
@@ -116,7 +136,7 @@ def _replay(row: dict, histories: dict[str, pd.DataFrame], benchmark: pd.DataFra
     outcome = _simulate(data, location + 1, entry, plan["stop_loss"], plan["target_1"], plan["target_2"])
     if outcome is None:
         raise ValueError(f"Unsimulatable trade for {row['ticker']} {row['signal_date']}")
-    exit_index = location + outcome["holding_days"]
+    exit_index = outcome["exit_index"]
     return {
         "entry_index": int(location + 1),
         "exit_index": int(exit_index),
@@ -130,10 +150,20 @@ def _replay(row: dict, histories: dict[str, pd.DataFrame], benchmark: pd.DataFra
 
 
 def _matches_ledger(row: dict, outcome: dict) -> bool:
-    return all(
+    trade_matches = all(
         abs(_number(row[field]) - float(outcome[field])) < 1e-9
-        for field in ("exit_price", "return_pct", "r_multiple", "mfe_r", "mae_r")
+        for field in ("entry_price", "entry_transaction_cost", "exit_price", "total_pnl", "total_transaction_cost", "return_pct", "r_multiple", "mfe_r", "mae_r")
     ) and all(str(row[field]).lower() == str(outcome[field]).lower() for field in ("tp1_hit", "tp2_hit", "stop_hit"))
+    ledger_legs = sorted(row["exit_legs"], key=lambda leg: int(leg["number"]))
+    outcome_legs = outcome["exit_legs"]
+    if len(ledger_legs) != len(outcome_legs):
+        return False
+    for ledger, calculated in zip(ledger_legs, outcome_legs):
+        if ledger["leg"] != calculated["leg"] or int(ledger["shares"]) != calculated["shares"]:
+            return False
+        if any(abs(_number(ledger[field]) - float(calculated[field])) >= 1e-9 for field in ("exit_price", "exit_index", "gross_pnl", "allocated_entry_cost", "exit_transaction_cost", "pnl", "r_multiple")):
+            return False
+    return trade_matches
 
 
 def _random_matched_returns(rows: list[dict], histories: dict[str, pd.DataFrame]) -> list[float]:
@@ -157,10 +187,9 @@ def _random_matched_returns(rows: list[dict], histories: dict[str, pd.DataFrame]
         if not candidates:
             continue
         index = int(generator.choice(candidates))
-        entry = float(data.iloc[index]["Open"]) * (1 + SLIPPAGE_BPS / 10_000)
-        exit_price = float(data.iloc[index + holding_days - 1]["Close"])
-        cost = entry * (SLIPPAGE_BPS + TRANSACTION_COST_BPS) / 10_000
-        cost += exit_price * (SLIPPAGE_BPS + TRANSACTION_COST_BPS) / 10_000
+        entry = entry_fill_price(float(data.iloc[index]["Open"]), SLIPPAGE_BPS)
+        exit_price = exit_fill_price(float(data.iloc[index + holding_days - 1]["Close"]), SLIPPAGE_BPS)
+        cost = transaction_cost(entry, 1, TRANSACTION_COST_BPS) + transaction_cost(exit_price, 1, TRANSACTION_COST_BPS)
         returns.append((exit_price - entry - cost) / entry * 100)
     return returns
 
@@ -183,9 +212,9 @@ def _ema_crossover_returns(histories: dict[str, pd.DataFrame], rows: list[dict])
             if active is None and crossed_up:
                 active = index + 1
             elif active is not None and (crossed_down or index - active + 1 >= MAX_HOLDING_DAYS):
-                entry = float(working.iloc[active]["Open"]) * (1 + SLIPPAGE_BPS / 10_000)
-                exit_price = float(working.iloc[index]["Close"])
-                cost = entry * (SLIPPAGE_BPS + TRANSACTION_COST_BPS) / 10_000 + exit_price * (SLIPPAGE_BPS + TRANSACTION_COST_BPS) / 10_000
+                entry = entry_fill_price(float(working.iloc[active]["Open"]), SLIPPAGE_BPS)
+                exit_price = exit_fill_price(float(working.iloc[index]["Close"]), SLIPPAGE_BPS)
+                cost = transaction_cost(entry, 1, TRANSACTION_COST_BPS) + transaction_cost(exit_price, 1, TRANSACTION_COST_BPS)
                 returns.append((exit_price - entry - cost) / entry * 100)
                 active = None
     return returns
@@ -199,11 +228,28 @@ def _buy_and_hold_returns(histories: dict[str, pd.DataFrame], rows: list[dict]) 
         period = data.loc[(data.index >= start) & (data.index <= end)]
         if len(period) < 2:
             continue
-        entry = float(period.iloc[0]["Open"]) * (1 + SLIPPAGE_BPS / 10_000)
-        exit_price = float(period.iloc[-1]["Close"])
-        cost = entry * (SLIPPAGE_BPS + TRANSACTION_COST_BPS) / 10_000 + exit_price * (SLIPPAGE_BPS + TRANSACTION_COST_BPS) / 10_000
+        entry = entry_fill_price(float(period.iloc[0]["Open"]), SLIPPAGE_BPS)
+        exit_price = exit_fill_price(float(period.iloc[-1]["Close"]), SLIPPAGE_BPS)
+        cost = transaction_cost(entry, 1, TRANSACTION_COST_BPS) + transaction_cost(exit_price, 1, TRANSACTION_COST_BPS)
         returns.append((exit_price - entry - cost) / entry * 100)
     return returns
+
+
+def _comparison() -> dict:
+    with (OUTPUT / "ai_calibration_results.json").open() as handle:
+        corrected = json.load(handle)["out_of_sample"]
+
+    def values(old: dict, new: dict) -> dict:
+        return {
+            key: {"previous": old[key], "corrected": new[key], "change": round(new[key] - old[key], 4)}
+            for key in old
+        }
+
+    return {
+        "basis": "Previous values are the committed pre-partial-exit out-of-sample artifact; corrected values use the regenerated exit-leg ledger.",
+        "overall": values(PREVIOUS_OOS["overall"], corrected["overall"]),
+        "bands": {band: values(previous, corrected["bands"][band]) for band, previous in PREVIOUS_OOS["bands"].items()},
+    }
 
 
 def run_integrity_audit() -> dict:
@@ -263,7 +309,6 @@ def run_integrity_audit() -> dict:
 
     band_rows = {band: [row for row in out_of_sample if row["band"] == band] for band in BANDS}
     configured_round_trip_bps = 2 * (SLIPPAGE_BPS + TRANSACTION_COST_BPS)
-    effective_round_trip_bps = configured_round_trip_bps + SLIPPAGE_BPS
     baselines = {
         "buy_and_hold_equal_weight": {
             **_summary(_buy_and_hold_returns(histories, out_of_sample)),
@@ -290,6 +335,7 @@ def run_integrity_audit() -> dict:
             "ohlcv_cache": "artifacts/calibration_dataset/*.csv",
             "scope": "out-of-sample chronological 30% of the recorded ledger",
             "out_of_sample_trades": len(out_of_sample),
+            "out_of_sample_exit_legs": sum(len(row["exit_legs"]) for row in out_of_sample),
             "bootstrap_samples": BOOTSTRAP_SAMPLES,
             "random_seed": RANDOM_SEED,
         },
@@ -306,8 +352,8 @@ def run_integrity_audit() -> dict:
             "partial_exit_accounting": {
                 "tp1_hits": checks["tp1_hits"],
                 "tp2_hits": checks["tp2_hits"],
-                "partial_exits_recorded": 0,
-                "remaining_position_tracking": False,
+                "partial_exits_recorded": sum(sum(leg["leg"] == "TP1" for leg in row["exit_legs"]) for row in out_of_sample),
+                "remaining_position_tracking": True,
                 "tp1_hits_with_non_positive_final_r": checks["tp1_non_positive_r"],
                 "tp1_hits_with_positive_final_r": checks["tp1_positive_r"],
             },
@@ -319,10 +365,10 @@ def run_integrity_audit() -> dict:
             "costs": {
                 "configured_slippage_bps_per_side": SLIPPAGE_BPS,
                 "configured_transaction_cost_bps_per_side": TRANSACTION_COST_BPS,
-                "cost_formula_bps_excluding_entry_fill_slippage": configured_round_trip_bps,
-                "approximate_effective_round_trip_bps_including_entry_fill_slippage": effective_round_trip_bps,
+                "documented_round_trip_bps_near_equal_prices": configured_round_trip_bps,
+                "rule": "5 bps adverse slippage and 5 bps transaction cost are applied to every entry or exit fill.",
             },
-            "r_multiple": "(exit_price - next_open_fill - cost) / (next_open_fill - planned_stop_loss); no TP1 partial realization is included.",
+            "r_multiple": "sum(realized exit-leg P/L) / (entry fill - planned stop loss) / initial shares.",
             "win_loss": "A trade is a win only when its final recorded R multiple is greater than zero.",
             "drawdown": "The calibration artifact sums R multiples after sorting all ticker signals by date. It is not a capital-weighted portfolio equity curve and concurrent ticker trades remain interleaved.",
             "duplicate_or_overlapping_same_ticker_positions": overlap_count,
@@ -337,6 +383,7 @@ def run_integrity_audit() -> dict:
             for band in BANDS
         },
         "baselines": baselines,
+        "previous_vs_corrected": _comparison(),
     }
 
 

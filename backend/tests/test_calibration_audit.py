@@ -10,7 +10,7 @@ class CalibrationAuditTests(unittest.TestCase):
         data = pd.DataFrame({"Open": [100], "High": [112], "Low": [94], "Close": [105]})
         result = _simulate(data, 0, 100, 95, 110, 120)
         self.assertTrue(result["stop_hit"])
-        self.assertEqual(result["exit_price"], 95)
+        self.assertAlmostEqual(result["exit_price"], 94.9525)
         self.assertTrue(result["tp1_hit"] is False)
 
     def test_dataset_validation_rejects_duplicate_and_incomplete_candles(self):

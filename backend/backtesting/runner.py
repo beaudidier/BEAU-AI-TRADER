@@ -4,33 +4,49 @@ from datetime import date
 import pandas as pd
 
 from decision_rules import is_actionable_score
+from .execution import TP1_PORTION, entry_fill_price, exit_fill_price, transaction_cost
 from .report import build_report
 from .strategy import build_trade_signal
+
+SLIPPAGE_BPS = 5
+TRANSACTION_COST_BPS = 5
 
 
 def _date_value(timestamp) -> str:
     return pd.Timestamp(timestamp).strftime("%Y-%m-%d")
 
 
-def _close_trade(active: dict, cash: float, exit_price: float, exit_date: str, reason: str) -> tuple[dict, float]:
-    cash += active["remaining_shares"] * exit_price
-    total_pnl = active["realized_pnl"] + (active["remaining_shares"] * (exit_price - active["entry"]))
-    realized_rr = total_pnl / active["initial_risk"] if active["initial_risk"] > 0 else 0
+def _realize_exit(active: dict, cash: float, shares: int, reference_price: float, exit_date: str, reason: str) -> float:
+    exit_price = exit_fill_price(reference_price, SLIPPAGE_BPS)
+    allocated_entry_cost = active["entry_cost"] * shares / active["shares"]
+    exit_cost = transaction_cost(exit_price, shares, TRANSACTION_COST_BPS)
+    pnl = (exit_price - active["entry"]) * shares - allocated_entry_cost - exit_cost
+    cash += shares * exit_price - exit_cost
+    active["remaining_shares"] -= shares
+    active["realized_pnl"] += pnl
+    active["exit_legs"].append({"reason": reason, "shares": shares, "exit": round(exit_price, 2), "pnl": round(pnl, 2), "date": exit_date})
+    return cash
+
+
+def _close_trade(active: dict, cash: float, reference_price: float, exit_date: str, reason: str) -> tuple[dict, float]:
+    cash = _realize_exit(active, cash, active["remaining_shares"], reference_price, exit_date, reason)
+    realized_rr = active["realized_pnl"] / active["initial_risk"] if active["initial_risk"] > 0 else 0
     trade = {
         "ticker": active["ticker"],
         "entry_date": active["entry_date"],
         "exit_date": exit_date,
         "entry": round(active["entry"], 2),
-        "exit": round(exit_price, 2),
+        "exit": active["exit_legs"][-1]["exit"],
         "stop_loss": round(active["stop_loss"], 2),
         "target_1": round(active["target_1"], 2),
         "target_2": round(active["target_2"], 2),
         "shares": active["shares"],
-        "pnl": round(total_pnl, 2),
+        "pnl": round(active["realized_pnl"], 2),
         "realized_rr": round(realized_rr, 2),
         "confidence_score": active["confidence_score"],
         "recommendation": active["recommendation"],
         "exit_reason": reason,
+        "exit_legs": active["exit_legs"],
     }
     return trade, cash
 
@@ -69,11 +85,9 @@ def run_backtest(
                 active = None
             else:
                 if not active["target_1_hit"] and high >= active["target_1"]:
-                    partial_shares = max(1, active["shares"] // 2)
+                    partial_shares = max(1, math.floor(active["shares"] * TP1_PORTION))
                     partial_shares = min(partial_shares, active["remaining_shares"])
-                    cash += partial_shares * active["target_1"]
-                    active["realized_pnl"] += partial_shares * (active["target_1"] - active["entry"])
-                    active["remaining_shares"] -= partial_shares
+                    cash = _realize_exit(active, cash, partial_shares, active["target_1"], date_label, "Target 1")
                     active["target_1_hit"] = True
 
                 if active is not None and high >= active["target_2"]:
@@ -85,15 +99,16 @@ def run_backtest(
             history = data.iloc[:index]
             plan = build_trade_signal(ticker, history, cash, risk_percent)
             if plan and is_actionable_score(plan["confidence_score"]) and plan["confidence_score"] >= minimum_confidence:
-                entry = plan["entry"]
+                entry = entry_fill_price(plan["entry"], SLIPPAGE_BPS)
                 shares = plan["position_size"]
                 if shares > 0 and low <= entry <= high:
-                    cash -= shares * entry
+                    entry_cost = transaction_cost(entry, shares, TRANSACTION_COST_BPS)
+                    cash -= shares * entry + entry_cost
                     active = {
                         "ticker": ticker.upper(), "entry_date": date_label, "entry": entry,
                         "stop_loss": plan["stop_loss"], "target_1": plan["target_1"], "target_2": plan["target_2"],
-                        "shares": shares, "remaining_shares": shares, "realized_pnl": 0.0,
-                        "initial_risk": plan["risk_per_share"] * shares, "target_1_hit": False,
+                        "shares": shares, "remaining_shares": shares, "realized_pnl": 0.0, "entry_cost": entry_cost, "exit_legs": [],
+                        "initial_risk": (entry - plan["stop_loss"]) * shares, "target_1_hit": False,
                         "confidence_score": plan["confidence_score"], "recommendation": plan["recommendation"],
                     }
 

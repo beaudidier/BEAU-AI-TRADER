@@ -15,6 +15,7 @@ from pathlib import Path
 import pandas as pd
 
 from atr import add_atr
+from backtesting.execution import TP1_PORTION, entry_fill_price, simulate_long_trade
 from engines.engine_utils import safe_float
 from engines.institutional_engine import calculate_institutional_analysis
 from engines.trade_plan_engine import calculate_trade_plan
@@ -48,21 +49,14 @@ def _metrics(rows: list[dict]) -> dict:
 
 
 def _simulate(data: pd.DataFrame, entry_index: int, entry: float, stop: float, target_1: float, target_2: float) -> dict | None:
-    if entry <= stop:
-        return None
-    risk = entry - stop; tp1 = tp2 = stopped = False; high_seen = entry; low_seen = entry; exit_price = None; exit_index = None
-    for index in range(entry_index, min(len(data), entry_index + MAX_HOLDING_DAYS)):
-        candle = data.iloc[index]; low, high = float(candle["Low"]), float(candle["High"]); high_seen, low_seen = max(high_seen, high), min(low_seen, low)
-        # Conservative OHLC assumption: stop wins any same-candle ambiguity.
-        if low <= stop:
-            stopped, exit_price, exit_index = True, stop, index; break
-        if high >= target_1: tp1 = True
-        if high >= target_2:
-            tp2, exit_price, exit_index = True, target_2, index; break
-    if exit_price is None:
-        exit_index = min(len(data) - 1, entry_index + MAX_HOLDING_DAYS - 1); exit_price = float(data.iloc[exit_index]["Close"])
-    cost = entry * (SLIPPAGE_BPS + TRANSACTION_COST_BPS) / 10_000 + exit_price * (SLIPPAGE_BPS + TRANSACTION_COST_BPS) / 10_000
-    return {"tp1_hit": tp1, "tp2_hit": tp2, "stop_hit": stopped, "exit_price": exit_price, "holding_days": exit_index - entry_index + 1, "return_pct": ((exit_price - entry - cost) / entry) * 100, "r_multiple": (exit_price - entry - cost) / risk, "mfe_r": (high_seen - entry) / risk, "mae_r": (low_seen - entry) / risk}
+    """Compatibility wrapper for the shared partial-exit execution model."""
+    return simulate_long_trade(
+        data, entry_index, entry, stop, target_1, target_2,
+        shares=100,
+        max_holding_days=MAX_HOLDING_DAYS,
+        slippage_bps=SLIPPAGE_BPS,
+        transaction_cost_bps=TRANSACTION_COST_BPS,
+    )
 
 
 def _validate_history(data: pd.DataFrame | None, end: date) -> str | None:
@@ -114,7 +108,7 @@ def run_audit(provider=None) -> dict:
         if error:
             failures.append({"ticker": ticker, "reason": error, "source": source}); continue
         histories[ticker] = data
-    parameters = {"tickers": len(TICKERS), "start": start.isoformat(), "end": end.isoformat(), "split": "chronological 70/30 by generated trade", "slippage_bps_per_side": SLIPPAGE_BPS, "transaction_cost_bps_per_side": TRANSACTION_COST_BPS, "max_holding_days": MAX_HOLDING_DAYS, "minimum_valid_symbols": 25, "minimum_candles_per_symbol": MINIMUM_CANDLES, "download_retries": DOWNLOAD_RETRIES}
+    parameters = {"tickers": len(TICKERS), "start": start.isoformat(), "end": end.isoformat(), "split": "chronological 70/30 by generated trade", "slippage_bps_per_side": SLIPPAGE_BPS, "transaction_cost_bps_per_side": TRANSACTION_COST_BPS, "tp1_portion": TP1_PORTION, "stop_management": "original stop remains in force after TP1", "max_holding_days": MAX_HOLDING_DAYS, "minimum_valid_symbols": 25, "minimum_candles_per_symbol": MINIMUM_CANDLES, "download_retries": DOWNLOAD_RETRIES}
     if len(histories) < 25 or benchmark is None:
         return {"audit_status": "blocked", "parameters": parameters, "provider_failures": failures, "validated_symbols": sorted(histories), "calibration": {"overall": _metrics([]), "bands": {band: _metrics([]) for band in ("0-59", "60-74", "75-89", "90-100")}}, "out_of_sample": {"overall": _metrics([]), "bands": {band: _metrics([]) for band in ("0-59", "60-74", "75-89", "90-100")}, "factors": {}, "market_regime": {}, "ticker": {}, "sector": {}}, "trades": []}
     for ticker, sector in TICKERS.items():
@@ -129,15 +123,18 @@ def run_audit(provider=None) -> dict:
                 analysis = calculate_institutional_analysis(history, benchmark_history); enriched = add_atr(history); atr = safe_float(enriched["ATR"].iloc[-1]); levels = calculate_support_resistance(enriched)
                 if not atr or atr <= 0: continue
                 plan = calculate_trade_plan(ticker, enriched, 10_000, 1, {"confidence": analysis["overall_score"]}, levels["support"], levels["resistance"], atr)
-                entry = float(data.iloc[index + 1]["Open"]) * (1 + SLIPPAGE_BPS / 10_000)
+                entry = entry_fill_price(float(data.iloc[index + 1]["Open"]), SLIPPAGE_BPS)
                 outcome = _simulate(data, index + 1, entry, plan["stop_loss"], plan["target_1"], plan["target_2"])
                 if outcome is None: continue
+                for leg in outcome["exit_legs"]:
+                    leg["exit_date"] = str(data.index[leg["exit_index"]].date())
             except Exception:
                 continue
             # One trade per ticker at a time: signal days inside the next holding window are skipped.
             if trades and trades[-1].get("ticker") == ticker and pd.Timestamp(trades[-1]["exit_date"]) >= data.index[index + 1]: continue
             engines = analysis["engines"]
-            trades.append({"ticker": ticker, "sector": sector, "signal_date": str(data.index[index].date()), "entry_date": str(data.index[index + 1].date()), "exit_date": str(data.index[index + outcome["holding_days"]].date()) if index + outcome["holding_days"] < len(data) else str(data.index[-1].date()), "confidence": analysis["overall_score"], "band": _band(analysis["overall_score"]), "verdict": analysis["recommendation"], "market_regime": "Risk-on" if engines["market_regime"]["score"] >= 60 else "Defensive", **{f"{name}_score": result["score"] for name, result in engines.items()}, **outcome})
+            signal_date = str(data.index[index].date())
+            trades.append({"trade_id": f"{ticker}-{signal_date}", "ticker": ticker, "sector": sector, "signal_date": signal_date, "entry_date": str(data.index[index + 1].date()), "exit_date": str(data.index[outcome["exit_index"]].date()), "confidence": analysis["overall_score"], "band": _band(analysis["overall_score"]), "verdict": analysis["recommendation"], "market_regime": "Risk-on" if engines["market_regime"]["score"] >= 60 else "Defensive", **{f"{name}_score": result["score"] for name, result in engines.items()}, **outcome})
     trades.sort(key=lambda row: row["signal_date"])
     split = int(len(trades) * .7); calibration, oos = trades[:split], trades[split:]
     grouped = lambda rows, field: {key: _metrics([row for row in rows if str(row[field]) == key]) for key in sorted({str(row[field]) for row in rows})}
@@ -148,7 +145,12 @@ def run_audit(provider=None) -> dict:
 def write_artifacts(results: dict) -> None:
     OUTPUT.mkdir(exist_ok=True); (OUTPUT / "ai_calibration_results.json").write_text(json.dumps({key: value for key, value in results.items() if key != "trades"}, indent=2))
     with (OUTPUT / "ai_calibration_trades.csv").open("w", newline="") as handle:
-        rows = results["trades"]; writer = csv.DictWriter(handle, fieldnames=sorted({key for row in rows for key in row}) if rows else ["ticker"]); writer.writeheader(); writer.writerows(rows)
+        rows = []
+        for trade in results["trades"]:
+            shared = {key: value for key, value in trade.items() if key != "exit_legs"}
+            for number, leg in enumerate(trade["exit_legs"], start=1):
+                rows.append({**shared, "leg_number": number, **{f"leg_{key}": value for key, value in leg.items()}})
+        writer = csv.DictWriter(handle, fieldnames=sorted({key for row in rows for key in row}) if rows else ["ticker"], lineterminator="\n"); writer.writeheader(); writer.writerows(rows)
 
 
 if __name__ == "__main__":

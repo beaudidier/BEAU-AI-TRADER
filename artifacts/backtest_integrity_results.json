@@ -5,6 +5,7 @@
     "ohlcv_cache": "artifacts/calibration_dataset/*.csv",
     "scope": "out-of-sample chronological 30% of the recorded ledger",
     "out_of_sample_trades": 300,
+    "out_of_sample_exit_legs": 502,
     "bootstrap_samples": 10000,
     "random_seed": 20260725
   },
@@ -32,10 +33,10 @@
     "partial_exit_accounting": {
       "tp1_hits": 202,
       "tp2_hits": 151,
-      "partial_exits_recorded": 0,
-      "remaining_position_tracking": false,
-      "tp1_hits_with_non_positive_final_r": 37,
-      "tp1_hits_with_positive_final_r": 165
+      "partial_exits_recorded": 202,
+      "remaining_position_tracking": true,
+      "tp1_hits_with_non_positive_final_r": 38,
+      "tp1_hits_with_positive_final_r": 164
     },
     "plan_gap_consistency": {
       "target_1_at_or_below_actual_next_open": 33,
@@ -45,10 +46,10 @@
     "costs": {
       "configured_slippage_bps_per_side": 5,
       "configured_transaction_cost_bps_per_side": 5,
-      "cost_formula_bps_excluding_entry_fill_slippage": 20,
-      "approximate_effective_round_trip_bps_including_entry_fill_slippage": 25
+      "documented_round_trip_bps_near_equal_prices": 20,
+      "rule": "5 bps adverse slippage and 5 bps transaction cost are applied to every entry or exit fill."
     },
-    "r_multiple": "(exit_price - next_open_fill - cost) / (next_open_fill - planned_stop_loss); no TP1 partial realization is included.",
+    "r_multiple": "sum(realized exit-leg P/L) / (entry fill - planned stop loss) / initial shares.",
     "win_loss": "A trade is a win only when its final recorded R multiple is greater than zero.",
     "drawdown": "The calibration artifact sums R multiples after sorting all ticker signals by date. It is not a capital-weighted portfolio equity curve and concurrent ticker trades remain interleaved.",
     "duplicate_or_overlapping_same_ticker_positions": 0,
@@ -59,23 +60,23 @@
       "trades": 72,
       "bootstrap_95_ci": {
         "win_rate": [
-          40.2778,
-          62.5
+          41.6667,
+          63.8889
         ],
         "expectancy_r": [
-          0.2148,
-          1.0743
+          0.1745,
+          0.9757
         ],
         "profit_factor": [
-          1.3832,
-          3.9717
+          1.3178,
+          3.7719
         ],
         "average_r": [
-          0.2148,
-          1.0743
+          0.1745,
+          0.9757
         ]
       },
-      "tp1_hits_with_non_positive_final_r": 1
+      "tp1_hits_with_non_positive_final_r": 0
     },
     "60-74": {
       "trades": 128,
@@ -85,16 +86,16 @@
           65.625
         ],
         "expectancy_r": [
-          -0.192,
-          0.1093
+          -0.1739,
+          0.0971
         ],
         "profit_factor": [
-          0.5192,
-          1.3968
+          0.4949,
+          1.4055
         ],
         "average_r": [
-          -0.192,
-          0.1093
+          -0.1739,
+          0.0971
         ]
       },
       "tp1_hits_with_non_positive_final_r": 18
@@ -103,23 +104,23 @@
       "trades": 100,
       "bootstrap_95_ci": {
         "win_rate": [
-          67.0,
-          84.0
+          65.0,
+          82.0
         ],
         "expectancy_r": [
-          -0.0584,
-          0.1229
+          -0.052,
+          0.0714
         ],
         "profit_factor": [
-          0.7554,
-          2.1428
+          0.6719,
+          2.0307
         ],
         "average_r": [
-          -0.0584,
-          0.1229
+          -0.052,
+          0.0714
         ]
       },
-      "tp1_hits_with_non_positive_final_r": 18
+      "tp1_hits_with_non_positive_final_r": 20
     },
     "90-100": {
       "trades": 0,
@@ -136,31 +137,144 @@
     "buy_and_hold_equal_weight": {
       "trades": 30,
       "win_rate": 76.6667,
-      "average_return_pct": 10.3223,
-      "profit_factor": 2.9524,
+      "average_return_pct": 10.3723,
+      "profit_factor": 2.9662,
       "definition": "One equal-weight long position per ticker from the first out-of-sample entry date to the final out-of-sample exit date."
     },
     "ema20_ema50_crossover": {
       "trades": 49,
       "win_rate": 40.8163,
-      "average_return_pct": 1.4167,
-      "profit_factor": 1.3444,
+      "average_return_pct": 1.4668,
+      "profit_factor": 1.3591,
       "definition": "Long on daily EMA20 crossing above EMA50; exit on a cross below or after 30 sessions. Uses the same cost formula."
     },
     "random_matched": {
       "trades": 300,
-      "win_rate": 58.6667,
-      "average_return_pct": 0.884,
-      "profit_factor": 1.4172,
+      "win_rate": 55.6667,
+      "average_return_pct": 0.8368,
+      "profit_factor": 1.3781,
       "definition": "Seeded random entries matched to each observed trade's ticker, calendar month, holding-time and total trade count; uses the same cost formula."
     },
     "all_valid_setups": {
       "trades": 300,
-      "win_rate": 62.0,
-      "average_return_pct": 0.5422,
-      "profit_factor": 1.1919,
-      "average_r": 0.1455,
+      "win_rate": 61.6667,
+      "average_return_pct": 0.3396,
+      "profit_factor": 1.1502,
+      "average_r": 0.1215,
       "definition": "Every valid plan generated in the out-of-sample ledger, with no confidence filter (all score bands)."
+    }
+  },
+  "previous_vs_corrected": {
+    "basis": "Previous values are the committed pre-partial-exit out-of-sample artifact; corrected values use the regenerated exit-leg ledger.",
+    "overall": {
+      "win_rate": {
+        "previous": 62.0,
+        "corrected": 61.67,
+        "change": -0.33
+      },
+      "average_return": {
+        "previous": 0.5422,
+        "corrected": 0.3396,
+        "change": -0.2026
+      },
+      "average_r_multiple": {
+        "previous": 0.1455,
+        "corrected": 0.1215,
+        "change": -0.024
+      },
+      "profit_factor": {
+        "previous": 1.4691,
+        "corrected": 1.449,
+        "change": -0.0201
+      },
+      "maximum_drawdown": {
+        "previous": -15.2058,
+        "corrected": -14.1255,
+        "change": 1.0803
+      }
+    },
+    "bands": {
+      "0-59": {
+        "win_rate": {
+          "previous": 51.39,
+          "corrected": 52.78,
+          "change": 1.39
+        },
+        "average_return": {
+          "previous": 2.9325,
+          "corrected": 2.5393,
+          "change": -0.3932
+        },
+        "average_r_multiple": {
+          "previous": 0.6346,
+          "corrected": 0.5631,
+          "change": -0.0715
+        },
+        "profit_factor": {
+          "previous": 2.3692,
+          "corrected": 2.2401,
+          "change": -0.1291
+        },
+        "maximum_drawdown": {
+          "previous": -5.3408,
+          "corrected": -5.2576,
+          "change": 0.0832
+        }
+      },
+      "60-74": {
+        "win_rate": {
+          "previous": 57.03,
+          "corrected": 57.03,
+          "change": 0.0
+        },
+        "average_return": {
+          "previous": -0.4793,
+          "corrected": -0.4866,
+          "change": -0.0073
+        },
+        "average_r_multiple": {
+          "previous": -0.0439,
+          "corrected": -0.0415,
+          "change": 0.0024
+        },
+        "profit_factor": {
+          "previous": 0.8683,
+          "corrected": 0.8575,
+          "change": -0.0108
+        },
+        "maximum_drawdown": {
+          "previous": -17.2594,
+          "corrected": -15.0853,
+          "change": 2.1741
+        }
+      },
+      "75-89": {
+        "win_rate": {
+          "previous": 76.0,
+          "corrected": 74.0,
+          "change": -2.0
+        },
+        "average_return": {
+          "previous": 0.1286,
+          "corrected": -0.1867,
+          "change": -0.3153
+        },
+        "average_r_multiple": {
+          "previous": 0.0359,
+          "corrected": 0.0122,
+          "change": -0.0237
+        },
+        "profit_factor": {
+          "previous": 1.2112,
+          "corrected": 1.1091,
+          "change": -0.1021
+        },
+        "maximum_drawdown": {
+          "previous": -3.1503,
+          "corrected": -2.1934,
+          "change": 0.9569
+        }
+      }
     }
   }
 }

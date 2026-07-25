@@ -2,56 +2,65 @@
 
 ## Executive verdict
 
-The reliable-data rerun completed with 30/30 validated liquid US symbols and SPY. The current score bands show **some ranking evidence in hit rates**: the 75–89 band reached TP1 93.94% of the time versus 64.29% for 60–74. However, returns and R multiples are not monotonic across bands, the 90–100 band produced zero out-of-sample observations, and the fixed current-ticker universe has survivorship bias. The score is not a probability and should not be presented as one.
+The full recalibration completed with 30/30 validated liquid US symbols and SPY. It uses the existing scoring, weights, thresholds, and next-open signal process unchanged. The execution accounting is now corrected: a TP1 hit realizes 50% of the position immediately and the remaining 50% retains the original stop until TP2, stop, or the 30-session time exit.
+
+The corrected results still do not justify treating confidence as a probability or changing decision thresholds. BUY has stronger hit rates than WATCH, but its out-of-sample expectancy is only **0.0122R** and its bootstrap interval includes zero. SKIP remains non-monotonic, and there are no STRONG BUY observations.
 
 ## Dataset and execution controls
 
-- Explicit range: 2023-07-16 through 2026-07-25 (end exclusive), daily OHLCV from Yahoo Finance.
-- Validation: every symbol and SPY had at least 600 valid candles (the cached dataset has 759), required OHLCV columns, chronological unique dates, positive numeric values, and a latest date before the exclusive end date.
-- Reliability: three individual download attempts per symbol, exact failures retained, CSV cache in `artifacts/calibration_dataset/`, and no audit unless at least 25 of 30 symbols validate. This run had no provider failures.
-- Split: chronological 70% calibration / 30% out-of-sample by signal date; never shuffled.
-- Signal/execution: indicators use only information available at the signal close; entry is the next daily open. One active trade per ticker is allowed. A simultaneous stop/target candle resolves to the stop first. Signals without a complete 30-session forward window are excluded. The simulation includes 5 bps slippage and 5 bps transaction cost on each side and a 30-day maximum hold.
+- Explicit range: 2023-07-16 through 2026-07-25 (end exclusive), daily Yahoo Finance OHLCV.
+- Validation: every symbol and SPY had at least 600 valid candles, required OHLCV columns, chronological unique dates, positive numeric values, and no incomplete final candle. There were no provider failures.
+- Split: chronological 70% calibration / 30% out-of-sample by generated trade; no random shuffle.
+- Signal timing: indicators and plans use data through the signal close; entry occurs at the next daily open.
+- Costs: every entry and exit leg applies 5 bps adverse slippage and 5 bps transaction cost.
+- Partial exits: TP1 closes 50% of initial shares. The original stop remains on the remaining shares. A candle touching both stop and target is resolved as stop first.
+- Trade ledger: `artifacts/ai_calibration_trades.csv` stores one row per realized exit leg, linked by `trade_id`.
 
-Artifacts: [results JSON](../artifacts/ai_calibration_results.json) and [trade CSV](../artifacts/ai_calibration_trades.csv).
+Artifacts: [results JSON](../artifacts/ai_calibration_results.json), [exit-leg ledger](../artifacts/ai_calibration_trades.csv), and [integrity results](../artifacts/backtest_integrity_results.json).
 
-## Out-of-sample results
+## Corrected out-of-sample results
 
-316 OOS trades were generated. TP1 hit rate was 67.41%, TP2 hit rate 48.10%, stop-loss rate 21.52%, win rate 62.03%, average return 0.6679%, average R 0.1853, profit factor 1.6597, maximum drawdown -15.2058R, and average holding time 15.13 days. These are simulation results under the stated rules, not a live-trading claim.
+The corrected out-of-sample sample contains 300 trades and 502 separately recorded exit legs. TP1 hit rate was **67.33%**, TP2 hit rate **50.33%**, stop-loss rate **25.00%**, win rate **61.67%**, average return **0.3396%**, average R and expectancy **0.1215R**, profit factor **1.4490**, maximum drawdown **-14.1255R**, and average holding time **15.63 days**.
 
-## Results per confidence band
+| Band | Trades | TP1 | TP2 | Stop | Win rate | Avg return | Avg R / expectancy | Profit factor | Maximum drawdown |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0–59 / SKIP | 72 | 36.11% | 29.17% | 41.67% | 52.78% | 2.5393% | 0.5631R | 2.2401 | -5.2576R |
+| 60–74 / WATCH | 128 | 64.06% | 43.75% | 27.34% | 57.03% | -0.4866% | -0.0415R | 0.8575 | -15.0853R |
+| 75–89 / BUY | 100 | 94.00% | 74.00% | 10.00% | 74.00% | -0.1867% | 0.0122R | 1.1091 | -2.1934R |
+| 90–100 / STRONG BUY | 0 | — | — | — | — | — | — | — | — |
 
-| Band | Trades | TP1 | TP2 | Stop | Win rate | Avg R | Profit factor |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 0–59 | 77 | 38.96% | 29.87% | 37.66% | 54.55% | 0.7117 | 2.6625 |
-| 60–74 (WATCH) | 140 | 64.29% | 42.86% | 21.43% | 58.57% | 0.0015 | 1.0052 |
-| 75–89 (BUY) | 99 | 93.94% | 69.70% | 9.09% | 72.73% | 0.0357 | 1.2198 |
-| 90–100 (STRONG BUY) | 0 | — | — | — | — | — | — |
+## What changed after partial-exit correction
 
-BUY clearly outperformed WATCH on TP1, TP2, stop-loss rate, and win rate. It only modestly outperformed WATCH on average R, and neither comparison validates the score as a probability. The 0–59 band’s unusually high average R conflicts with the hit-rate ordering; that is a warning that the present exit/risk construction and small cross-sectional sample need deeper review.
+The comparison uses the previous committed out-of-sample artifact against the corrected exit-leg rerun. Signal count and target/stop hit rates are unchanged; only execution, per-leg costs, realized P/L, and derived metrics changed.
 
-## Factor and regime usefulness
+| Scope | Metric | Previous | Corrected | Change |
+| --- | --- | ---: | ---: | ---: |
+| Overall | Win rate | 62.00% | 61.67% | -0.33 pp |
+| Overall | Average return | 0.5422% | 0.3396% | -0.2026 pp |
+| Overall | Average R / expectancy | 0.1455R | 0.1215R | -0.0240R |
+| Overall | Profit factor | 1.4691 | 1.4490 | -0.0201 |
+| Overall | Maximum drawdown | -15.2058R | -14.1255R | +1.0803R |
+| SKIP | Average R | 0.6346R | 0.5631R | -0.0715R |
+| WATCH | Average R | -0.0439R | -0.0415R | +0.0024R |
+| BUY | Average R | 0.0359R | 0.0122R | -0.0237R |
+| BUY | Win rate | 76.00% | 74.00% | -2.00 pp |
 
-The JSON artifact contains OOS performance grouped by every raw trend, momentum, volume, support/resistance, volatility, and relative-strength score, plus regime, ticker, and sector. At a high level, Risk-on observations (247 trades) had a 70.04% TP1 rate and 0.0915 average R; Defensive observations (69 trades) had a 57.97% TP1 rate and 0.5208 average R. These groups are not large enough to justify changing weights.
+The correction resolves the prior mismatch between a TP1 flag and realized P/L: all 202 OOS TP1 hits now have a TP1 exit leg. A TP1 trade can still finish non-positive when the target lies at or below the next-open fill or the remaining half loses enough at the original stop/time exit; that is now represented by the sum of the two legs rather than by ignoring TP1 proceeds.
 
-## Bias and leakage audit
+## Integrity findings
 
-- No look-ahead: history is sliced through the signal close; execution begins next open.
-- Same-candle ambiguity: stop first, conservatively.
-- Duplicate/overlap control: one open trade per ticker.
-- Fill realism: fixed explicit costs and slippage are included; liquidity, spread variation, and gaps are not fully modeled.
-- Data leakage: no future OHLCV is passed to indicator/plan construction.
-- Survivorship bias remains: the 30 symbols are a current liquid universe, not historical index constituents.
-- Incomplete latest candle: rejected by dataset validation.
-- Probability language remains uncalibrated: a score of 70 is not 70% probability.
+- All **999 / 999** ledger trades reproduce from the cached raw OHLCV data, with **0** replay failures.
+- All **300 / 300** corrected OOS trades reproduce exactly.
+- There are **0** duplicate or overlapping same-ticker positions and **0** incomplete positions counted.
+- The 300 OOS trades have 502 exit legs: 202 TP1 legs plus their remaining-position legs, and one-leg direct stop/time exits.
+- The reported maximum drawdown is still a sequential R-series drawdown, not a capital-constrained multi-ticker portfolio equity curve.
 
-## Are thresholds justified?
+## Limitations and threshold decision
 
-Not yet. The BUY threshold has better OOS hit-rate evidence than WATCH in this sample, but there are no STRONG BUY observations, returns are not monotonic, and no confidence intervals or external baseline were calculated. No thresholds, weights, or decision logic were changed.
+- No STRONG BUY trade exists in the out-of-sample period.
+- BUY’s 0.0122R expectancy is economically small and its 95% bootstrap interval is -0.0520R to 0.0714R.
+- WATCH’s 95% expectancy interval is -0.1739R to 0.0971R; neither WATCH nor BUY establishes a stable positive edge.
+- SKIP’s positive result is non-monotonic and not actionable evidence.
+- The 30-stock current universe retains survivorship bias; liquidity, spread variation, gap fills, and historical index membership remain unmodelled.
 
-## Remaining limitations and recommended next steps
-
-1. Preserve/version the cached raw dataset before treating results as a baseline.
-2. Add historical universe membership to address survivorship bias.
-3. Add confidence intervals, benchmark returns, and larger multi-regime samples before calibration changes.
-4. Investigate why the low-score band has high realized R despite worse target/stop hit rates.
-5. Keep score language ordinal until robust calibration demonstrates stable empirical probabilities.
+No scoring rules, confidence thresholds, factor weights, or signal-generation logic were changed.
