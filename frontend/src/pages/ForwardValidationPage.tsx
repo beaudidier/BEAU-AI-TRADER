@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import ForwardValidationTable from "../components/ForwardValidationTable";
 import Header from "../components/Header";
@@ -144,9 +145,14 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
           </section>
 
           {latestReplay && <section className="mt-5 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-5">
-            <p className="text-xs font-medium uppercase tracking-wide text-emerald-300">Latest production-path replay · {latestReplay.replay_date}</p>
-            <p className="mt-2 text-lg font-semibold text-white">{latestReplay.signals_found} valid signals found across {latestReplay.completed_symbols} completed symbols.</p>
-            <p className="mt-1 text-sm text-emerald-100/70">{latestReplay.completion_percentage.toFixed(2)}% coverage · {latestReplay.health.toUpperCase()}</p>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-emerald-300">Latest production-path replay · {latestReplay.replay_date}</p>
+                <p className="mt-2 text-lg font-semibold text-white">{latestReplay.signals_found} valid signals found across {latestReplay.completed_symbols} completed symbols.</p>
+                <p className="mt-1 text-sm text-emerald-100/70">{latestReplay.completion_percentage.toFixed(2)}% coverage · {latestReplay.health.toUpperCase()}</p>
+              </div>
+              <Link to="/latest-signals" className="rounded-lg border border-emerald-300/30 bg-emerald-300/10 px-4 py-2.5 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-300/20">Review all {latestReplay.signals_found} signals</Link>
+            </div>
           </section>}
 
           <section className="mt-5 grid gap-4 lg:grid-cols-2">

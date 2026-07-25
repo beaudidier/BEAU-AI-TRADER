@@ -1,0 +1,908 @@
+{
+  "all_checks_passed": true,
+  "checks": {
+    "all_chart_values_match_ledger": true,
+    "all_signal_checks_passed": true,
+    "all_signals_audited": true,
+    "expected_signal_count": true,
+    "no_duplicate_signals": true,
+    "no_missing_raw_data": true,
+    "no_recalculation_mismatches": true,
+    "no_signal_above_five_percent_risk": true
+  },
+  "classification": "latest_complete_sp500_production_path_replay",
+  "duplicate_signals": [],
+  "generated_at": "2026-07-25T15:53:47.822773+00:00",
+  "methodology": {
+    "execution": "Frozen strategy signal generated after the completed daily candle",
+    "look_ahead_data_used": false,
+    "notice": "Replay signal evidence only. Not a live-money recommendation. Paper-trading and forward-validation use only.",
+    "source": "Latest complete S&P 500 production-path replay"
+  },
+  "mismatches": [],
+  "missing_raw_data": [],
+  "replay_date": "2026-07-23",
+  "schema_version": 1,
+  "sectors": [
+    "Communication Services",
+    "Financials",
+    "Health Care",
+    "Real Estate",
+    "Utilities"
+  ],
+  "signal_count": 12,
+  "signals": [
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/aes.svg",
+        "public_url": "/latest-signals/charts/aes.svg",
+        "values": {
+          "ema20": 14.747448,
+          "ema50": 14.655011,
+          "pullback-entry": 14.747448,
+          "risk-percent": 2.178528,
+          "signal-date": "2026-07-23",
+          "signal-price": 14.83,
+          "stop": 14.433384,
+          "swing-low": 14.53,
+          "tp1": 15.397697,
+          "tp2": 16.040572
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "AES Corporation",
+      "confidence": 67.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-AES",
+      "levels": {
+        "ema20": 14.747448,
+        "ema50": 14.655011,
+        "pullback_entry": 14.747448,
+        "stop": 14.433384,
+        "swing_low": 14.53,
+        "tp1": 15.397697,
+        "tp2": 16.040572
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 0.064410 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 2.18% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/AES.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "febceb5c4de6e542f04f37cea62fc9e0c39bd29cb26db493fb0c9319d6eeeb35"
+      },
+      "risk_percent": 2.178528,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Utilities",
+      "signal_date": "2026-07-23",
+      "signal_price": 14.83,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "AES"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/brk_b.svg",
+        "public_url": "/latest-signals/charts/brk_b.svg",
+        "values": {
+          "ema20": 492.553089,
+          "ema50": 489.669426,
+          "pullback-entry": 492.553089,
+          "risk-percent": 3.335169,
+          "signal-date": "2026-07-23",
+          "signal-price": 490.850006,
+          "stop": 476.363673,
+          "swing-low": 486.059998,
+          "tp1": 525.670751,
+          "tp2": 558.542137
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "Berkshire Hathaway",
+      "confidence": 68.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-BRK-B",
+      "levels": {
+        "ema20": 492.553089,
+        "ema50": 489.669426,
+        "pullback_entry": 492.553089,
+        "stop": 476.363673,
+        "swing_low": 486.059998,
+        "tp1": 525.670751,
+        "tp2": 558.542137
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 6.464216 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 3.34% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/BRK-B.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "047839fdf7802692ac4b95e121d499a8a6fca288822802166dfb5174af7be99d"
+      },
+      "risk_percent": 3.335169,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Financials",
+      "signal_date": "2026-07-23",
+      "signal_price": 490.850006,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "BRK-B"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/cpt.svg",
+        "public_url": "/latest-signals/charts/cpt.svg",
+        "values": {
+          "ema20": 112.937684,
+          "ema50": 110.696266,
+          "pullback-entry": 112.937684,
+          "risk-percent": 4.967461,
+          "signal-date": "2026-07-23",
+          "signal-price": 112.839996,
+          "stop": 107.381213,
+          "swing-low": 110.477671,
+          "tp1": 124.220032,
+          "tp2": 135.445912
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "Camden Property Trust",
+      "confidence": 69.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-CPT",
+      "levels": {
+        "ema20": 112.937684,
+        "ema50": 110.696266,
+        "pullback_entry": 112.937684,
+        "stop": 107.381213,
+        "swing_low": 110.477671,
+        "tp1": 124.220032,
+        "tp2": 135.445912
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 2.064305 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 4.97% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/CPT.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "ea23478bf8e7a72d1c0aa1bf6b19a74e7df1085e3e510eec1f039314b9a6dbf2"
+      },
+      "risk_percent": 4.967461,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Real Estate",
+      "signal_date": "2026-07-23",
+      "signal_price": 112.839996,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "CPT"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/duk.svg",
+        "public_url": "/latest-signals/charts/duk.svg",
+        "values": {
+          "ema20": 126.370394,
+          "ema50": 125.786988,
+          "pullback-entry": 126.370394,
+          "risk-percent": 4.604093,
+          "signal-date": "2026-07-23",
+          "signal-price": 129.259995,
+          "stop": 120.612459,
+          "swing-low": 124.099998,
+          "tp1": 138.075819,
+          "tp2": 149.718059
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "Duke Energy",
+      "confidence": 73.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-DUK",
+      "levels": {
+        "ema20": 126.370394,
+        "ema50": 125.786988,
+        "pullback_entry": 126.370394,
+        "stop": 120.612459,
+        "swing_low": 124.099998,
+        "tp1": 138.075819,
+        "tp2": 149.718059
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 2.325026 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 4.60% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/DUK.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "2cba0b0a88e49a8aec32c6916c85372d60cb13c12189d7d281c9a1c9dc1c12e9"
+      },
+      "risk_percent": 4.604093,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Utilities",
+      "signal_date": "2026-07-23",
+      "signal_price": 129.259995,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "DUK"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/ea.svg",
+        "public_url": "/latest-signals/charts/ea.svg",
+        "values": {
+          "ema20": 206.845938,
+          "ema50": 204.838461,
+          "pullback-entry": 206.845938,
+          "risk-percent": 1.973898,
+          "signal-date": "2026-07-23",
+          "signal-price": 209.0,
+          "stop": 202.864391,
+          "swing-low": 204.119995,
+          "tp1": 215.119299,
+          "tp2": 223.289237
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "Electronic Arts",
+      "confidence": 64.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-EA",
+      "levels": {
+        "ema20": 206.845938,
+        "ema50": 204.838461,
+        "pullback_entry": 206.845938,
+        "stop": 202.864391,
+        "swing_low": 204.119995,
+        "tp1": 215.119299,
+        "tp2": 223.289237
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 0.837069 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 1.97% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/EA.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "7c88bb808ead049f9d36f073042bd2bbb65335b2a6d2ce2e6dbc3156d497cda8"
+      },
+      "risk_percent": 1.973898,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Communication Services",
+      "signal_date": "2026-07-23",
+      "signal_price": 209.0,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "EA"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/ed.svg",
+        "public_url": "/latest-signals/charts/ed.svg",
+        "values": {
+          "ema20": 111.073387,
+          "ema50": 109.753088,
+          "pullback-entry": 111.073387,
+          "risk-percent": 4.486733,
+          "signal-date": "2026-07-23",
+          "signal-price": 112.790001,
+          "stop": 106.142866,
+          "swing-low": 109.410004,
+          "tp1": 121.101041,
+          "tp2": 131.073158
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "Consolidated Edison",
+      "confidence": 76.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-ED",
+      "levels": {
+        "ema20": 111.073387,
+        "ema50": 109.753088,
+        "pullback_entry": 111.073387,
+        "stop": 106.142866,
+        "swing_low": 109.410004,
+        "tp1": 121.101041,
+        "tp2": 131.073158
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 2.178092 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 4.49% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/ED.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "05cdb0de7b83045067ad0dc77a883ebd0de94b90fc8e09bc1fd821bfdab11dbb"
+      },
+      "risk_percent": 4.486733,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Utilities",
+      "signal_date": "2026-07-23",
+      "signal_price": 112.790001,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "ED"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/evrg.svg",
+        "public_url": "/latest-signals/charts/evrg.svg",
+        "values": {
+          "ema20": 85.707968,
+          "ema50": 84.411554,
+          "pullback-entry": 85.707968,
+          "risk-percent": 4.152262,
+          "signal-date": "2026-07-23",
+          "signal-price": 86.650002,
+          "stop": 82.190223,
+          "swing-low": 84.459999,
+          "tp1": 92.872021,
+          "tp2": 99.993219
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "Evergy",
+      "confidence": 71.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-EVRG",
+      "levels": {
+        "ema20": 85.707968,
+        "ema50": 84.411554,
+        "pullback_entry": 85.707968,
+        "stop": 82.190223,
+        "swing_low": 84.459999,
+        "tp1": 92.872021,
+        "tp2": 99.993219
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 1.513184 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 4.15% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/EVRG.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "c845bd327f1521560c490cec251b2ad01a35850fa3d150385ca223ca0ffa434f"
+      },
+      "risk_percent": 4.152262,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Utilities",
+      "signal_date": "2026-07-23",
+      "signal_price": 86.650002,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "EVRG"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/frt.svg",
+        "public_url": "/latest-signals/charts/frt.svg",
+        "values": {
+          "ema20": 123.214884,
+          "ema50": 120.177425,
+          "pullback-entry": 123.214884,
+          "risk-percent": 4.959834,
+          "signal-date": "2026-07-23",
+          "signal-price": 124.830002,
+          "stop": 117.162182,
+          "swing-low": 119.970001,
+          "tp1": 135.505108,
+          "tp2": 147.733726
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "Federal Realty Investment Trust",
+      "confidence": 79.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-FRT",
+      "levels": {
+        "ema20": 123.214884,
+        "ema50": 120.177425,
+        "pullback_entry": 123.214884,
+        "stop": 117.162182,
+        "swing_low": 119.970001,
+        "tp1": 135.505108,
+        "tp2": 147.733726
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 1.871879 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 4.96% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/FRT.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "56bee4be97e3472d50d3fec6130942dadd6f1e6abe59a7e54b1429bf041526c5"
+      },
+      "risk_percent": 4.959834,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Real Estate",
+      "signal_date": "2026-07-23",
+      "signal_price": 124.830002,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "FRT"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/nee.svg",
+        "public_url": "/latest-signals/charts/nee.svg",
+        "values": {
+          "ema20": 88.311815,
+          "ema50": 88.358732,
+          "pullback-entry": 88.311815,
+          "risk-percent": 4.97426,
+          "signal-date": "2026-07-23",
+          "signal-price": 89.790001,
+          "stop": 83.960915,
+          "swing-low": 86.32,
+          "tp1": 97.146084,
+          "tp2": 105.936198
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "NextEra Energy",
+      "confidence": 68.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-NEE",
+      "levels": {
+        "ema20": 88.311815,
+        "ema50": 88.358732,
+        "pullback_entry": 88.311815,
+        "stop": 83.960915,
+        "swing_low": 86.32,
+        "tp1": 97.146084,
+        "tp2": 105.936198
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 1.572723 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 4.97% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/NEE.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "9e9b3a4b2a26f764ed7b4c126dcd7afa4017f34ee78fbedaff8fd799c5700112"
+      },
+      "risk_percent": 4.97426,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Utilities",
+      "signal_date": "2026-07-23",
+      "signal_price": 89.790001,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "NEE"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/pnw.svg",
+        "public_url": "/latest-signals/charts/pnw.svg",
+        "values": {
+          "ema20": 106.553209,
+          "ema50": 104.668177,
+          "pullback-entry": 106.553209,
+          "risk-percent": 4.714179,
+          "signal-date": "2026-07-23",
+          "signal-price": 105.43,
+          "stop": 101.580865,
+          "swing-low": 104.709999,
+          "tp1": 116.657727,
+          "tp2": 126.708969
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "Pinnacle West Capital",
+      "confidence": 80.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-PNW",
+      "levels": {
+        "ema20": 106.553209,
+        "ema50": 104.668177,
+        "pullback_entry": 106.553209,
+        "stop": 101.580865,
+        "swing_low": 104.709999,
+        "tp1": 116.657727,
+        "tp2": 126.708969
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 2.086089 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 4.71% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/PNW.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "b905c9579ad471425dcf7fa2a0c2531e825aec9a784c11efb98fe57993fe1dc3"
+      },
+      "risk_percent": 4.714179,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Utilities",
+      "signal_date": "2026-07-23",
+      "signal_price": 105.43,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "PNW"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/reg.svg",
+        "public_url": "/latest-signals/charts/reg.svg",
+        "values": {
+          "ema20": 80.709508,
+          "ema50": 79.358593,
+          "pullback-entry": 80.709508,
+          "risk-percent": 4.859015,
+          "signal-date": "2026-07-23",
+          "signal-price": 81.18,
+          "stop": 76.826215,
+          "swing-low": 78.839996,
+          "tp1": 88.59716,
+          "tp2": 96.444457
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "Regency Centers",
+      "confidence": 79.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-REG",
+      "levels": {
+        "ema20": 80.709508,
+        "ema50": 79.358593,
+        "pullback_entry": 80.709508,
+        "stop": 76.826215,
+        "swing_low": 78.839996,
+        "tp1": 88.59716,
+        "tp2": 96.444457
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 1.342521 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 4.86% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/REG.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "8a1d3d1d2b2a7a6167fd5926c99c0225de53fe983ae3d313f5ca86f01c1fcb35"
+      },
+      "risk_percent": 4.859015,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Real Estate",
+      "signal_date": "2026-07-23",
+      "signal_price": 81.18,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "REG"
+    },
+    {
+      "chart": {
+        "file": "frontend/public/latest-signals/charts/tech.svg",
+        "public_url": "/latest-signals/charts/tech.svg",
+        "values": {
+          "ema20": 69.102775,
+          "ema50": 63.158007,
+          "pullback-entry": 69.102775,
+          "risk-percent": 0.963605,
+          "signal-date": "2026-07-23",
+          "signal-price": 71.769997,
+          "stop": 68.471115,
+          "swing-low": 70.080002,
+          "tp1": 70.469748,
+          "tp2": 71.802169
+        },
+        "window_end": "2026-07-23",
+        "window_start": "2026-04-14"
+      },
+      "checks": {
+        "chart_values_match_ledger": true,
+        "ema20_matches_pullback_entry": true,
+        "ema20_matches_replay_ledger": true,
+        "no_lookahead_data": true,
+        "qualification_reasons_present": true,
+        "raw_signal_candle_present": true,
+        "risk_percent_matches_replay_ledger": true,
+        "risk_within_five_percent": true,
+        "rr_target_1_is_two": true,
+        "rr_target_2_is_four": true,
+        "signal_price_matches_close": true,
+        "stored_signal_matches_recalculation": true,
+        "swing_low_matches_raw_20_day_low": true
+      },
+      "company_name": "Bio-Techne",
+      "confidence": 70.0,
+      "data_timestamp": "2026-07-23T00:00:00",
+      "id": "LS-2026-07-23-TECH",
+      "levels": {
+        "ema20": 69.102775,
+        "ema50": 63.158007,
+        "pullback_entry": 69.102775,
+        "stop": 68.471115,
+        "swing_low": 70.080002,
+        "tp1": 70.469748,
+        "tp2": 71.802169
+      },
+      "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
+      "market_regime_score": 90.0,
+      "qualification_reasons": [
+        "Market-regime score 90.00 met the frozen minimum of 65.",
+        "ATR 1.072591 and the 20-session swing low produced a valid stop.",
+        "Per-share risk 0.96% stayed within the frozen 5% maximum."
+      ],
+      "raw_ohlcv": {
+        "file": "artifacts/forward_validation_cache/2026-07-23/TECH.csv",
+        "first_date": "2024-07-25",
+        "last_date": "2026-07-23",
+        "rows": 500,
+        "sha256": "d5aef2d4407f897c0673ee540089019610fd0f5f1480a1d83c6bbd4dc1789bb4"
+      },
+      "risk_percent": 0.963605,
+      "risk_reward_target_1": 2.0,
+      "risk_reward_target_2": 4.0,
+      "sector": "Health Care",
+      "signal_date": "2026-07-23",
+      "signal_price": 71.769997,
+      "signal_timestamp": "2026-07-23T20:15:00+00:00",
+      "strategy_version": "regime-gated-pullback-v1.0.0",
+      "ticker": "TECH"
+    }
+  ],
+  "strategy": {
+    "asset_class": "US stocks",
+    "name": "Regime-Gated Pullback",
+    "status": "FORWARD_VALIDATION",
+    "version": "regime-gated-pullback-v1.0.0"
+  },
+  "tickers": [
+    "AES",
+    "BRK-B",
+    "CPT",
+    "DUK",
+    "EA",
+    "ED",
+    "EVRG",
+    "FRT",
+    "NEE",
+    "PNW",
+    "REG",
+    "TECH"
+  ]
+}
