@@ -1,9 +1,10 @@
-export type AppPage = "dashboard" | "backtesting" | "paper-trading" | "learning" | "validation";
+export type AppPage = "dashboard" | "backtesting" | "paper-trading" | "forward-validation" | "learning" | "validation";
 
 const navigationItems: Array<[string, string, AppPage]> = [
   ["▦", "Dashboard", "dashboard"],
   ["◫", "Backtesting", "backtesting"],
   ["◉", "Paper trading", "paper-trading"],
+  ["↗", "Forward validation", "forward-validation"],
   ["◌", "Learning", "learning"],
   ["✓", "AI Accuracy", "validation"],
 ];

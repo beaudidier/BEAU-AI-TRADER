@@ -27,4 +27,7 @@ export const userApi = {
   paperTradeClosePreview: (id: string) => authenticatedFetch(`/me/paper-trading/${id}/close-preview`),
   learningDashboard: (ticker?: string) => authenticatedFetch(`/me/learning/dashboard${ticker ? `?ticker=${encodeURIComponent(ticker)}` : ""}`),
   backtests: () => authenticatedFetch("/me/backtests"),
+  forwardValidationDashboard: () => authenticatedFetch("/me/forward-validation/dashboard"),
+  scanForwardValidation: () => authenticatedFetch("/me/forward-validation/scan", { method: "POST" }),
+  refreshForwardValidation: () => authenticatedFetch("/me/forward-validation/refresh", { method: "POST" }),
 };
