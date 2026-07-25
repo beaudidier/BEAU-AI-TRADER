@@ -4,10 +4,12 @@ from fastapi import Header, HTTPException, status
 try:
     import jwt
     from supabase import Client, create_client
+    from supabase_auth.errors import AuthApiError
 except ImportError:
     jwt = None
     Client = object
     create_client = None
+    AuthApiError = ValueError
 
 from .config import get_settings
 
@@ -56,7 +58,7 @@ def get_current_user(authorization: str | None = Header(default=None)) -> Curren
         if not user:
             raise ValueError("Supabase did not return a user")
         return CurrentUser(id=user.id, email=user.email, access_token=access_token)
-    except ((jwt.PyJWTError if jwt else ValueError), ValueError) as error:
+    except ((jwt.PyJWTError if jwt else ValueError), ValueError, AuthApiError) as error:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired access token") from error
 
 

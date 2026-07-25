@@ -1,9 +1,12 @@
+from threading import Lock
 from typing import Any
 
 import pandas as pd
 import yfinance as yf
 
 from .provider import MarketDataProvider
+
+_DOWNLOAD_LOCK = Lock()
 
 
 class YahooFinanceProvider(MarketDataProvider):
@@ -16,14 +19,25 @@ class YahooFinanceProvider(MarketDataProvider):
                 options.update({"start": start, "end": end})
             else:
                 options["period"] = period
-            data = yf.download(**options)
+            # yfinance mutates shared download state, so parallel dashboard
+            # requests can otherwise mix columns from unrelated tickers.
+            with _DOWNLOAD_LOCK:
+                data = yf.download(**options)
             if data.empty:
                 return None
             if isinstance(data.columns, pd.MultiIndex):
                 data.columns = data.columns.get_level_values(0)
-            for column in ["Open", "High", "Low", "Close", "Volume"]:
+            if data.columns.has_duplicates:
+                return None
+            required_columns = ["Open", "High", "Low", "Close", "Volume"]
+            for column in required_columns:
                 if column in data.columns:
                     data[column] = data[column].squeeze()
+            if any(column not in data.columns for column in required_columns):
+                return None
+            data = data.dropna(subset=required_columns)
+            if data.empty:
+                return None
             return data
         except Exception as error:
             print(f"Fout bij ophalen van {ticker}: {error}")

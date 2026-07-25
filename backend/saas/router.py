@@ -65,7 +65,13 @@ class PaperTradeOpen(BaseModel):
 
 
 def _data(response): return response.data or []
-def _one(response): return response.data or {}
+def _one(response):
+    if response is None:
+        return {}
+    data = response.data
+    if isinstance(data, list):
+        return data[0] if data else {}
+    return data or {}
 def _client(user: CurrentUser): return get_user_client(user)
 
 

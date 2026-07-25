@@ -1,10 +1,15 @@
 import unittest
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock
+from time import sleep
+from unittest.mock import patch
 
 import pandas as pd
 
 from data import get_stock_data
 from providers import get_market_data_provider, set_market_data_provider
 from providers.provider import MarketDataProvider
+from providers.yahoo_provider import YahooFinanceProvider
 
 
 class FakeProvider(MarketDataProvider):
@@ -23,6 +28,64 @@ class ProviderAbstractionTests(unittest.TestCase):
             self.assertEqual(float(result["Close"].iloc[-1]), 1.0)
         finally:
             set_market_data_provider(original)
+
+    @patch("providers.yahoo_provider.yf.download")
+    def test_yahoo_provider_drops_incomplete_market_rows(self, download):
+        download.return_value = pd.DataFrame(
+            {
+                "Open": [100.0, float("nan")],
+                "High": [102.0, float("nan")],
+                "Low": [99.0, float("nan")],
+                "Close": [101.0, float("nan")],
+                "Volume": [1_000, 2_000],
+            },
+            index=pd.to_datetime(["2026-07-23", "2026-07-24"]),
+        )
+
+        result = YahooFinanceProvider().get_history("TEST")
+
+        self.assertIsNotNone(result)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result.index[-1], pd.Timestamp("2026-07-23"))
+        self.assertEqual(float(result["Close"].iloc[-1]), 101.0)
+
+    @patch("providers.yahoo_provider.yf.download")
+    def test_yahoo_provider_rejects_missing_ohlcv_columns(self, download):
+        download.return_value = pd.DataFrame({"Close": [101.0]})
+
+        self.assertIsNone(YahooFinanceProvider().get_history("TEST"))
+
+    @patch("providers.yahoo_provider.yf.download")
+    def test_yahoo_downloads_are_serialized(self, download):
+        state_lock = Lock()
+        active = 0
+        maximum_active = 0
+
+        def fake_download(**_options):
+            nonlocal active, maximum_active
+            with state_lock:
+                active += 1
+                maximum_active = max(maximum_active, active)
+            sleep(0.01)
+            with state_lock:
+                active -= 1
+            return pd.DataFrame(
+                {
+                    "Open": [100.0],
+                    "High": [102.0],
+                    "Low": [99.0],
+                    "Close": [101.0],
+                    "Volume": [1_000],
+                }
+            )
+
+        download.side_effect = fake_download
+        provider = YahooFinanceProvider()
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            results = list(executor.map(provider.get_history, ["A", "B", "C", "D"]))
+
+        self.assertTrue(all(result is not None for result in results))
+        self.assertEqual(maximum_active, 1)
 
 
 if __name__ == "__main__":
