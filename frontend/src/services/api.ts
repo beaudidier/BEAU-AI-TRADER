@@ -1,9 +1,16 @@
-import type { BacktestRequest, BacktestResult, BacktestTrade, CoachAnalysis, DailyBriefing, InstitutionalAnalysis, ScanJob, Stock, StockChartData, Timeframe, TradePlan, ValidationDashboard } from "../types/stock";
+import type { BacktestRequest, BacktestResult, BacktestTrade, CoachAnalysis, DailyBriefing, InstitutionalAnalysis, ScanJob, Stock, StockChartData, Timeframe, TradePlan, TradingStrategy, ValidationDashboard } from "../types/stock";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
-export async function scanMarket(): Promise<Stock[]> {
-  const response = await fetch(`${API_BASE_URL}/scan`);
+export async function getStrategies(): Promise<TradingStrategy[]> {
+  const response = await fetch(`${API_BASE_URL}/strategies`);
+  if (!response.ok) throw new Error("Unable to load trading strategies.");
+  return response.json() as Promise<TradingStrategy[]>;
+}
+
+export async function scanMarket(strategy = "swing_trading"): Promise<Stock[]> {
+  const parameters = new URLSearchParams({ strategy });
+  const response = await fetch(`${API_BASE_URL}/scan?${parameters}`);
 
   if (!response.ok) {
     throw new Error("The market scanner is temporarily unavailable.");

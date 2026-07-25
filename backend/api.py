@@ -27,6 +27,7 @@ from briefing import build_daily_briefing
 from universe.universe_registry import scan_jobs
 from validation.validation_engine import validation_store
 from providers import get_market_data_provider
+from strategies import StrategyNotFoundError, StrategyUnavailableError, strategy_registry
 
 _previous_debug_scores: dict[str, dict] = {}
 
@@ -85,13 +86,29 @@ def root():
     return {"status": "running"}
 
 
+@app.get("/strategies")
+def list_strategies():
+    return strategy_registry.serialize()
+
+
 @app.get("/briefing")
 def daily_briefing():
     return build_daily_briefing(WATCHLIST, get_stock_data)
 
 
 @app.get("/scan")
-def scan(market: str = Query(default="stocks"), universe: str = Query(default="demo")):
+def scan(
+    market: str = Query(default="stocks"),
+    universe: str = Query(default="demo"),
+    strategy: str | None = Query(default=None),
+):
+    if strategy is not None:
+        try:
+            strategy_registry.require_usable(strategy)
+        except StrategyNotFoundError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except StrategyUnavailableError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
 
     if market != "stocks" or universe != "demo":
         try:

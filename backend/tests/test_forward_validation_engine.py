@@ -22,7 +22,7 @@ def _signal(data_timestamp: str) -> dict:
 
 
 class ForwardValidationEngineTests(unittest.TestCase):
-    @patch("forward_validation.engine.calculate_institutional_analysis")
+    @patch("strategies.swing_strategy.calculate_institutional_analysis")
     def test_builds_exact_frozen_signal_snapshot(self, analysis):
         analysis.return_value = {"overall_score": 82, "engines": {"market_regime": {"score": 65, "explanation": "Risk-on"}}}
         signal = build_live_signal("test", _history(), _history(), signal_timestamp="2026-01-01T00:00:00+00:00")
@@ -31,7 +31,7 @@ class ForwardValidationEngineTests(unittest.TestCase):
         self.assertEqual(signal["confidence"], 82)
         self.assertGreater(signal["target_2"], signal["target_1"])
 
-    @patch("forward_validation.engine.calculate_institutional_analysis")
+    @patch("strategies.swing_strategy.calculate_institutional_analysis")
     def test_rejects_defensive_market(self, analysis):
         analysis.return_value = {"overall_score": 82, "engines": {"market_regime": {"score": 35, "explanation": "Defensive"}}}
         self.assertIsNone(build_live_signal("TEST", _history(), _history()))

@@ -12,6 +12,23 @@ export type Stock = {
   reasons: string[];
 };
 
+export type StrategyStatus = "ACTIVE" | "FORWARD_VALIDATION" | "COMING_SOON" | "DISABLED";
+
+export type TradingStrategy = {
+  id: "day_trading" | "swing_trading" | "long_term" | "crypto";
+  name: string;
+  status: StrategyStatus;
+  asset_classes: string[];
+  supported_timeframes: string[];
+  required_data: string[];
+  scanner_rules: string[];
+  entry_rules: string[];
+  stop_rules: string[];
+  target_rules: string[];
+  holding_period: string;
+  risk_limits: string[];
+};
+
 export type ScanJob = {
   job_id: string;
   status: "queued" | "running" | "completed";

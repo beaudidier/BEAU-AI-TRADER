@@ -15,7 +15,8 @@ from engines.institutional_engine import calculate_institutional_analysis
 from learning.learning_engine import build_learning_context, build_learning_dashboard, build_learning_trade_update
 from config import WATCHLIST
 from forward_validation import build_dashboard as build_forward_validation_dashboard
-from forward_validation import build_live_signal, evaluate_signal
+from forward_validation import evaluate_signal
+from strategies import strategy_registry
 
 
 router = APIRouter(prefix="/me", tags=["SaaS user data"])
@@ -259,13 +260,14 @@ def scan_forward_validation_signals(user: CurrentUser = Depends(get_current_user
     benchmark = _completed_daily_history("SPY")
     if benchmark is None or benchmark.empty:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Market conditions are unavailable right now.")
+    strategy = strategy_registry.require_usable("swing_trading")
     created, duplicates, disallowed, unavailable = [], [], [], []
     for ticker in WATCHLIST:
         try:
             history = _completed_daily_history(ticker)
             if history is None or history.empty:
                 unavailable.append(ticker); continue
-            signal = build_live_signal(ticker, history, benchmark)
+            signal = strategy.scan(ticker=ticker, history=history, benchmark=benchmark)
             if signal is None:
                 disallowed.append(ticker); continue
             existing = _one(client.table("forward_validation_signals").select("*").eq("user_id", user.id).eq("ticker", ticker).eq("strategy_version", signal["strategy_version"]).eq("data_timestamp", signal["data_timestamp"]).maybe_single().execute())
