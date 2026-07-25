@@ -1,0 +1,884 @@
+{
+  "audit_status": "completed",
+  "parameters": {
+    "holdout_start": "2016-07-01",
+    "holdout_end": "2021-07-10",
+    "relationship_to_prior_research": "non-overlapping retrospective window before the 2021-07-12 to 2026-07-23 research data",
+    "universe_size": 108,
+    "frozen_strategy": {
+      "regime_filter": "F. Existing market-regime engine",
+      "entry_wait": 3,
+      "stop_atr": 1.5,
+      "target_1_r": 2.0,
+      "target_2_r": 4.0,
+      "tp1_portion": 0.5
+    },
+    "execution": "same costs, slippage, partial exits, stop-first handling, and no overlapping ticker positions"
+  },
+  "provider_failures": {
+    "XEL": "attempt 1: invalid OHLCV values; attempt 2: invalid OHLCV values; attempt 3: invalid OHLCV values",
+    "DOW": "attempt 1: only 582 candles; need 1100; attempt 2: only 582 candles; need 1100; attempt 3: only 582 candles; need 1100"
+  },
+  "candidate_signals": 111348,
+  "selected_regime_gated_pullback": {
+    "eligible_signals": 89208,
+    "accepted_trades": 835,
+    "rejected_trades": 110513,
+    "trades_per_year": 318.69,
+    "expectancy": 0.3042,
+    "profit_factor": 1.7644,
+    "win_rate": 55.93,
+    "average_r": 0.3042,
+    "maximum_drawdown": -10.4094,
+    "tp1_rate": 21.44,
+    "tp2_rate": 1.08,
+    "stop_rate": 36.89,
+    "expectancy_95_ci": [
+      0.2216,
+      0.3875
+    ],
+    "by_sector": {
+      "Communication Services": {
+        "eligible_signals": 0,
+        "accepted_trades": 62,
+        "rejected_trades": 10248,
+        "trades_per_year": 17.12,
+        "expectancy": 0.0643,
+        "profit_factor": 1.1394,
+        "win_rate": 46.77,
+        "average_r": 0.0643,
+        "maximum_drawdown": -4.7207,
+        "tp1_rate": 19.35,
+        "tp2_rate": 0.0,
+        "stop_rate": 38.71,
+        "expectancy_95_ci": [
+          -0.2069,
+          0.3468
+        ]
+      },
+      "Consumer Discretionary": {
+        "eligible_signals": 0,
+        "accepted_trades": 64,
+        "rejected_trades": 10246,
+        "trades_per_year": 64.0,
+        "expectancy": 0.2823,
+        "profit_factor": 1.6458,
+        "win_rate": 50.0,
+        "average_r": 0.2823,
+        "maximum_drawdown": -4.7593,
+        "tp1_rate": 26.56,
+        "tp2_rate": 1.56,
+        "stop_rate": 42.19,
+        "expectancy_95_ci": [
+          -0.0257,
+          0.5735
+        ]
+      },
+      "Consumer Staples": {
+        "eligible_signals": 0,
+        "accepted_trades": 135,
+        "rejected_trades": 10175,
+        "trades_per_year": 33.59,
+        "expectancy": 0.2424,
+        "profit_factor": 1.6432,
+        "win_rate": 57.78,
+        "average_r": 0.2424,
+        "maximum_drawdown": -5.9679,
+        "tp1_rate": 15.56,
+        "tp2_rate": 0.0,
+        "stop_rate": 35.56,
+        "expectancy_95_ci": [
+          0.0544,
+          0.4325
+        ]
+      },
+      "Energy": {
+        "eligible_signals": 0,
+        "accepted_trades": 39,
+        "rejected_trades": 10271,
+        "trades_per_year": 14.99,
+        "expectancy": 0.3507,
+        "profit_factor": 1.8911,
+        "win_rate": 53.85,
+        "average_r": 0.3507,
+        "maximum_drawdown": -2.913,
+        "tp1_rate": 23.08,
+        "tp2_rate": 0.0,
+        "stop_rate": 33.33,
+        "expectancy_95_ci": [
+          -0.0666,
+          0.7569
+        ]
+      },
+      "Financials": {
+        "eligible_signals": 0,
+        "accepted_trades": 68,
+        "rejected_trades": 10242,
+        "trades_per_year": 18.97,
+        "expectancy": 0.6094,
+        "profit_factor": 2.5962,
+        "win_rate": 58.82,
+        "average_r": 0.6094,
+        "maximum_drawdown": -3.7511,
+        "tp1_rate": 35.29,
+        "tp2_rate": 2.94,
+        "stop_rate": 32.35,
+        "expectancy_95_ci": [
+          0.2808,
+          0.9359
+        ]
+      },
+      "Health Care": {
+        "eligible_signals": 0,
+        "accepted_trades": 82,
+        "rejected_trades": 10228,
+        "trades_per_year": 29.98,
+        "expectancy": 0.1901,
+        "profit_factor": 1.4314,
+        "win_rate": 51.22,
+        "average_r": 0.1901,
+        "maximum_drawdown": -7.4022,
+        "tp1_rate": 19.51,
+        "tp2_rate": 1.22,
+        "stop_rate": 39.02,
+        "expectancy_95_ci": [
+          -0.0674,
+          0.4504
+        ]
+      },
+      "Industrials": {
+        "eligible_signals": 0,
+        "accepted_trades": 70,
+        "rejected_trades": 10240,
+        "trades_per_year": 19.59,
+        "expectancy": 0.4229,
+        "profit_factor": 2.0586,
+        "win_rate": 60.0,
+        "average_r": 0.4229,
+        "maximum_drawdown": -5.0766,
+        "tp1_rate": 30.0,
+        "tp2_rate": 1.43,
+        "stop_rate": 42.86,
+        "expectancy_95_ci": [
+          0.1234,
+          0.7297
+        ]
+      },
+      "Materials": {
+        "eligible_signals": 0,
+        "accepted_trades": 53,
+        "rejected_trades": 9226,
+        "trades_per_year": 14.25,
+        "expectancy": 0.5389,
+        "profit_factor": 2.7143,
+        "win_rate": 66.04,
+        "average_r": 0.5389,
+        "maximum_drawdown": -2.4157,
+        "tp1_rate": 28.3,
+        "tp2_rate": 1.89,
+        "stop_rate": 28.3,
+        "expectancy_95_ci": [
+          0.2097,
+          0.8788
+        ]
+      },
+      "Real Estate": {
+        "eligible_signals": 0,
+        "accepted_trades": 90,
+        "rejected_trades": 10220,
+        "trades_per_year": 32.84,
+        "expectancy": 0.2196,
+        "profit_factor": 1.4986,
+        "win_rate": 52.22,
+        "average_r": 0.2196,
+        "maximum_drawdown": -5.3807,
+        "tp1_rate": 20.0,
+        "tp2_rate": 0.0,
+        "stop_rate": 42.22,
+        "expectancy_95_ci": [
+          -0.0228,
+          0.4768
+        ]
+      },
+      "Technology": {
+        "eligible_signals": 0,
+        "accepted_trades": 51,
+        "rejected_trades": 10259,
+        "trades_per_year": 15.56,
+        "expectancy": 0.478,
+        "profit_factor": 2.3742,
+        "win_rate": 58.82,
+        "average_r": 0.478,
+        "maximum_drawdown": -5.1656,
+        "tp1_rate": 25.49,
+        "tp2_rate": 5.88,
+        "stop_rate": 35.29,
+        "expectancy_95_ci": [
+          0.116,
+          0.8449
+        ]
+      },
+      "Utilities": {
+        "eligible_signals": 0,
+        "accepted_trades": 121,
+        "rejected_trades": 9158,
+        "trades_per_year": 29.8,
+        "expectancy": 0.2167,
+        "profit_factor": 1.5778,
+        "win_rate": 58.68,
+        "average_r": 0.2167,
+        "maximum_drawdown": -3.65,
+        "tp1_rate": 10.74,
+        "tp2_rate": 0.0,
+        "stop_rate": 33.88,
+        "expectancy_95_ci": [
+          0.0241,
+          0.4122
+        ]
+      }
+    },
+    "by_market_regime": {
+      "Bear": {
+        "eligible_signals": 0,
+        "accepted_trades": 1,
+        "rejected_trades": 7235,
+        "trades_per_year": 1.0,
+        "expectancy": -1.0298,
+        "profit_factor": 0.0,
+        "win_rate": 0.0,
+        "average_r": -1.0298,
+        "maximum_drawdown": -1.0298,
+        "tp1_rate": 0.0,
+        "tp2_rate": 0.0,
+        "stop_rate": 100.0,
+        "expectancy_95_ci": [
+          -1.0298,
+          -1.0298
+        ]
+      },
+      "Bull": {
+        "eligible_signals": 0,
+        "accepted_trades": 829,
+        "rejected_trades": 94859,
+        "trades_per_year": 316.4,
+        "expectancy": 0.3045,
+        "profit_factor": 1.7656,
+        "win_rate": 55.97,
+        "average_r": 0.3045,
+        "maximum_drawdown": -10.4094,
+        "tp1_rate": 21.47,
+        "tp2_rate": 1.09,
+        "stop_rate": 36.91,
+        "expectancy_95_ci": [
+          0.2198,
+          0.3894
+        ]
+      },
+      "Sideways": {
+        "eligible_signals": 0,
+        "accepted_trades": 5,
+        "rejected_trades": 8419,
+        "trades_per_year": 5.0,
+        "expectancy": 0.528,
+        "profit_factor": 2.6841,
+        "win_rate": 60.0,
+        "average_r": 0.528,
+        "maximum_drawdown": -1.0308,
+        "tp1_rate": 20.0,
+        "tp2_rate": 0.0,
+        "stop_rate": 20.0,
+        "expectancy_95_ci": [
+          -0.5488,
+          1.6123
+        ]
+      }
+    },
+    "rejection_reasons": {
+      "Market regime filter disallowed long entry": 22140,
+      "Overlapping position for ticker": 17759,
+      "Position risk exceeds 5% of entry price": 24979,
+      "Pullback limit was not traded within 3 candles": 45635
+    },
+    "double_cost": {
+      "eligible_signals": 89208,
+      "accepted_trades": 816,
+      "rejected_trades": 110532,
+      "trades_per_year": 311.44,
+      "expectancy": 0.2638,
+      "profit_factor": 1.6391,
+      "win_rate": 55.02,
+      "average_r": 0.2638,
+      "maximum_drawdown": -11.1109,
+      "tp1_rate": 21.45,
+      "tp2_rate": 1.1,
+      "stop_rate": 36.76,
+      "expectancy_95_ci": [
+        0.1791,
+        0.3466
+      ],
+      "by_sector": {
+        "Communication Services": {
+          "eligible_signals": 0,
+          "accepted_trades": 60,
+          "rejected_trades": 10250,
+          "trades_per_year": 16.56,
+          "expectancy": 0.0544,
+          "profit_factor": 1.118,
+          "win_rate": 45.0,
+          "average_r": 0.0544,
+          "maximum_drawdown": -5.166,
+          "tp1_rate": 20.0,
+          "tp2_rate": 0.0,
+          "stop_rate": 36.67,
+          "expectancy_95_ci": [
+            -0.2287,
+            0.3428
+          ]
+        },
+        "Consumer Discretionary": {
+          "eligible_signals": 0,
+          "accepted_trades": 63,
+          "rejected_trades": 10247,
+          "trades_per_year": 63.0,
+          "expectancy": 0.2031,
+          "profit_factor": 1.4247,
+          "win_rate": 47.62,
+          "average_r": 0.2031,
+          "maximum_drawdown": -7.5784,
+          "tp1_rate": 25.4,
+          "tp2_rate": 1.59,
+          "stop_rate": 44.44,
+          "expectancy_95_ci": [
+            -0.1055,
+            0.512
+          ]
+        },
+        "Consumer Staples": {
+          "eligible_signals": 0,
+          "accepted_trades": 132,
+          "rejected_trades": 10178,
+          "trades_per_year": 32.84,
+          "expectancy": 0.2062,
+          "profit_factor": 1.5285,
+          "win_rate": 58.33,
+          "average_r": 0.2062,
+          "maximum_drawdown": -6.7535,
+          "tp1_rate": 15.91,
+          "tp2_rate": 0.0,
+          "stop_rate": 35.61,
+          "expectancy_95_ci": [
+            0.0171,
+            0.3964
+          ]
+        },
+        "Energy": {
+          "eligible_signals": 0,
+          "accepted_trades": 39,
+          "rejected_trades": 10271,
+          "trades_per_year": 15.01,
+          "expectancy": 0.3138,
+          "profit_factor": 1.7659,
+          "win_rate": 53.85,
+          "average_r": 0.3138,
+          "maximum_drawdown": -3.0479,
+          "tp1_rate": 25.64,
+          "tp2_rate": 0.0,
+          "stop_rate": 33.33,
+          "expectancy_95_ci": [
+            -0.103,
+            0.7244
+          ]
+        },
+        "Financials": {
+          "eligible_signals": 0,
+          "accepted_trades": 67,
+          "rejected_trades": 10243,
+          "trades_per_year": 18.68,
+          "expectancy": 0.5539,
+          "profit_factor": 2.3799,
+          "win_rate": 58.21,
+          "average_r": 0.5539,
+          "maximum_drawdown": -3.235,
+          "tp1_rate": 35.82,
+          "tp2_rate": 2.99,
+          "stop_rate": 32.84,
+          "expectancy_95_ci": [
+            0.2356,
+            0.8728
+          ]
+        },
+        "Health Care": {
+          "eligible_signals": 0,
+          "accepted_trades": 81,
+          "rejected_trades": 10229,
+          "trades_per_year": 29.61,
+          "expectancy": 0.1369,
+          "profit_factor": 1.2946,
+          "win_rate": 48.15,
+          "average_r": 0.1369,
+          "maximum_drawdown": -8.3988,
+          "tp1_rate": 19.75,
+          "tp2_rate": 1.23,
+          "stop_rate": 39.51,
+          "expectancy_95_ci": [
+            -0.1202,
+            0.4142
+          ]
+        },
+        "Industrials": {
+          "eligible_signals": 0,
+          "accepted_trades": 68,
+          "rejected_trades": 10242,
+          "trades_per_year": 19.03,
+          "expectancy": 0.3167,
+          "profit_factor": 1.7182,
+          "win_rate": 57.35,
+          "average_r": 0.3167,
+          "maximum_drawdown": -6.4311,
+          "tp1_rate": 27.94,
+          "tp2_rate": 1.47,
+          "stop_rate": 45.59,
+          "expectancy_95_ci": [
+            0.0077,
+            0.6171
+          ]
+        },
+        "Materials": {
+          "eligible_signals": 0,
+          "accepted_trades": 52,
+          "rejected_trades": 9227,
+          "trades_per_year": 13.99,
+          "expectancy": 0.5267,
+          "profit_factor": 2.6847,
+          "win_rate": 63.46,
+          "average_r": 0.5267,
+          "maximum_drawdown": -2.5585,
+          "tp1_rate": 28.85,
+          "tp2_rate": 1.92,
+          "stop_rate": 26.92,
+          "expectancy_95_ci": [
+            0.183,
+            0.8588
+          ]
+        },
+        "Real Estate": {
+          "eligible_signals": 0,
+          "accepted_trades": 87,
+          "rejected_trades": 10223,
+          "trades_per_year": 31.75,
+          "expectancy": 0.1906,
+          "profit_factor": 1.4276,
+          "win_rate": 51.72,
+          "average_r": 0.1906,
+          "maximum_drawdown": -5.1176,
+          "tp1_rate": 18.39,
+          "tp2_rate": 0.0,
+          "stop_rate": 41.38,
+          "expectancy_95_ci": [
+            -0.0632,
+            0.4464
+          ]
+        },
+        "Technology": {
+          "eligible_signals": 0,
+          "accepted_trades": 48,
+          "rejected_trades": 10262,
+          "trades_per_year": 14.65,
+          "expectancy": 0.4962,
+          "profit_factor": 2.4528,
+          "win_rate": 58.33,
+          "average_r": 0.4962,
+          "maximum_drawdown": -4.3114,
+          "tp1_rate": 25.0,
+          "tp2_rate": 6.25,
+          "stop_rate": 31.25,
+          "expectancy_95_ci": [
+            0.1304,
+            0.8759
+          ]
+        },
+        "Utilities": {
+          "eligible_signals": 0,
+          "accepted_trades": 119,
+          "rejected_trades": 9160,
+          "trades_per_year": 29.31,
+          "expectancy": 0.1869,
+          "profit_factor": 1.4877,
+          "win_rate": 59.66,
+          "average_r": 0.1869,
+          "maximum_drawdown": -3.9182,
+          "tp1_rate": 11.76,
+          "tp2_rate": 0.0,
+          "stop_rate": 33.61,
+          "expectancy_95_ci": [
+            0.0044,
+            0.3829
+          ]
+        }
+      },
+      "by_market_regime": {
+        "Bear": {
+          "eligible_signals": 0,
+          "accepted_trades": 1,
+          "rejected_trades": 7235,
+          "trades_per_year": 1.0,
+          "expectancy": -1.0591,
+          "profit_factor": 0.0,
+          "win_rate": 0.0,
+          "average_r": -1.0591,
+          "maximum_drawdown": -1.0591,
+          "tp1_rate": 0.0,
+          "tp2_rate": 0.0,
+          "stop_rate": 100.0,
+          "expectancy_95_ci": [
+            -1.0591,
+            -1.0591
+          ]
+        },
+        "Bull": {
+          "eligible_signals": 0,
+          "accepted_trades": 810,
+          "rejected_trades": 94878,
+          "trades_per_year": 309.15,
+          "expectancy": 0.2644,
+          "profit_factor": 1.6409,
+          "win_rate": 55.06,
+          "average_r": 0.2644,
+          "maximum_drawdown": -11.1109,
+          "tp1_rate": 21.48,
+          "tp2_rate": 1.11,
+          "stop_rate": 36.79,
+          "expectancy_95_ci": [
+            0.1784,
+            0.3491
+          ]
+        },
+        "Sideways": {
+          "eligible_signals": 0,
+          "accepted_trades": 5,
+          "rejected_trades": 8419,
+          "trades_per_year": 5.0,
+          "expectancy": 0.4381,
+          "profit_factor": 2.3371,
+          "win_rate": 60.0,
+          "average_r": 0.4381,
+          "maximum_drawdown": -1.0609,
+          "tp1_rate": 20.0,
+          "tp2_rate": 0.0,
+          "stop_rate": 20.0,
+          "expectancy_95_ci": [
+            -0.6312,
+            1.5616
+          ]
+        }
+      },
+      "rejection_reasons": {
+        "Market regime filter disallowed long entry": 22140,
+        "Overlapping position for ticker": 17374,
+        "Position risk exceeds 5% of entry price": 25219,
+        "Pullback limit was not traded within 3 candles": 45799
+      }
+    }
+  },
+  "ungated_pullback": {
+    "eligible_signals": 111348,
+    "accepted_trades": 878,
+    "rejected_trades": 110470,
+    "trades_per_year": 335.1,
+    "expectancy": 0.3206,
+    "profit_factor": 1.8146,
+    "win_rate": 56.15,
+    "average_r": 0.3206,
+    "maximum_drawdown": -11.6968,
+    "tp1_rate": 21.75,
+    "tp2_rate": 1.37,
+    "stop_rate": 36.56,
+    "expectancy_95_ci": [
+      0.2378,
+      0.4015
+    ],
+    "by_sector": {
+      "Communication Services": {
+        "eligible_signals": 0,
+        "accepted_trades": 64,
+        "rejected_trades": 10246,
+        "trades_per_year": 17.67,
+        "expectancy": 0.0502,
+        "profit_factor": 1.1073,
+        "win_rate": 45.31,
+        "average_r": 0.0502,
+        "maximum_drawdown": -5.4714,
+        "tp1_rate": 17.19,
+        "tp2_rate": 0.0,
+        "stop_rate": 39.06,
+        "expectancy_95_ci": [
+          -0.2173,
+          0.3262
+        ]
+      },
+      "Consumer Discretionary": {
+        "eligible_signals": 0,
+        "accepted_trades": 69,
+        "rejected_trades": 10241,
+        "trades_per_year": 69.0,
+        "expectancy": 0.2246,
+        "profit_factor": 1.4826,
+        "win_rate": 47.83,
+        "average_r": 0.2246,
+        "maximum_drawdown": -4.6952,
+        "tp1_rate": 26.09,
+        "tp2_rate": 1.45,
+        "stop_rate": 44.93,
+        "expectancy_95_ci": [
+          -0.0729,
+          0.5448
+        ]
+      },
+      "Consumer Staples": {
+        "eligible_signals": 0,
+        "accepted_trades": 146,
+        "rejected_trades": 10164,
+        "trades_per_year": 36.33,
+        "expectancy": 0.2404,
+        "profit_factor": 1.6287,
+        "win_rate": 57.53,
+        "average_r": 0.2404,
+        "maximum_drawdown": -4.8924,
+        "tp1_rate": 15.75,
+        "tp2_rate": 0.0,
+        "stop_rate": 35.62,
+        "expectancy_95_ci": [
+          0.0662,
+          0.425
+        ]
+      },
+      "Energy": {
+        "eligible_signals": 0,
+        "accepted_trades": 40,
+        "rejected_trades": 10270,
+        "trades_per_year": 15.38,
+        "expectancy": 0.3355,
+        "profit_factor": 1.8601,
+        "win_rate": 52.5,
+        "average_r": 0.3355,
+        "maximum_drawdown": -2.913,
+        "tp1_rate": 22.5,
+        "tp2_rate": 0.0,
+        "stop_rate": 35.0,
+        "expectancy_95_ci": [
+          -0.054,
+          0.7359
+        ]
+      },
+      "Financials": {
+        "eligible_signals": 0,
+        "accepted_trades": 70,
+        "rejected_trades": 10240,
+        "trades_per_year": 19.53,
+        "expectancy": 0.6414,
+        "profit_factor": 2.7296,
+        "win_rate": 60.0,
+        "average_r": 0.6414,
+        "maximum_drawdown": -3.7511,
+        "tp1_rate": 37.14,
+        "tp2_rate": 2.86,
+        "stop_rate": 31.43,
+        "expectancy_95_ci": [
+          0.3204,
+          0.9684
+        ]
+      },
+      "Health Care": {
+        "eligible_signals": 0,
+        "accepted_trades": 88,
+        "rejected_trades": 10222,
+        "trades_per_year": 32.17,
+        "expectancy": 0.3047,
+        "profit_factor": 1.7349,
+        "win_rate": 54.55,
+        "average_r": 0.3047,
+        "maximum_drawdown": -7.0561,
+        "tp1_rate": 22.73,
+        "tp2_rate": 3.41,
+        "stop_rate": 37.5,
+        "expectancy_95_ci": [
+          0.0336,
+          0.5695
+        ]
+      },
+      "Industrials": {
+        "eligible_signals": 0,
+        "accepted_trades": 70,
+        "rejected_trades": 10240,
+        "trades_per_year": 19.59,
+        "expectancy": 0.4229,
+        "profit_factor": 2.0587,
+        "win_rate": 60.0,
+        "average_r": 0.4229,
+        "maximum_drawdown": -5.0766,
+        "tp1_rate": 30.0,
+        "tp2_rate": 1.43,
+        "stop_rate": 42.86,
+        "expectancy_95_ci": [
+          0.1234,
+          0.7298
+        ]
+      },
+      "Materials": {
+        "eligible_signals": 0,
+        "accepted_trades": 55,
+        "rejected_trades": 9224,
+        "trades_per_year": 14.79,
+        "expectancy": 0.5919,
+        "profit_factor": 3.0282,
+        "win_rate": 65.45,
+        "average_r": 0.5919,
+        "maximum_drawdown": -2.4157,
+        "tp1_rate": 30.91,
+        "tp2_rate": 1.82,
+        "stop_rate": 25.45,
+        "expectancy_95_ci": [
+          0.2691,
+          0.9136
+        ]
+      },
+      "Real Estate": {
+        "eligible_signals": 0,
+        "accepted_trades": 97,
+        "rejected_trades": 10213,
+        "trades_per_year": 35.39,
+        "expectancy": 0.2261,
+        "profit_factor": 1.5131,
+        "win_rate": 52.58,
+        "average_r": 0.2261,
+        "maximum_drawdown": -6.2026,
+        "tp1_rate": 18.56,
+        "tp2_rate": 0.0,
+        "stop_rate": 42.27,
+        "expectancy_95_ci": [
+          -0.0113,
+          0.4795
+        ]
+      },
+      "Technology": {
+        "eligible_signals": 0,
+        "accepted_trades": 53,
+        "rejected_trades": 10257,
+        "trades_per_year": 16.17,
+        "expectancy": 0.541,
+        "profit_factor": 2.6162,
+        "win_rate": 60.38,
+        "average_r": 0.541,
+        "maximum_drawdown": -5.1658,
+        "tp1_rate": 28.3,
+        "tp2_rate": 7.55,
+        "stop_rate": 33.96,
+        "expectancy_95_ci": [
+          0.1805,
+          0.8933
+        ]
+      },
+      "Utilities": {
+        "eligible_signals": 0,
+        "accepted_trades": 126,
+        "rejected_trades": 9153,
+        "trades_per_year": 31.03,
+        "expectancy": 0.2364,
+        "profit_factor": 1.6594,
+        "win_rate": 59.52,
+        "average_r": 0.2364,
+        "maximum_drawdown": -2.7924,
+        "tp1_rate": 10.32,
+        "tp2_rate": 0.0,
+        "stop_rate": 32.54,
+        "expectancy_95_ci": [
+          0.0528,
+          0.4228
+        ]
+      }
+    },
+    "by_market_regime": {
+      "Bear": {
+        "eligible_signals": 0,
+        "accepted_trades": 2,
+        "rejected_trades": 7234,
+        "trades_per_year": 2.0,
+        "expectancy": -1.0301,
+        "profit_factor": 0.0,
+        "win_rate": 0.0,
+        "average_r": -1.0301,
+        "maximum_drawdown": -2.0603,
+        "tp1_rate": 0.0,
+        "tp2_rate": 0.0,
+        "stop_rate": 100.0,
+        "expectancy_95_ci": [
+          -1.0305,
+          -1.0298
+        ]
+      },
+      "Bull": {
+        "eligible_signals": 0,
+        "accepted_trades": 866,
+        "rejected_trades": 94822,
+        "trades_per_year": 330.52,
+        "expectancy": 0.3303,
+        "profit_factor": 1.8494,
+        "win_rate": 56.58,
+        "average_r": 0.3303,
+        "maximum_drawdown": -10.6663,
+        "tp1_rate": 21.94,
+        "tp2_rate": 1.39,
+        "stop_rate": 36.14,
+        "expectancy_95_ci": [
+          0.2468,
+          0.4105
+        ]
+      },
+      "Sideways": {
+        "eligible_signals": 0,
+        "accepted_trades": 10,
+        "rejected_trades": 8414,
+        "trades_per_year": 10.0,
+        "expectancy": -0.2521,
+        "profit_factor": 0.6253,
+        "win_rate": 30.0,
+        "average_r": -0.2521,
+        "maximum_drawdown": -4.2717,
+        "tp1_rate": 10.0,
+        "tp2_rate": 0.0,
+        "stop_rate": 60.0,
+        "expectancy_95_ci": [
+          -0.9312,
+          0.5362
+        ]
+      }
+    },
+    "rejection_reasons": {
+      "Overlapping position for ticker": 20415,
+      "Position risk exceeds 5% of entry price": 32448,
+      "Pullback limit was not traded within 3 candles": 57607
+    }
+  },
+  "baselines": {
+    "buy_and_hold": {
+      "observations": 108,
+      "average_return_pct": 117.7451,
+      "win_rate": 90.74
+    },
+    "ema20_ema50_crossover": {
+      "observations": 1155,
+      "average_return_pct": 2.1477,
+      "win_rate": 61.21
+    },
+    "matched_random_entries": {
+      "observations": 878,
+      "average_return_pct": 2.0755,
+      "win_rate": 65.15
+    }
+  },
+  "approval": {
+    "meets_mechanical_criteria": true,
+    "sector_profit_concentration": 0.1631,
+    "decision": "No production change: retrospective holdout is supportive only; a future-forward holdout remains required."
+  }
+}

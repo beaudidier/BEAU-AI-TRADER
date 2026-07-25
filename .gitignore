@@ -11,4 +11,5 @@ frontend/*.tsbuildinfo
 artifacts/calibration_dataset/
 artifacts/pullback_robustness_dataset/
 artifacts/*_trades.csv
+artifacts/locked_holdout_dataset/
 !*.env.example
