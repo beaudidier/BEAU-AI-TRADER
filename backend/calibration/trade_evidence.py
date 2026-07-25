@@ -12,6 +12,7 @@ import html
 import json
 import math
 import shutil
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +20,7 @@ import pandas as pd
 
 from atr import add_atr
 from backtesting.execution import entry_fill_price, exit_fill_price, simulate_long_trade
+from calibration.pullback_robustness import SYMBOLS
 from engines.institutional_engine import calculate_institutional_analysis
 from strategies.swing_strategy import (
     ENTRY_WAIT,
@@ -41,10 +43,16 @@ RAW_DIR = EVIDENCE_DIR / "raw"
 SUMMARY_PATH = ROOT / "artifacts" / "trade_evidence_summary.json"
 REPORT_PATH = ROOT / "docs" / "HISTORICAL_TRADE_EVIDENCE.md"
 SELECTED_LEDGER_PATH = EVIDENCE_DIR / "selected_trade_ledger.json"
+FRONTEND_EVIDENCE_DIR = ROOT / "frontend" / "public" / "evidence"
+FRONTEND_CHART_DIR = FRONTEND_EVIDENCE_DIR / "charts"
+HOLDOUT_RESULTS_PATH = ROOT / "artifacts" / "locked_holdout_results.json"
 
 ACCOUNT_SIZE_GBP = 10_000.0
 RISK_PERCENT = 1.0
 RISK_BUDGET_GBP = ACCOUNT_SIZE_GBP * RISK_PERCENT / 100
+SELECTION_ALGORITHM = "seeded-balanced-stratified-v1"
+SELECTION_SEED = "BEAU-AI-TRADER:HISTORICAL-EVIDENCE:2026-07-25"
+CATEGORY_QUOTAS = {"WINNER": 10, "LOSER": 10, "EXPIRED": 5, "REJECTED": 5}
 
 COMPANY_NAMES = {
     "AAPL": "Apple Inc.",
@@ -56,61 +64,42 @@ COMPANY_NAMES = {
     "BLK": "BlackRock, Inc.",
     "CHTR": "Charter Communications, Inc.",
     "CL": "Colgate-Palmolive Company",
+    "CME": "CME Group Inc.",
     "COP": "ConocoPhillips",
     "COST": "Costco Wholesale Corporation",
+    "CSCO": "Cisco Systems, Inc.",
+    "DE": "Deere & Company",
+    "DHR": "Danaher Corporation",
+    "DIS": "The Walt Disney Company",
     "DUK": "Duke Energy Corporation",
+    "EQR": "Equity Residential",
+    "ETN": "Eaton Corporation plc",
+    "EXC": "Exelon Corporation",
+    "GM": "General Motors Company",
     "IBM": "International Business Machines Corporation",
     "ITW": "Illinois Tool Works Inc.",
     "JNJ": "Johnson & Johnson",
+    "KMI": "Kinder Morgan, Inc.",
     "KO": "The Coca-Cola Company",
+    "LIN": "Linde plc",
     "LOW": "Lowe's Companies, Inc.",
+    "MCD": "McDonald's Corporation",
     "MRK": "Merck & Co., Inc.",
+    "MSFT": "Microsoft Corporation",
     "NEM": "Newmont Corporation",
+    "NFLX": "Netflix, Inc.",
     "ORCL": "Oracle Corporation",
     "PSA": "Public Storage",
     "SBUX": "Starbucks Corporation",
+    "SHW": "The Sherwin-Williams Company",
+    "SO": "The Southern Company",
+    "T": "AT&T Inc.",
     "TMO": "Thermo Fisher Scientific Inc.",
+    "VLO": "Valero Energy Corporation",
     "VZ": "Verizon Communications Inc.",
     "WELL": "Welltower Inc.",
     "XOM": "Exxon Mobil Corporation",
 }
-
-SELECTIONS = (
-    # Ten wins across five years, eight sectors, and Bull/Sideways conditions.
-    {"category": "WINNER", "trade_id": "existing_market_regime-ORCL-2017-05-10"},
-    {"category": "WINNER", "trade_id": "existing_market_regime-TMO-2017-04-19"},
-    {"category": "WINNER", "trade_id": "existing_market_regime-LOW-2018-08-06"},
-    {"category": "WINNER", "trade_id": "existing_market_regime-BLK-2018-01-02"},
-    {"category": "WINNER", "trade_id": "existing_market_regime-COST-2019-02-08"},
-    {"category": "WINNER", "trade_id": "existing_market_regime-WELL-2019-02-22"},
-    {"category": "WINNER", "trade_id": "existing_market_regime-NEM-2020-02-13"},
-    {"category": "WINNER", "trade_id": "existing_market_regime-ABT-2020-08-18"},
-    {"category": "WINNER", "trade_id": "existing_market_regime-PSA-2021-05-17"},
-    {"category": "WINNER", "trade_id": "existing_market_regime-DUK-2021-04-30"},
-    # Ten losses across five years, eight sectors, and Bull/Bear/Sideways conditions.
-    {"category": "LOSER", "trade_id": "existing_market_regime-CL-2017-04-19"},
-    {"category": "LOSER", "trade_id": "existing_market_regime-XOM-2017-07-19"},
-    {"category": "LOSER", "trade_id": "existing_market_regime-SBUX-2018-06-04"},
-    {"category": "LOSER", "trade_id": "existing_market_regime-JNJ-2018-10-03"},
-    {"category": "LOSER", "trade_id": "existing_market_regime-KO-2019-01-28"},
-    {"category": "LOSER", "trade_id": "existing_market_regime-BAC-2019-02-13"},
-    {"category": "LOSER", "trade_id": "existing_market_regime-ITW-2020-01-14"},
-    {"category": "LOSER", "trade_id": "existing_market_regime-IBM-2020-08-31"},
-    {"category": "LOSER", "trade_id": "existing_market_regime-MRK-2021-04-12"},
-    {"category": "LOSER", "trade_id": "existing_market_regime-VZ-2021-01-04"},
-    # Five entry limits that expired without a fill.
-    {"category": "EXPIRED", "ticker": "BA", "signal_date": "2017-04-19", "reason": "Pullback limit was not traded within 3 candles"},
-    {"category": "EXPIRED", "ticker": "COP", "signal_date": "2018-01-02", "reason": "Pullback limit was not traded within 3 candles"},
-    {"category": "EXPIRED", "ticker": "CHTR", "signal_date": "2019-01-18", "reason": "Pullback limit was not traded within 3 candles"},
-    {"category": "EXPIRED", "ticker": "AEP", "signal_date": "2020-01-27", "reason": "Pullback limit was not traded within 3 candles"},
-    {"category": "EXPIRED", "ticker": "ABBV", "signal_date": "2021-01-06", "reason": "Pullback limit was not traded within 3 candles"},
-    # Five hard rejections spanning all holdout years and three rejection paths.
-    {"category": "REJECTED", "ticker": "AAPL", "signal_date": "2017-06-22", "reason": "Position risk exceeds 5% of entry price"},
-    {"category": "REJECTED", "ticker": "XOM", "signal_date": "2018-04-02", "reason": "Market regime filter disallowed long entry"},
-    {"category": "REJECTED", "ticker": "BAC", "signal_date": "2019-02-14", "reason": "Overlapping position for ticker"},
-    {"category": "REJECTED", "ticker": "ABBV", "signal_date": "2020-04-29", "reason": "Position risk exceeds 5% of entry price"},
-    {"category": "REJECTED", "ticker": "ABBV", "signal_date": "2021-03-04", "reason": "Market regime filter disallowed long entry"},
-)
 
 
 def _sha256(path: Path) -> str:
@@ -135,6 +124,122 @@ def _clean(value: Any) -> Any:
             return None
         return round(value, 8)
     return value
+
+
+def _stable_hash(value: str) -> str:
+    return hashlib.sha256(f"{SELECTION_SEED}|{value}".encode()).hexdigest()
+
+
+def _category(row: dict[str, Any]) -> str:
+    if row["record_type"] == "TRADE":
+        return "WINNER" if float(row["r_multiple"]) > 0 else "LOSER"
+    return "EXPIRED" if row["reason"] == "Pullback limit was not traded within 3 candles" else "REJECTED"
+
+
+def _selection_for(row: dict[str, Any]) -> dict[str, str]:
+    category = _category(row)
+    if row["record_type"] == "TRADE":
+        return {"category": category, "trade_id": str(row["trade_id"])}
+    return {
+        "category": category,
+        "ticker": str(row["ticker"]),
+        "signal_date": str(row["signal_date"]),
+        "reason": str(row["reason"]),
+    }
+
+
+def _candidate_key(row: dict[str, Any]) -> str:
+    selection = _selection_for(row)
+    if "trade_id" in selection:
+        return f"{selection['category']}|{selection['trade_id']}"
+    return "|".join(
+        (
+            selection["category"],
+            selection["ticker"],
+            selection["signal_date"],
+            selection["reason"],
+        )
+    )
+
+
+def _population_rows(ledger: pd.DataFrame) -> list[dict[str, Any]]:
+    relevant = ledger.loc[
+        (ledger["filter_id"] == "existing_market_regime")
+        & (ledger["out_of_sample"] == True)  # noqa: E712 - pandas scalar comparison
+    ].copy()
+    trades = relevant.loc[relevant["record_type"] == "TRADE"].drop_duplicates("trade_id")
+    non_trades = relevant.loc[relevant["record_type"] != "TRADE"].drop_duplicates(
+        ["ticker", "signal_date", "reason"]
+    )
+    population = [_clean(row) for row in pd.concat([trades, non_trades]).to_dict(orient="records")]
+    population.sort(key=_candidate_key)
+    return population
+
+
+def _deterministic_stratified_selections(
+    population: list[dict[str, Any]],
+) -> tuple[list[dict[str, str]], dict[str, Any]]:
+    pools: dict[str, list[dict[str, Any]]] = {
+        category: [row for row in population if _category(row) == category]
+        for category in CATEGORY_QUOTAS
+    }
+    if any(len(pools[category]) < quota for category, quota in CATEGORY_QUOTAS.items()):
+        raise ValueError("The full holdout ledger does not contain enough records for the evidence quotas.")
+
+    selected: list[dict[str, Any]] = []
+    selected_keys: set[str] = set()
+    global_counts = {field: Counter() for field in ("sector", "market_regime", "year")}
+    category_counts = {
+        category: {field: Counter() for field in ("sector", "market_regime", "year")}
+        for category in CATEGORY_QUOTAS
+    }
+
+    def dimensions(row: dict[str, Any]) -> tuple[str, str, str]:
+        return str(row["sector"]), str(row["market_regime"]), str(row["signal_date"])[:4]
+
+    def priority(category: str, row: dict[str, Any]) -> tuple[Any, ...]:
+        sector, regime, year = dimensions(row)
+        return (
+            global_counts["market_regime"][regime],
+            global_counts["year"][year],
+            global_counts["sector"][sector],
+            category_counts[category]["market_regime"][regime],
+            category_counts[category]["year"][year],
+            category_counts[category]["sector"][sector],
+            _stable_hash(_candidate_key(row)),
+        )
+
+    remaining = dict(CATEGORY_QUOTAS)
+    while any(remaining.values()):
+        for category in CATEGORY_QUOTAS:
+            if remaining[category] == 0:
+                continue
+            candidates = [row for row in pools[category] if _candidate_key(row) not in selected_keys]
+            choice = min(candidates, key=lambda row: priority(category, row))
+            selected.append(choice)
+            selected_keys.add(_candidate_key(choice))
+            sector, regime, year = dimensions(choice)
+            for field, value in (("sector", sector), ("market_regime", regime), ("year", year)):
+                global_counts[field][value] += 1
+                category_counts[category][field][value] += 1
+            remaining[category] -= 1
+
+    selections = [_selection_for(row) for row in selected]
+    selection_keys = [_candidate_key(row) for row in selected]
+    manifest = {
+        "algorithm": SELECTION_ALGORITHM,
+        "seed": SELECTION_SEED,
+        "candidate_population": len(population),
+        "candidate_distribution": dict(
+            sorted(Counter(_category(row) for row in population).items())
+        ),
+        "quotas": CATEGORY_QUOTAS,
+        "strata": ["outcome", "sector", "market_regime", "signal_year"],
+        "tie_breaker": "SHA-256(seed + immutable candidate key)",
+        "selected_keys": selection_keys,
+        "selected_keys_sha256": hashlib.sha256("\n".join(selection_keys).encode()).hexdigest(),
+    }
+    return selections, manifest
 
 
 def _close(left: Any, right: Any, tolerance: float = 1e-6) -> bool:
@@ -171,6 +276,18 @@ def _position_size(entry: float, stop: float) -> dict[str, Any]:
         "total_position_value_gbp": shares * entry,
         "maximum_monetary_risk_gbp": shares * risk_per_share,
     }
+
+
+def _historical_regime(benchmark: pd.DataFrame, signal_timestamp: pd.Timestamp) -> str:
+    close = pd.to_numeric(benchmark["Close"], errors="coerce")
+    ema50 = close.ewm(span=50, adjust=False).mean()
+    ema200 = close.ewm(span=200, adjust=False).mean()
+    current = float(close.loc[signal_timestamp])
+    if current > float(ema200.loc[signal_timestamp]) and float(ema50.loc[signal_timestamp]) > float(ema200.loc[signal_timestamp]):
+        return "Bull"
+    if current < float(ema200.loc[signal_timestamp]) and float(ema50.loc[signal_timestamp]) < float(ema200.loc[signal_timestamp]):
+        return "Bear"
+    return "Sideways"
 
 
 def _match_source_rows(ledger: pd.DataFrame, selection: dict[str, str]) -> pd.DataFrame:
@@ -399,6 +516,7 @@ def _svg_chart(example: dict[str, Any], data: pd.DataFrame, path: Path) -> dict[
     path.write_text("\n".join(parts))
     return {
         "file": f"artifacts/trade_evidence/{path.name}",
+        "public_url": f"/evidence/charts/{path.name}",
         "window_start": str(window.index[0].date()),
         "window_end": str(window.index[-1].date()),
         "lines": {
@@ -491,7 +609,7 @@ def _build_example(
         "id": f"E{number:02d}",
         "category": category,
         "ticker": ticker,
-        "company_name": COMPANY_NAMES[ticker],
+        "company_name": COMPANY_NAMES.get(ticker, ticker),
         "sector": str(source["sector"]),
         "classification": classification,
         "strategy_id": "swing_trading",
@@ -562,6 +680,10 @@ def _build_example(
         "atr_matches_source_ledger": _close(atr, source["atr"]),
         "swing_low_matches_source_ledger": _close(swing_low, source["swing_low_20"]),
         "market_regime_gate_matches_source_ledger": (float(market_engine["score"]) >= 65) == bool(source["existing_market_regime"]),
+        "sector_matches_frozen_universe": str(source["sector"]) == SYMBOLS[ticker],
+        "historical_regime_matches_raw_spy": str(source["market_regime"])
+        == _historical_regime(benchmark, signal_timestamp),
+        "outcome_class_matches_source_record": _category(source) == category,
     }
 
     if category in {"WINNER", "LOSER"}:
@@ -686,6 +808,15 @@ def _write_report(summary: dict[str, Any]) -> None:
         "",
         "For each signal, the analysis engines receive only stock and SPY candles timestamped at or before the signal close. The EMA20, EMA50, ATR, swing low, entry, stop, targets, position size, execution legs, costs, R result, MFE, and MAE are recomputed from bundled raw OHLCV. Executed examples are reconciled to the locked source ledger; expired and rejected examples are verified to contain no entry or exit.",
         "",
+        "The Milestone 34 audit found that its original record IDs were explicitly enumerated. Replays were deterministic, but the selection itself could not prove freedom from judgment. This pack supersedes that registry with `seeded-balanced-stratified-v1`: every out-of-sample candidate in the full locked ledger enters the population, outcome quotas are fixed before selection, sector/regime/year under-representation is minimized at every draw, and SHA-256 of the published seed plus immutable candidate key resolves ties. Running the selector twice returns the same ordered keys and digest.",
+        "",
+        f"- Full candidate population: {summary['selection']['candidate_population']:,}",
+        f"- Population outcome counts: {summary['selection']['candidate_distribution']}",
+        f"- Published selection seed: `{summary['selection']['seed']}`",
+        f"- Ordered selection digest: `{summary['selection']['selected_keys_sha256']}`",
+        f"- Deterministic replay: **{'verified' if summary['selection']['deterministic_replay_verified'] else 'failed'}**",
+        "- The 30-card sample is deliberately balanced for audit coverage, not weighted to reproduce population frequencies. Full-ledger statistics, not card counts, must be used for historical rates.",
+        "",
         "The raw snapshots are stored in `artifacts/trade_evidence/raw/`, the selected source rows in `artifacts/trade_evidence/selected_trade_ledger.json`, and the full machine-readable audit in `artifacts/trade_evidence_summary.json`.",
         "",
         "## Evidence index",
@@ -766,20 +897,34 @@ def _write_report(summary: dict[str, Any]) -> None:
 def generate_evidence_pack() -> dict[str, Any]:
     if not SOURCE_LEDGER.exists():
         raise FileNotFoundError("The locked holdout ledger is required to generate evidence.")
+    if not HOLDOUT_RESULTS_PATH.exists():
+        raise FileNotFoundError("The locked holdout summary is required to generate evidence.")
     EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
     RAW_DIR.mkdir(parents=True, exist_ok=True)
+    FRONTEND_CHART_DIR.mkdir(parents=True, exist_ok=True)
     for pattern in ("*.svg", "*.json"):
         for path in EVIDENCE_DIR.glob(pattern):
             path.unlink()
     for path in RAW_DIR.glob("*.csv"):
         path.unlink()
+    for path in FRONTEND_CHART_DIR.glob("*.svg"):
+        path.unlink()
 
     ledger = pd.read_csv(SOURCE_LEDGER, low_memory=False)
+    population = _population_rows(ledger)
+    selections, selection_manifest = _deterministic_stratified_selections(population)
+    replayed_selections, replayed_manifest = _deterministic_stratified_selections(population)
+    deterministic_replay = (
+        selections == replayed_selections
+        and selection_manifest["selected_keys_sha256"] == replayed_manifest["selected_keys_sha256"]
+    )
+    if not deterministic_replay:
+        raise AssertionError("Evidence selection is not deterministic.")
     ledger_trades = ledger.loc[ledger["record_type"] == "TRADE"].drop_duplicates("trade_id").copy()
     benchmark = _load_history("SPY")
     selected_rows: list[dict[str, Any]] = []
     matched: list[tuple[dict[str, str], pd.DataFrame]] = []
-    for number, selection in enumerate(SELECTIONS, start=1):
+    for number, selection in enumerate(selections, start=1):
         rows = _match_source_rows(ledger, selection)
         matched.append((selection, rows))
         selected_rows.append(
@@ -794,6 +939,7 @@ def generate_evidence_pack() -> dict[str, Any]:
             {
                 "source": "artifacts/locked_holdout_trades.csv",
                 "source_sha256": _sha256(SOURCE_LEDGER),
+                "selection": {**selection_manifest, "deterministic_replay_verified": deterministic_replay},
                 "records": selected_rows,
             },
             indent=2,
@@ -810,12 +956,17 @@ def generate_evidence_pack() -> dict[str, Any]:
         _build_example(number, selection, rows, ledger_trades, benchmark)
         for number, (selection, rows) in enumerate(matched, start=1)
     ]
+    for example in examples:
+        source_chart = ROOT / example["chart"]["file"]
+        shutil.copyfile(source_chart, FRONTEND_CHART_DIR / source_chart.name)
     distribution = {
         category: sum(example["category"] == category for example in examples)
         for category in ("WINNER", "LOSER", "EXPIRED", "REJECTED")
     }
+    holdout = json.loads(HOLDOUT_RESULTS_PATH.read_text())
+    population_stats = holdout["selected_regime_gated_pullback"]
     summary = {
-        "schema_version": 1,
+        "schema_version": 2,
         "strategy": {
             "id": "swing_trading",
             "name": "Regime-Gated Pullback",
@@ -851,6 +1002,31 @@ def generate_evidence_pack() -> dict[str, Any]:
             "leverage": False,
             "currency_assumption": "Historical US price units are treated as GBP-equivalent; no historical USD/GBP conversion is applied.",
         },
+        "selection": {
+            **selection_manifest,
+            "deterministic_replay_verified": deterministic_replay,
+            "milestone_34_audit": {
+                "finding": "The original explicit record registry replayed deterministically but did not make selection judgment auditable.",
+                "resolution": "The registry was replaced by full-population seeded stratified selection; no outcome magnitude or profit value participates in selection.",
+                "manual_record_ids_used": False,
+            },
+        },
+        "population_statistics": {
+            "classification": "RETROSPECTIVE HOLDOUT · OUT-OF-SAMPLE · NOT FORWARD VALIDATION",
+            "candidate_signals": int(holdout["candidate_signals"]),
+            "accepted_trades": int(population_stats["accepted_trades"]),
+            "rejected_signals": int(population_stats["rejected_trades"]),
+            "wins": int(sum(_category(row) == "WINNER" for row in population)),
+            "losses": int(sum(_category(row) == "LOSER" for row in population)),
+            "win_rate": float(population_stats["win_rate"]),
+            "expectancy_r": float(population_stats["expectancy"]),
+            "profit_factor": float(population_stats["profit_factor"]),
+            "maximum_drawdown_r": float(population_stats["maximum_drawdown"]),
+            "expectancy_95_ci": population_stats["expectancy_95_ci"],
+            "tp1_rate": float(population_stats["tp1_rate"]),
+            "tp2_rate": float(population_stats["tp2_rate"]),
+            "stop_rate": float(population_stats["stop_rate"]),
+        },
         "example_count": len(examples),
         "distribution": distribution,
         "coverage": {
@@ -877,6 +1053,9 @@ def generate_evidence_pack() -> dict[str, Any]:
     }
     SUMMARY_PATH.write_text(json.dumps(_clean(summary), indent=2, allow_nan=False) + "\n")
     _write_report(summary)
+    (FRONTEND_EVIDENCE_DIR / "summary.json").write_text(
+        json.dumps(_clean(summary), separators=(",", ":"), allow_nan=False) + "\n"
+    )
     return summary
 
 

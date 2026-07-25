@@ -6,6 +6,7 @@ import { GuestRoute, ProtectedRoute } from "./auth/ProtectedRoute";
 import BacktestingPage from "./pages/BacktestingPage";
 import BillingPage from "./pages/BillingPage";
 import Dashboard from "./pages/Dashboard";
+import EvidencePage from "./pages/EvidencePage";
 import ProfileSettingsPage from "./pages/ProfileSettingsPage";
 import PaperTradingPage from "./pages/PaperTradingPage";
 import LearningPage from "./pages/LearningPage";
@@ -23,10 +24,10 @@ function ProtectedApplication() {
   const location = useLocation();
   const [dashboardSearch, setDashboardSearch] = useState("");
   const workspaceMatch = location.pathname.match(/^\/workspace\/([A-Za-z0-9.-]+)$/);
-  const page: AppPage = location.pathname === "/backtesting" ? "backtesting" : location.pathname === "/paper-trading" ? "paper-trading" : location.pathname === "/forward-validation" ? "forward-validation" : location.pathname === "/learning" ? "learning" : location.pathname === "/validation" ? "validation" : "dashboard";
+  const page: AppPage = location.pathname === "/backtesting" ? "backtesting" : location.pathname === "/paper-trading" ? "paper-trading" : location.pathname === "/forward-validation" ? "forward-validation" : location.pathname === "/learning" ? "learning" : location.pathname === "/validation" ? "validation" : location.pathname === "/evidence" ? "evidence" : "dashboard";
 
   function navigatePage(nextPage: AppPage) {
-    routerNavigate(nextPage === "dashboard" ? "/dashboard" : nextPage === "backtesting" ? "/backtesting" : nextPage === "paper-trading" ? "/paper-trading" : nextPage === "forward-validation" ? "/forward-validation" : nextPage === "learning" ? "/learning" : "/validation");
+    routerNavigate(nextPage === "dashboard" ? "/dashboard" : nextPage === "backtesting" ? "/backtesting" : nextPage === "paper-trading" ? "/paper-trading" : nextPage === "forward-validation" ? "/forward-validation" : nextPage === "learning" ? "/learning" : nextPage === "validation" ? "/validation" : "/evidence");
   }
 
   if (workspaceMatch) {
@@ -49,13 +50,15 @@ function ProtectedApplication() {
     return <LearningPage onNavigate={navigatePage} />;
   }
 
+  if (page === "evidence") return <EvidencePage onNavigate={navigatePage} />;
+
   if (page === "validation") return <ValidationPage onNavigate={navigatePage} />;
 
   return <Dashboard searchTerm={dashboardSearch} onSearchChange={setDashboardSearch} onOpenChart={(stock) => routerNavigate(`/workspace/${stock.ticker}`)} onNavigate={navigatePage} />;
 }
 
 function App() {
-  return <BrowserRouter><AuthProvider><Routes><Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} /><Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} /><Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} /><Route path="/reset-password" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} /><Route path="/settings/profile" element={<ProtectedRoute><ProfileSettingsPage /></ProtectedRoute>} /><Route path="/settings/billing" element={<ProtectedRoute><BillingPage /></ProtectedRoute>} /><Route path="/dashboard" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/backtesting" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/paper-trading" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/forward-validation" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/learning" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/validation" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/workspace/:ticker" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/chart" element={<Navigate to="/dashboard" replace />} /><Route path="*" element={<Navigate to="/dashboard" replace />} /></Routes></AuthProvider></BrowserRouter>;
+  return <BrowserRouter><AuthProvider><Routes><Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} /><Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} /><Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} /><Route path="/reset-password" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} /><Route path="/settings/profile" element={<ProtectedRoute><ProfileSettingsPage /></ProtectedRoute>} /><Route path="/settings/billing" element={<ProtectedRoute><BillingPage /></ProtectedRoute>} /><Route path="/dashboard" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/backtesting" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/paper-trading" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/forward-validation" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/learning" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/validation" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/evidence" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/workspace/:ticker" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/chart" element={<Navigate to="/dashboard" replace />} /><Route path="*" element={<Navigate to="/dashboard" replace />} /></Routes></AuthProvider></BrowserRouter>;
 }
 
 export default App;

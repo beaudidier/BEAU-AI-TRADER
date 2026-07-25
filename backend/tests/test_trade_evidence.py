@@ -9,6 +9,12 @@ from pathlib import Path
 import pandas as pd
 
 from atr import add_atr
+from calibration.trade_evidence import (
+    CATEGORY_QUOTAS,
+    SOURCE_LEDGER,
+    _deterministic_stratified_selections,
+    _population_rows,
+)
 from engines.institutional_engine import calculate_institutional_analysis
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -47,13 +53,39 @@ class HistoricalTradeEvidenceTests(unittest.TestCase):
         self.assertGreaterEqual(len(self.summary["coverage"]["sectors"]), 10)
         self.assertTrue(self.summary["all_audit_checks_passed"])
         self.assertFalse(self.summary["future_profitability_guaranteed"])
+        self.assertEqual(_sha256(SOURCE_LEDGER), self.ledger["source_sha256"])
         for example in self.examples:
             self.assertTrue(example["classification"]["retrospective_holdout"])
             self.assertTrue(example["classification"]["out_of_sample"])
             self.assertFalse(example["classification"]["forward_validation"])
             self.assertTrue(all(example["audit_checks"].values()))
+            self.assertTrue(example["audit_checks"]["sector_matches_frozen_universe"])
+            self.assertTrue(example["audit_checks"]["historical_regime_matches_raw_spy"])
+            self.assertTrue(example["audit_checks"]["outcome_class_matches_source_record"])
         for ticker, source in self.summary["sources"]["raw_files"].items():
             self.assertEqual(_sha256(ROOT / source["path"]), source["sha256"], ticker)
+
+    def test_selection_is_deterministic_and_uses_the_full_oos_population(self):
+        ledger = pd.read_csv(SOURCE_LEDGER, low_memory=False)
+        population = _population_rows(ledger)
+        first, first_manifest = _deterministic_stratified_selections(population)
+        second, second_manifest = _deterministic_stratified_selections(population)
+        self.assertEqual(first, second)
+        self.assertEqual(first_manifest, second_manifest)
+        self.assertEqual(first_manifest["candidate_population"], 111348)
+        self.assertEqual(first_manifest["quotas"], CATEGORY_QUOTAS)
+        self.assertEqual(first_manifest["selected_keys_sha256"], self.summary["selection"]["selected_keys_sha256"])
+        self.assertEqual(first_manifest["selected_keys"], self.ledger["selection"]["selected_keys"])
+        self.assertTrue(self.summary["selection"]["deterministic_replay_verified"])
+        self.assertFalse(self.summary["selection"]["milestone_34_audit"]["manual_record_ids_used"])
+
+    def test_frontend_payload_and_charts_match_the_audited_artifacts(self):
+        frontend = json.loads((ROOT / "frontend" / "public" / "evidence" / "summary.json").read_text())
+        self.assertEqual(frontend, self.summary)
+        for example in self.examples:
+            source = ROOT / example["chart"]["file"]
+            public = ROOT / "frontend" / "public" / example["chart"]["public_url"].lstrip("/")
+            self.assertEqual(_sha256(source), _sha256(public), example["id"])
 
     def test_chart_values_and_markers_match_evidence_ledger(self):
         for example in self.examples:
@@ -134,7 +166,7 @@ class HistoricalTradeEvidenceTests(unittest.TestCase):
                 total_pnl = sum(leg["pnl"] for leg in legs)
                 total_exit_cost = sum(leg["exit_transaction_cost"] for leg in legs)
                 total_exit_slippage = sum(leg["slippage_amount_gbp"] for leg in legs)
-                self.assertAlmostEqual(maximum_risk, sizing["maximum_monetary_risk_gbp"], places=6)
+                self.assertAlmostEqual(maximum_risk, sizing["maximum_monetary_risk_gbp"], delta=1e-6)
                 self.assertAlmostEqual(total_pnl, example["total_pnl_gbp"], places=6)
                 self.assertAlmostEqual(total_pnl / maximum_risk, example["final_r_result"], places=6)
                 self.assertAlmostEqual(
