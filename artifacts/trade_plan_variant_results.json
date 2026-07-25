@@ -1,0 +1,308 @@
+{
+  "audit_status": "completed",
+  "parameters": {
+    "dataset": "existing cached calibration dataset",
+    "signals": "existing close-of-candle institutional signals; unchanged",
+    "split": "chronological 70/30 by shared signal date",
+    "candidate_signals": 15780,
+    "out_of_sample_candidate_signals": 4734,
+    "slippage_bps_per_side": 5,
+    "transaction_cost_bps_per_side": 5,
+    "max_holding_days": 30,
+    "partial_exit": "50% at TP1; original stop remains for the remainder",
+    "same_candle_rule": "stop first"
+  },
+  "variants": {
+    "next_open_atr": {
+      "overall": {
+        "valid_trades": 363,
+        "rejected_trades": 4371,
+        "win_rate": 44.08,
+        "expectancy": 0.1381,
+        "profit_factor": 1.2401,
+        "average_r": 0.1381,
+        "maximum_drawdown": -15.1636,
+        "tp1_rate": 42.42,
+        "tp2_rate": 25.62,
+        "stop_rate": 61.71,
+        "average_holding_time": 13.02,
+        "expectancy_95_ci": [
+          -0.0103,
+          0.2872
+        ]
+      },
+      "by_band": {
+        "WATCH": {
+          "valid_trades": 186,
+          "rejected_trades": 2274,
+          "win_rate": 44.62,
+          "expectancy": 0.0977,
+          "profit_factor": 1.1713,
+          "average_r": 0.0977,
+          "maximum_drawdown": -13.108,
+          "tp1_rate": 41.94,
+          "tp2_rate": 23.66,
+          "stop_rate": 62.9,
+          "average_holding_time": 13.63,
+          "expectancy_95_ci": [
+            -0.0953,
+            0.3
+          ]
+        },
+        "BUY": {
+          "valid_trades": 92,
+          "rejected_trades": 832,
+          "win_rate": 44.57,
+          "expectancy": 0.1634,
+          "profit_factor": 1.284,
+          "average_r": 0.1634,
+          "maximum_drawdown": -8.6992,
+          "tp1_rate": 44.57,
+          "tp2_rate": 28.26,
+          "stop_rate": 61.96,
+          "average_holding_time": 10.86,
+          "expectancy_95_ci": [
+            -0.1325,
+            0.4573
+          ]
+        }
+      },
+      "by_market_regime": {
+        "Defensive": {
+          "valid_trades": 101,
+          "rejected_trades": 1039,
+          "win_rate": 49.5,
+          "expectancy": 0.332,
+          "profit_factor": 1.6514,
+          "average_r": 0.332,
+          "maximum_drawdown": -6.5958,
+          "tp1_rate": 46.53,
+          "tp2_rate": 26.73,
+          "stop_rate": 52.48,
+          "average_holding_time": 15.57,
+          "expectancy_95_ci": [
+            0.057,
+            0.621
+          ]
+        },
+        "Risk-on": {
+          "valid_trades": 262,
+          "rejected_trades": 3332,
+          "win_rate": 41.98,
+          "expectancy": 0.0634,
+          "profit_factor": 1.1055,
+          "average_r": 0.0634,
+          "maximum_drawdown": -22.4175,
+          "tp1_rate": 40.84,
+          "tp2_rate": 25.19,
+          "stop_rate": 65.27,
+          "average_holding_time": 12.04,
+          "expectancy_95_ci": [
+            -0.1077,
+            0.238
+          ]
+        }
+      },
+      "rejection_reasons": {
+        "Overlapping position for ticker": 4371
+      }
+    },
+    "pullback": {
+      "overall": {
+        "valid_trades": 42,
+        "rejected_trades": 4692,
+        "win_rate": 54.76,
+        "expectancy": 0.5595,
+        "profit_factor": 2.4233,
+        "average_r": 0.5595,
+        "maximum_drawdown": -3.3237,
+        "tp1_rate": 42.86,
+        "tp2_rate": 28.57,
+        "stop_rate": 33.33,
+        "average_holding_time": 21.52,
+        "expectancy_95_ci": [
+          0.1409,
+          0.9801
+        ]
+      },
+      "by_band": {
+        "WATCH": {
+          "valid_trades": 29,
+          "rejected_trades": 2431,
+          "win_rate": 51.72,
+          "expectancy": 0.4679,
+          "profit_factor": 2.1304,
+          "average_r": 0.4679,
+          "maximum_drawdown": -4.9539,
+          "tp1_rate": 41.38,
+          "tp2_rate": 20.69,
+          "stop_rate": 34.48,
+          "average_holding_time": 21.79,
+          "expectancy_95_ci": [
+            -0.015,
+            0.958
+          ]
+        },
+        "BUY": {
+          "valid_trades": 5,
+          "rejected_trades": 919,
+          "win_rate": 40.0,
+          "expectancy": 0.0514,
+          "profit_factor": 1.105,
+          "average_r": 0.0514,
+          "maximum_drawdown": -1.0324,
+          "tp1_rate": 20.0,
+          "tp2_rate": 20.0,
+          "stop_rate": 40.0,
+          "average_holding_time": 21.4,
+          "expectancy_95_ci": [
+            -0.9017,
+            1.2166
+          ]
+        }
+      },
+      "by_market_regime": {
+        "Defensive": {
+          "valid_trades": 10,
+          "rejected_trades": 1130,
+          "win_rate": 50.0,
+          "expectancy": 0.2834,
+          "profit_factor": 1.6887,
+          "average_r": 0.2834,
+          "maximum_drawdown": -4.1152,
+          "tp1_rate": 30.0,
+          "tp2_rate": 10.0,
+          "stop_rate": 30.0,
+          "average_holding_time": 24.4,
+          "expectancy_95_ci": [
+            -0.435,
+            1.0182
+          ]
+        },
+        "Risk-on": {
+          "valid_trades": 32,
+          "rejected_trades": 3562,
+          "win_rate": 56.25,
+          "expectancy": 0.6458,
+          "profit_factor": 2.6672,
+          "average_r": 0.6458,
+          "maximum_drawdown": -3.3237,
+          "tp1_rate": 46.88,
+          "tp2_rate": 34.38,
+          "stop_rate": 34.38,
+          "average_holding_time": 20.62,
+          "expectancy_95_ci": [
+            0.1515,
+            1.1362
+          ]
+        }
+      },
+      "rejection_reasons": {
+        "Overlapping position for ticker": 1002,
+        "Position risk exceeds 5% of entry price": 1382,
+        "Pullback limit was not traded within 3 candles": 2308
+      }
+    },
+    "breakout": {
+      "overall": {
+        "valid_trades": 442,
+        "rejected_trades": 4292,
+        "win_rate": 37.1,
+        "expectancy": -0.0905,
+        "profit_factor": 0.8626,
+        "average_r": -0.0905,
+        "maximum_drawdown": -47.9436,
+        "tp1_rate": 36.88,
+        "tp2_rate": 22.17,
+        "stop_rate": 71.49,
+        "average_holding_time": 8.76,
+        "expectancy_95_ci": [
+          -0.2135,
+          0.0381
+        ]
+      },
+      "by_band": {
+        "WATCH": {
+          "valid_trades": 209,
+          "rejected_trades": 2251,
+          "win_rate": 35.89,
+          "expectancy": -0.1353,
+          "profit_factor": 0.7991,
+          "average_r": -0.1353,
+          "maximum_drawdown": -34.3803,
+          "tp1_rate": 35.89,
+          "tp2_rate": 20.57,
+          "stop_rate": 73.21,
+          "average_holding_time": 8.81,
+          "expectancy_95_ci": [
+            -0.3133,
+            0.0512
+          ]
+        },
+        "BUY": {
+          "valid_trades": 90,
+          "rejected_trades": 834,
+          "win_rate": 37.78,
+          "expectancy": -0.0209,
+          "profit_factor": 0.9682,
+          "average_r": -0.0209,
+          "maximum_drawdown": -12.8477,
+          "tp1_rate": 36.67,
+          "tp2_rate": 26.67,
+          "stop_rate": 67.78,
+          "average_holding_time": 8.56,
+          "expectancy_95_ci": [
+            -0.3117,
+            0.2773
+          ]
+        }
+      },
+      "by_market_regime": {
+        "Defensive": {
+          "valid_trades": 133,
+          "rejected_trades": 1007,
+          "win_rate": 33.83,
+          "expectancy": -0.1827,
+          "profit_factor": 0.7305,
+          "average_r": -0.1827,
+          "maximum_drawdown": -30.5371,
+          "tp1_rate": 33.83,
+          "tp2_rate": 18.05,
+          "stop_rate": 73.68,
+          "average_holding_time": 8.76,
+          "expectancy_95_ci": [
+            -0.4002,
+            0.0386
+          ]
+        },
+        "Risk-on": {
+          "valid_trades": 309,
+          "rejected_trades": 3285,
+          "win_rate": 38.51,
+          "expectancy": -0.0509,
+          "profit_factor": 0.9219,
+          "average_r": -0.0509,
+          "maximum_drawdown": -26.5694,
+          "tp1_rate": 38.19,
+          "tp2_rate": 23.95,
+          "stop_rate": 70.55,
+          "average_holding_time": 8.76,
+          "expectancy_95_ci": [
+            -0.202,
+            0.1016
+          ]
+        }
+      },
+      "rejection_reasons": {
+        "Breakout trigger was not reached within 3 candles": 496,
+        "Overlapping position for ticker": 3691,
+        "Position risk exceeds 5% of entry price": 105
+      }
+    }
+  },
+  "recommendation": {
+    "recommended_variant": "pullback",
+    "decision": "Variant B \u2014 Pullback satisfies all pre-defined experiment gates.",
+    "criteria": "Requires >=30 OOS trades, positive expectancy, profit factor above 1, and a positive lower 95% bootstrap expectancy bound."
+  }
+}
