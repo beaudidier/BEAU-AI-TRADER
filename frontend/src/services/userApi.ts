@@ -6,7 +6,23 @@ async function authenticatedFetch(path: string, options: RequestInit = {}) {
   const { data } = await supabase?.auth.getSession() ?? { data: { session: null } };
   if (!data.session) throw new Error("Your session has expired. Please sign in again.");
   const response = await fetch(`${apiBaseUrl}${path}`, { ...options, headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session.access_token}`, ...options.headers } });
-  if (!response.ok) throw new Error("Unable to complete this request.");
+  if (!response.ok) {
+    let message = "Unable to complete this request.";
+    try {
+      const payload = await response.json() as { detail?: string | { message?: string; capacity_resets_at?: string } };
+      if (typeof payload.detail === "string") message = payload.detail;
+      if (payload.detail && typeof payload.detail === "object" && payload.detail.message) {
+        message = payload.detail.message;
+        if (payload.detail.capacity_resets_at) {
+          const reset = new Date(payload.detail.capacity_resets_at);
+          if (!Number.isNaN(reset.getTime())) message += ` Capacity resets ${reset.toLocaleString()}.`;
+        }
+      }
+    } catch {
+      // Keep the non-technical fallback when the server has no JSON response.
+    }
+    throw new Error(message);
+  }
   return response.status === 204 ? null : response.json();
 }
 

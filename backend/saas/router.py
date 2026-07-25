@@ -9,6 +9,7 @@ from .auth import CurrentUser, get_current_user, get_user_client
 from .entitlements import entitlement_for, require_limit
 from coach.coach_engine import analyze_completed_trade
 from paper_trading.engine import build_close_preview, build_portfolio_summary, build_trade_coach_payload
+from paper_trading.portfolio_risk import build_portfolio_risk_dashboard
 from paper_trading.validation import validate_long_paper_trade
 from providers import get_market_data_provider
 from engines.institutional_engine import calculate_institutional_analysis
@@ -230,6 +231,15 @@ def _forward_validation_dashboard(store: SupabaseForwardValidationStore, user_id
         "required": 100,
         "percentage": min(100, round(completed)),
     }
+    account = store.get_paper_account(user_id)
+    paper_trades = store.list_paper_trades(user_id)
+    dashboard["portfolio_risk"] = build_portfolio_risk_dashboard(
+        account,
+        paper_trades,
+    )
+    dashboard["portfolio_risk_rejections"] = store.list_risk_rejections(
+        user_id
+    )
     return dashboard
 
 
@@ -286,10 +296,27 @@ def get_paper_portfolio(user: CurrentUser = Depends(get_current_user)):
     account = _one(client.table("paper_accounts").select("*").eq("user_id", user.id).maybe_single().execute())
     if not account:
         account = _one(client.table("paper_accounts").insert({"user_id": user.id}).execute())
-    open_trades = _data(client.table("paper_trades").select("*").eq("user_id", user.id).eq("status", "OPEN").order("opened_at", desc=True).execute())
-    closed_trades = _data(client.table("paper_trades").select("*").eq("user_id", user.id).eq("status", "CLOSED").order("closed_at", desc=True).execute())
+    trades = _data(client.table("paper_trades").select("*").eq("user_id", user.id).order("opened_at", desc=True).execute())
+    open_trades = [trade for trade in trades if trade.get("status") == "OPEN"]
+    closed_trades = [trade for trade in trades if trade.get("status") == "CLOSED"]
     quotes = {ticker: get_market_data_provider().get_quote(ticker) or {} for ticker in {trade["ticker"] for trade in open_trades}}
-    return build_portfolio_summary(account, open_trades, closed_trades, quotes)
+    portfolio = build_portfolio_summary(
+        account, open_trades, closed_trades, quotes
+    )
+    portfolio["portfolio_risk"] = build_portfolio_risk_dashboard(
+        account,
+        trades,
+        portfolio_balance=portfolio["portfolio_balance"],
+    )
+    portfolio["risk_rejections"] = _data(
+        client.table("portfolio_risk_rejections")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("rejected_at", desc=True)
+        .limit(100)
+        .execute()
+    )
+    return portfolio
 
 
 @router.post("/paper-trading/open", status_code=status.HTTP_201_CREATED)
@@ -308,7 +335,22 @@ def open_paper_trade(payload: PaperTradeOpen, user: CurrentUser = Depends(get_cu
         "p_setup_quality": context["setup_quality"], "p_market_regime": context["market_regime"], "p_trend": context["trend"], "p_momentum": context["momentum"], "p_sector": context["sector"],
     }
     try:
-        return _one(_client(user).rpc("open_paper_trade", parameters).execute())
+        result = _one(
+            _client(user).rpc("open_paper_trade", parameters).execute()
+        )
+        if result.get("blocked"):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={
+                    "message": result.get("rejection_reason")
+                    or "This paper trade exceeds the validated portfolio limits.",
+                    "capacity_resets_at": result.get("capacity_resets_at"),
+                    "limiting_positions": result.get("limiting_positions") or [],
+                },
+            )
+        return result
+    except HTTPException:
+        raise
     except Exception as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unable to open paper trade. Check account balance and trade values.") from error
 

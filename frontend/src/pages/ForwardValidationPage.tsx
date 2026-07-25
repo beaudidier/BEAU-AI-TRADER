@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import ForwardValidationTable from "../components/ForwardValidationTable";
 import Header from "../components/Header";
+import PortfolioRiskPanel from "../components/PortfolioRiskPanel";
 import Sidebar, { type AppPage } from "../components/Sidebar";
 import SectorConcentrationBanner from "../components/SectorConcentrationBanner";
 import { userApi } from "../services/userApi";
@@ -160,6 +161,13 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
             <SectorConcentrationBanner concentration={dashboard.concentration} />
           </div>}
 
+          <div className="mt-5">
+            <PortfolioRiskPanel
+              risk={dashboard.portfolio_risk}
+              rejections={dashboard.portfolio_risk_rejections}
+            />
+          </div>
+
           <section className="mt-5 grid gap-4 lg:grid-cols-2">
             <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
               <h2 className="font-semibold text-white">Intentionally excluded symbols</h2>
@@ -201,6 +209,7 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
             <ForwardValidationTable title="Open paper trades" description="Entered validation positions tracked in R. No real-money orders exist." signals={dashboard.open_paper_trades} emptyMessage="No open forward-validation paper trades." />
             <ForwardValidationTable title="Completed trades" description="Final outcomes include costs, slippage, partial exits, and holding time." signals={dashboard.completed_trades} emptyMessage="No completed forward-validation trades yet." />
             <ForwardValidationTable title="Expired signals" description="Signals whose EMA20 limit was not traded within three completed candles." signals={dashboard.expired_signals} emptyMessage="No expired signals." />
+            <ForwardValidationTable title="Portfolio-blocked signals" description="Signals retained for audit because validated paper-risk capacity was unavailable." signals={dashboard.blocked_signals ?? []} emptyMessage="No signals were blocked by portfolio limits." />
           </div>
         </>}
       </main>

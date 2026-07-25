@@ -76,6 +76,12 @@ class MemoryStore:
         self.signals: list[dict] = []
         self.outcomes: dict[str, dict] = {}
         self.paper_trades: list[dict] = []
+        self.risk_rejections: list[dict] = []
+        self.paper_account = {
+            "user_id": "user-1",
+            "initial_balance": 10_000.0,
+            "cash_balance": 10_000.0,
+        }
 
     def create_run(self, values):
         row = {"id": f"run-{len(self.runs) + 1}", **deepcopy(values)}
@@ -124,6 +130,123 @@ class MemoryStore:
 
     def list_open_paper_trades(self, user_id):
         return deepcopy([item for item in self.paper_trades if item["user_id"] == user_id and item["status"] == "OPEN"])
+
+    def list_paper_trades(self, user_id):
+        return deepcopy(
+            [item for item in self.paper_trades if item["user_id"] == user_id]
+        )
+
+    def get_paper_account(self, user_id):
+        self.paper_account["user_id"] = user_id
+        return deepcopy(self.paper_account)
+
+    def list_risk_rejections(self, user_id):
+        return deepcopy(
+            [
+                item
+                for item in self.risk_rejections
+                if item["user_id"] == user_id
+            ]
+        )
+
+    def create_risk_rejection(self, values):
+        existing = next(
+            (
+                item
+                for item in self.risk_rejections
+                if item["user_id"] == values["user_id"]
+                and item["source"] == values["source"]
+                and item["deduplication_key"]
+                == values["deduplication_key"]
+            ),
+            None,
+        )
+        if existing:
+            return deepcopy(existing)
+        row = {
+            "id": f"rejection-{len(self.risk_rejections) + 1}",
+            **deepcopy(values),
+        }
+        self.risk_rejections.append(row)
+        return deepcopy(row)
+
+    def open_automatic_paper_trade(self, values):
+        existing = next(
+            (
+                item
+                for item in self.paper_trades
+                if item.get("forward_validation_signal_id")
+                == values["p_signal_id"]
+            ),
+            None,
+        )
+        if existing:
+            return deepcopy(existing)
+        entry = float(values["p_entry_price"])
+        stop = float(values["p_stop_loss"])
+        quantity = float(values["p_quantity"])
+        risk_amount = (entry - stop) * quantity
+        risk_r = risk_amount / 100
+        row = {
+            "id": f"paper-{len(self.paper_trades) + 1}",
+            "user_id": values["p_user_id"],
+            "ticker": values["p_ticker"],
+            "status": "OPEN",
+            "side": "BUY",
+            "entry_price": entry,
+            "stop_loss": stop,
+            "target_1": values["p_target_1"],
+            "target_2": values["p_target_2"],
+            "quantity": quantity,
+            "initial_risk_amount": risk_amount,
+            "initial_risk_r": risk_r,
+            "remaining_risk_r": risk_r,
+            "remaining_fraction": 1,
+            "risk_admitted_at": values["p_risk_admitted_at"],
+            "opened_at": values["p_risk_admitted_at"],
+            "forward_validation_signal_id": values["p_signal_id"],
+            "portfolio_signal_rank": values["p_signal_rank"],
+        }
+        self.paper_trades.append(row)
+        self.paper_account["cash_balance"] -= entry * quantity
+        return deepcopy(row)
+
+    def update_paper_trade_by_signal(self, signal_id, values):
+        row = next(
+            item
+            for item in self.paper_trades
+            if item.get("forward_validation_signal_id") == signal_id
+            and item["status"] == "OPEN"
+        )
+        row.update(deepcopy(values))
+        return deepcopy(row)
+
+    def close_automatic_paper_trade(
+        self, signal_id, realized_r, completed_at
+    ):
+        row = next(
+            item
+            for item in self.paper_trades
+            if item.get("forward_validation_signal_id") == signal_id
+            and item["status"] == "OPEN"
+        )
+        risk_amount = float(row["initial_risk_amount"])
+        realized_pnl = float(realized_r) * risk_amount
+        row.update(
+            {
+                "status": "CLOSED",
+                "realized_pnl": realized_pnl,
+                "realized_rr": realized_r,
+                "remaining_risk_r": 0,
+                "remaining_fraction": 0,
+                "closed_at": completed_at,
+            }
+        )
+        self.paper_account["cash_balance"] += (
+            float(row["entry_price"]) * float(row["quantity"])
+            + realized_pnl
+        )
+        return deepcopy(row)
 
     def update_paper_trade(self, trade_id, values):
         row = next(item for item in self.paper_trades if item["id"] == trade_id)

@@ -258,6 +258,7 @@ def build_dashboard(signals: list[dict[str, Any]], outcomes: list[dict[str, Any]
         "strategy": STRATEGY_METADATA,
         "active_signals": [item for item in combined if item["outcome"].get("status") in {"waiting_for_entry", "data_error"}],
         "expired_signals": [item for item in combined if item["outcome"].get("status") == "expired"],
+        "blocked_signals": [item for item in combined if item["outcome"].get("status") == "portfolio_blocked"],
         "open_paper_trades": [item for item in combined if item["outcome"].get("status") in {"entered", "TP1_hit"}],
         "completed_trades": completed,
         "metrics": metrics,

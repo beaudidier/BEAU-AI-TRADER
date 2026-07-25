@@ -15,6 +15,13 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from engines.engine_utils import REQUIRED_MARKET_COLUMNS, safe_float
+from decision_rules import recommendation_for_score
+from paper_trading.portfolio_risk import (
+    account_risk_unit,
+    admit_ranked_signals,
+    build_portfolio_risk_dashboard,
+    risk_day,
+)
 from providers import get_market_data_provider
 from providers.provider import MarketDataProvider
 from strategies import strategy_registry
@@ -33,14 +40,20 @@ from .health import (
 )
 from .setup_clarity import setup_status_from_outcome
 
-RUNNER_VERSION = "forward-validation-runner-v2.1.0"
+RUNNER_VERSION = "forward-validation-runner-v2.2.0"
 ACTIVE_UNIVERSE = "sp500"
 ACTIVE_MARKET = "stocks"
 SCHEDULE_HOUR_UTC = 22
 SCHEDULE_MINUTE_UTC = 30
 MARKET_TIMEZONE = ZoneInfo("America/New_York")
 MARKET_CLOSE_BUFFER = time(16, 15)
-TERMINAL_STATUSES = {"expired", "TP2_hit", "stopped", "completed"}
+TERMINAL_STATUSES = {
+    "expired",
+    "TP2_hit",
+    "stopped",
+    "completed",
+    "portfolio_blocked",
+}
 REPLAY_ARTIFACT = (
     Path(__file__).resolve().parents[2]
     / "artifacts"
@@ -59,6 +72,13 @@ class ForwardValidationStore(Protocol):
     def create_signal(self, values: dict[str, Any]) -> dict[str, Any]: ...
     def save_outcome(self, values: dict[str, Any]) -> dict[str, Any]: ...
     def list_open_paper_trades(self, user_id: str) -> list[dict[str, Any]]: ...
+    def list_paper_trades(self, user_id: str) -> list[dict[str, Any]]: ...
+    def get_paper_account(self, user_id: str) -> dict[str, Any]: ...
+    def list_risk_rejections(self, user_id: str) -> list[dict[str, Any]]: ...
+    def create_risk_rejection(self, values: dict[str, Any]) -> dict[str, Any]: ...
+    def open_automatic_paper_trade(self, values: dict[str, Any]) -> dict[str, Any]: ...
+    def update_paper_trade_by_signal(self, signal_id: str, values: dict[str, Any]) -> dict[str, Any]: ...
+    def close_automatic_paper_trade(self, signal_id: str, realized_r: float, completed_at: str) -> dict[str, Any]: ...
     def update_paper_trade(self, trade_id: str, values: dict[str, Any]) -> dict[str, Any]: ...
 
 
@@ -143,6 +163,91 @@ class SupabaseForwardValidationStore:
             .eq("user_id", user_id)
             .eq("status", "OPEN")
             .execute()
+        )
+
+    def list_paper_trades(self, user_id: str) -> list[dict[str, Any]]:
+        return _data(
+            self.client.table("paper_trades")
+            .select("*")
+            .eq("user_id", user_id)
+            .order("opened_at", desc=True)
+            .execute()
+        )
+
+    def get_paper_account(self, user_id: str) -> dict[str, Any]:
+        account = _one(
+            self.client.table("paper_accounts")
+            .select("*")
+            .eq("user_id", user_id)
+            .maybe_single()
+            .execute()
+        )
+        if account:
+            return account
+        return _one(
+            self.client.table("paper_accounts")
+            .insert({"user_id": user_id})
+            .execute()
+        )
+
+    def list_risk_rejections(self, user_id: str) -> list[dict[str, Any]]:
+        return _data(
+            self.client.table("portfolio_risk_rejections")
+            .select("*")
+            .eq("user_id", user_id)
+            .order("rejected_at", desc=True)
+            .limit(100)
+            .execute()
+        )
+
+    def create_risk_rejection(
+        self, values: dict[str, Any]
+    ) -> dict[str, Any]:
+        return _one(
+            self.client.table("portfolio_risk_rejections")
+            .upsert(
+                values,
+                on_conflict="user_id,source,deduplication_key",
+                ignore_duplicates=True,
+            )
+            .execute()
+        )
+
+    def open_automatic_paper_trade(
+        self, values: dict[str, Any]
+    ) -> dict[str, Any]:
+        return _one(
+            self.client.rpc(
+                "open_forward_validation_paper_trade", values
+            ).execute()
+        )
+
+    def update_paper_trade_by_signal(
+        self, signal_id: str, values: dict[str, Any]
+    ) -> dict[str, Any]:
+        return _one(
+            self.client.table("paper_trades")
+            .update(values)
+            .eq("forward_validation_signal_id", signal_id)
+            .eq("status", "OPEN")
+            .execute()
+        )
+
+    def close_automatic_paper_trade(
+        self,
+        signal_id: str,
+        realized_r: float,
+        completed_at: str,
+    ) -> dict[str, Any]:
+        return _one(
+            self.client.rpc(
+                "close_forward_validation_paper_trade",
+                {
+                    "p_signal_id": signal_id,
+                    "p_realized_r": realized_r,
+                    "p_completed_at": completed_at,
+                },
+            ).execute()
         )
 
     def update_paper_trade(self, trade_id: str, values: dict[str, Any]) -> dict[str, Any]:
@@ -319,6 +424,47 @@ def _finite(value: Any) -> float | None:
     return result if math.isfinite(result) else None
 
 
+def _automatic_quantity(
+    account: dict[str, Any],
+    entry_price: float,
+    stop_loss: float,
+) -> int:
+    risk_per_share = entry_price - stop_loss
+    cash = _finite(account.get("cash_balance")) or 0.0
+    if risk_per_share <= 0 or entry_price <= 0 or cash <= 0:
+        return 0
+    risk_sized = math.floor(account_risk_unit(account) / risk_per_share)
+    cash_sized = math.floor(cash / entry_price)
+    return max(0, min(risk_sized, cash_sized))
+
+
+def _signal_rejection_values(
+    user_id: str,
+    signal: dict[str, Any],
+    decision: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "user_id": user_id,
+        "deduplication_key": (
+            f"{signal.get('ticker')}:{signal.get('strategy_version')}:"
+            f"{signal.get('data_timestamp')}"
+        ),
+        "source": "forward_validation_signal",
+        "ticker": str(signal.get("ticker") or "").upper(),
+        "signal_id": None,
+        "rejection_reason": decision["rejection_reason"],
+        "current_open_positions": decision["current_open_positions"],
+        "current_open_risk_r": decision["current_open_risk_r"],
+        "daily_new_risk_r": decision["daily_new_risk_r"],
+        "proposed_risk_r": decision["proposed_risk_r"],
+        "signal_rank": decision["signal_rank"],
+        "limiting_reference": decision["limiting_reference"],
+        "capacity_resets_at": decision["capacity_resets_at"],
+        "signal_snapshot": signal,
+        "rejected_at": decision["timestamp"],
+    }
+
+
 def _run_values(
     user_id: str,
     now: datetime,
@@ -488,9 +634,27 @@ def run_for_user(
             raise RuntimeError(reason)
 
         data_timestamp = pd.Timestamp(benchmark.index[-1]).isoformat()
-        signals = store.list_signals(user_id)
+        signals = sorted(
+            store.list_signals(user_id),
+            key=lambda item: (
+                -(_finite(item.get("confidence")) or 0),
+                str(item.get("ticker") or ""),
+                str(item.get("signal_timestamp") or ""),
+            ),
+        )
         outcomes = {str(item["signal_id"]): item for item in store.list_outcomes(user_id)}
-        open_trades = store.list_open_paper_trades(user_id)
+        paper_account = store.get_paper_account(user_id)
+        paper_trades = store.list_paper_trades(user_id)
+        open_trades = [
+            trade
+            for trade in paper_trades
+            if str(trade.get("status")).upper() == "OPEN"
+        ]
+        paper_by_signal = {
+            str(trade["forward_validation_signal_id"]): trade
+            for trade in paper_trades
+            if trade.get("forward_validation_signal_id")
+        }
         required_symbols = list(dict.fromkeys([*universe, *(str(item["ticker"]) for item in signals), *(str(item["ticker"]) for item in open_trades)]))
 
         def save_checkpoint(values: dict[str, object]) -> None:
@@ -597,10 +761,104 @@ def run_for_user(
                     "invalidation_reason": None,
                     "last_evaluated_at": moment.isoformat(),
                 }
+                entered = evaluation.get("entry_price") is not None
+                paper_trade = paper_by_signal.get(signal_id)
+                if entered and paper_trade is None:
+                    entry_price = float(evaluation["entry_price"])
+                    stop_loss = float(signal["stop_loss"])
+                    quantity = _automatic_quantity(
+                        paper_account, entry_price, stop_loss
+                    )
+                    if quantity <= 0:
+                        update.update(
+                            {
+                                "status": "portfolio_blocked",
+                                "setup_status": "invalidated",
+                                "invalidation_reason": (
+                                    "The paper account has no safe position size "
+                                    "or available simulated cash."
+                                ),
+                            }
+                        )
+                    else:
+                        opened = store.open_automatic_paper_trade(
+                            {
+                                "p_user_id": user_id,
+                                "p_signal_id": signal_id,
+                                "p_ticker": signal["ticker"],
+                                "p_entry_price": entry_price,
+                                "p_stop_loss": stop_loss,
+                                "p_target_1": signal["target_1"],
+                                "p_target_2": signal["target_2"],
+                                "p_quantity": quantity,
+                                "p_confidence_score": signal["confidence"],
+                                "p_recommendation": recommendation_for_score(
+                                    signal["confidence"]
+                                ),
+                                "p_market_regime": signal["market_regime"],
+                                "p_sector": signal.get("sector") or "Unknown",
+                                "p_signal_rank": int(
+                                    signal.get("portfolio_signal_rank") or 1
+                                ),
+                                "p_risk_admitted_at": (
+                                    evaluation.get("entry_timestamp")
+                                    or moment.isoformat()
+                                ),
+                            }
+                        )
+                        if opened.get("blocked"):
+                            update.update(
+                                {
+                                    "status": "portfolio_blocked",
+                                    "setup_status": "invalidated",
+                                    "invalidation_reason": (
+                                        opened.get("rejection_reason")
+                                        or "Validated portfolio capacity is unavailable."
+                                    ),
+                                }
+                            )
+                        elif opened.get("id"):
+                            paper_trade = opened
+                            paper_by_signal[signal_id] = opened
+                            paper_account["cash_balance"] = (
+                                (_finite(paper_account.get("cash_balance")) or 0)
+                                - entry_price * quantity
+                            )
+                if paper_trade and update["status"] == "TP1_hit":
+                    initial_risk = _finite(
+                        paper_trade.get("initial_risk_r")
+                    ) or 0
+                    store.update_paper_trade_by_signal(
+                        signal_id,
+                        {
+                            "remaining_fraction": evaluation[
+                                "remaining_fraction"
+                            ],
+                            "remaining_risk_r": round(
+                                initial_risk
+                                * float(evaluation["remaining_fraction"]),
+                                6,
+                            ),
+                        },
+                    )
+                if (
+                    paper_trade
+                    and update["status"]
+                    in {"TP2_hit", "stopped", "completed"}
+                ):
+                    store.close_automatic_paper_trade(
+                        signal_id,
+                        float(evaluation["realized_r"]),
+                        str(
+                            evaluation.get("completed_at")
+                            or moment.isoformat()
+                        ),
+                    )
             store.save_outcome(update)
             outcomes_updated += 1
 
         strategy = strategy_registry.require_usable("swing_trading")
+        candidate_signals: list[dict[str, Any]] = []
         for ticker in universe:
             history = histories.get(ticker)
             if history is None:
@@ -649,6 +907,50 @@ def run_for_user(
             if store.find_signal(user_id, ticker, signal["strategy_version"], signal["data_timestamp"]):
                 duplicates += 1
                 continue
+            candidate_signals.append(signal)
+
+        paper_account = store.get_paper_account(user_id)
+        paper_trades = store.list_paper_trades(user_id)
+        risk_dashboard = build_portfolio_risk_dashboard(
+            paper_account,
+            paper_trades,
+            now=moment,
+        )
+        signal_outcome_by_id = outcomes
+        admitted_today = sum(
+            1
+            for item in signals
+            if risk_day(item.get("signal_timestamp")) == risk_day(moment)
+            and signal_outcome_by_id.get(
+                str(item.get("id")), {}
+            ).get("status")
+            != "portfolio_blocked"
+        )
+        risk_dashboard["daily_new_risk_used_r"] = max(
+            risk_dashboard["daily_new_risk_used_r"],
+            float(admitted_today),
+        )
+        risk_dashboard["remaining_daily_risk_budget_r"] = max(
+            0.0,
+            1.0 - risk_dashboard["daily_new_risk_used_r"],
+        )
+        admitted_signals, portfolio_rejected = admit_ranked_signals(
+            candidate_signals,
+            risk_dashboard,
+            timestamp=moment.isoformat(),
+        )
+        for rejected_signal in portfolio_rejected:
+            decision = rejected_signal["portfolio_rejection"]
+            store.create_risk_rejection(
+                _signal_rejection_values(
+                    user_id, rejected_signal, decision
+                )
+            )
+            rejection_reasons["portfolio_limit_rejected"] = (
+                rejection_reasons.get("portfolio_limit_rejected", 0) + 1
+            )
+
+        for signal in admitted_signals:
             signal_day = pd.Timestamp(signal["data_timestamp"]).date()
             try:
                 saved = store.create_signal(
@@ -657,10 +959,18 @@ def run_for_user(
                         **signal,
                         "expiry_date": signal_expiry_date(signal_day).isoformat(),
                         "initial_status": "waiting_for_entry",
+                        "portfolio_signal_rank": signal[
+                            "portfolio_signal_rank"
+                        ],
                     }
                 )
             except Exception:
-                if store.find_signal(user_id, ticker, signal["strategy_version"], signal["data_timestamp"]):
+                if store.find_signal(
+                    user_id,
+                    signal["ticker"],
+                    signal["strategy_version"],
+                    signal["data_timestamp"],
+                ):
                     duplicates += 1
                     continue
                 raise
