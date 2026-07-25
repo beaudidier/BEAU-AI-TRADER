@@ -11,6 +11,7 @@ import Sidebar, { type AppPage } from "../components/Sidebar";
 import TimeframeSelector from "../components/TimeframeSelector";
 import TradingChart from "../components/TradingChart";
 import { getInstitutionalAnalysis, getStockChart, getTradePlan } from "../services/api";
+import { paperTradeAdmissionReasons } from "../services/portfolioRisk";
 import { userApi } from "../services/userApi";
 import type { LearningDashboard, PaperPortfolio } from "../types/database";
 import type { InstitutionalAnalysis, StockChartData, Timeframe, TradePlan } from "../types/stock";
@@ -61,7 +62,7 @@ function TradeWorkspacePage({ ticker, onBack, onNavigate }: TradeWorkspacePagePr
   const blocked = plan
     ? [
         ...blockReasons(plan),
-        ...(portfolio?.portfolio_risk.blocked_reasons ?? []),
+        ...paperTradeAdmissionReasons(portfolio, plan),
       ]
     : [];
   async function confirmPaperTrade() { if (!plan) return; setOpening(true); setPaperError(null); try { const created = await userApi.openPaperTrade({ ticker, side: "BUY", current_price: plan.current_price, entry_price: plan.entry, stop_loss: plan.stop_loss, target_1: plan.target_1, target_2: plan.target_2, quantity: plan.position_size, confidence_score: plan.confidence_score, recommendation: plan.recommendation, risk_reward_target_1: plan.risk_reward_target_1 }) as { id?: string }; if (!created.id) throw new Error("Paper trade was created without a position identifier."); setOpenedTradeId(created.id); setPortfolio(await userApi.paperPortfolio() as PaperPortfolio); setConfirming(false); } catch (error) { setPaperError(error instanceof Error ? error.message : "Unable to open paper trade."); } finally { setOpening(false); } }

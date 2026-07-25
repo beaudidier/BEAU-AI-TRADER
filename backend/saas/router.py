@@ -2,6 +2,7 @@ import math
 from datetime import datetime, timezone
 from typing import Any, Literal
 
+import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from pydantic import BaseModel, Field
 
@@ -189,15 +190,39 @@ def delete_trade(trade_id: str, user: CurrentUser = Depends(get_current_user)):
     _client(user).table("trades").delete().eq("id", trade_id).execute(); return Response(status_code=204)
 
 
-def _quote_price(ticker: str) -> float:
-    quote = get_market_data_provider().get_quote(ticker)
+def _quote_snapshot(ticker: str) -> tuple[float, str]:
+    provider = get_market_data_provider()
+    try:
+        quote = provider.get_quote(ticker)
+    except Exception:
+        quote = None
     try:
         price = float((quote or {}).get("price"))
     except (TypeError, ValueError):
         price = 0
-    if not math.isfinite(price) or price <= 0:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unable to obtain a valid market quote")
-    return price
+    if math.isfinite(price) and price > 0:
+        return price, datetime.now(timezone.utc).isoformat()
+
+    try:
+        history = provider.get_history(ticker, period="5d", interval="1d")
+    except Exception:
+        history = None
+    if history is not None and not history.empty:
+        try:
+            price = float(history.iloc[-1]["Close"])
+            timestamp = pd.Timestamp(history.index[-1]).isoformat()
+        except (KeyError, TypeError, ValueError):
+            price = 0
+        if math.isfinite(price) and price > 0:
+            return price, timestamp
+    raise HTTPException(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        detail="The latest market price is temporarily unavailable. Please try again.",
+    )
+
+
+def _quote_price(ticker: str) -> float:
+    return _quote_snapshot(ticker)[0]
 
 
 def _learning_context(payload: PaperTradeOpen, recommendation: str) -> dict[str, Any]:
@@ -362,8 +387,8 @@ def preview_paper_trade_close(trade_id: str, user: CurrentUser = Depends(get_cur
     trade = _one(_client(user).table("paper_trades").select("*").eq("id", trade_id).eq("user_id", user.id).eq("status", "OPEN").maybe_single().execute())
     if not trade:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Open paper trade not found")
-    quote = _quote_price(trade["ticker"])
-    return build_close_preview(trade, quote, datetime.now(timezone.utc).isoformat())
+    quote, quote_timestamp = _quote_snapshot(trade["ticker"])
+    return build_close_preview(trade, quote, quote_timestamp)
 
 
 @router.post("/paper-trading/{trade_id}/close")

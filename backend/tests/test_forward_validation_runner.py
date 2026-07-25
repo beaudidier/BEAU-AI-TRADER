@@ -428,6 +428,146 @@ class ForwardValidationRunnerTests(unittest.TestCase):
         self.assertEqual(store.paper_trades[0]["market_price"], 100.0)
         self.assertEqual(store.paper_trades[0]["unrealized_pnl"], 10.0)
 
+    @patch("forward_validation.runner.strategy_registry.require_usable", return_value=FakeStrategy())
+    def test_tp1_partial_exit_releases_linked_paper_trade_risk(self, _strategy):
+        store = MemoryStore()
+        signal_history = _history("2026-07-24")
+        signal = {
+            "id": "signal-1",
+            "user_id": "user-1",
+            **FakeStrategy().scan(
+                ticker="AAPL",
+                history=signal_history,
+                benchmark=signal_history,
+                signal_timestamp="2026-07-24T22:30:00+00:00",
+            ),
+            "expiry_date": "2026-07-29",
+            "initial_status": "waiting_for_entry",
+        }
+        store.signals.append(signal)
+        store.outcomes["signal-1"] = {
+            "signal_id": "signal-1",
+            "user_id": "user-1",
+            "status": "entered",
+        }
+        store.paper_trades.append(
+            {
+                "id": "paper-1",
+                "user_id": "user-1",
+                "ticker": "AAPL",
+                "status": "OPEN",
+                "entry_price": 99.0,
+                "quantity": 20,
+                "initial_risk_amount": 100.0,
+                "initial_risk_r": 1.0,
+                "remaining_risk_r": 1.0,
+                "remaining_fraction": 1.0,
+                "forward_validation_signal_id": "signal-1",
+            }
+        )
+        evaluation = {
+            "status": "TP1_hit",
+            "entry_price": 99.0,
+            "entry_timestamp": "2026-07-25T00:00:00",
+            "completed_at": None,
+            "tp1_hit": True,
+            "tp2_hit": False,
+            "stop_hit": False,
+            "open_pl": 75.0,
+            "open_r": 0.75,
+            "realized_r": 0.75,
+            "mfe_r": 1.6,
+            "mae_r": -0.2,
+            "holding_days": 2,
+            "costs": 1.0,
+            "slippage": 0.5,
+            "remaining_fraction": 0.5,
+        }
+        provider = FakeProvider({"SPY": _history(), "AAPL": _history()})
+
+        with patch("forward_validation.runner.evaluate_signal", return_value=evaluation):
+            run_for_user(
+                store,
+                "user-1",
+                provider=provider,
+                now=self.now,
+                symbols=["AAPL"],
+            )
+
+        self.assertEqual(store.paper_trades[0]["status"], "OPEN")
+        self.assertEqual(store.paper_trades[0]["remaining_fraction"], 0.5)
+        self.assertEqual(store.paper_trades[0]["remaining_risk_r"], 0.5)
+
+    @patch("forward_validation.runner.strategy_registry.require_usable", return_value=FakeStrategy())
+    def test_completed_linked_trade_releases_all_open_capacity(self, _strategy):
+        store = MemoryStore()
+        signal_history = _history("2026-07-24")
+        signal = {
+            "id": "signal-1",
+            "user_id": "user-1",
+            **FakeStrategy().scan(
+                ticker="AAPL",
+                history=signal_history,
+                benchmark=signal_history,
+                signal_timestamp="2026-07-24T22:30:00+00:00",
+            ),
+            "expiry_date": "2026-07-29",
+            "initial_status": "waiting_for_entry",
+        }
+        store.signals.append(signal)
+        store.outcomes["signal-1"] = {
+            "signal_id": "signal-1",
+            "user_id": "user-1",
+            "status": "TP1_hit",
+        }
+        store.paper_trades.append(
+            {
+                "id": "paper-1",
+                "user_id": "user-1",
+                "ticker": "AAPL",
+                "status": "OPEN",
+                "entry_price": 99.0,
+                "quantity": 20,
+                "initial_risk_amount": 100.0,
+                "initial_risk_r": 1.0,
+                "remaining_risk_r": 0.5,
+                "remaining_fraction": 0.5,
+                "forward_validation_signal_id": "signal-1",
+            }
+        )
+        evaluation = {
+            "status": "completed",
+            "entry_price": 99.0,
+            "entry_timestamp": "2026-07-25T00:00:00",
+            "completed_at": "2026-07-27T00:00:00",
+            "tp1_hit": True,
+            "tp2_hit": True,
+            "stop_hit": False,
+            "open_pl": 0.0,
+            "open_r": 0.0,
+            "realized_r": 2.25,
+            "mfe_r": 3.1,
+            "mae_r": -0.2,
+            "holding_days": 3,
+            "costs": 2.0,
+            "slippage": 1.0,
+            "remaining_fraction": 0.0,
+        }
+        provider = FakeProvider({"SPY": _history(), "AAPL": _history()})
+
+        with patch("forward_validation.runner.evaluate_signal", return_value=evaluation):
+            run_for_user(
+                store,
+                "user-1",
+                provider=provider,
+                now=self.now,
+                symbols=["AAPL"],
+            )
+
+        self.assertEqual(store.paper_trades[0]["status"], "CLOSED")
+        self.assertEqual(store.paper_trades[0]["remaining_risk_r"], 0)
+        self.assertEqual(store.paper_trades[0]["remaining_fraction"], 0)
+
     def test_runner_health_reports_last_successful_run(self):
         runs = [
             {"status": "success", "started_at": "2026-07-24T22:30:00+00:00"},

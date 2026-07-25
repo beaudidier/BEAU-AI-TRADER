@@ -1,7 +1,11 @@
 import unittest
+from unittest.mock import patch
+
+import pandas as pd
 
 from paper_trading.engine import build_close_preview
 from paper_trading.validation import validate_long_paper_trade
+from saas.router import _quote_snapshot
 
 
 class SafePaperTradingTests(unittest.TestCase):
@@ -36,6 +40,29 @@ class SafePaperTradingTests(unittest.TestCase):
         self.assertEqual(preview["latest_quote"], 108)
         self.assertEqual(preview["estimated_exit_value"], 1080)
         self.assertEqual(preview["realized_pnl_estimate"], 80)
+
+    def test_close_quote_falls_back_to_latest_completed_candle(self):
+        history = pd.DataFrame(
+            {"Close": [104.5, 105.25]},
+            index=pd.to_datetime(["2026-07-22", "2026-07-23"]),
+        )
+
+        class Provider:
+            @staticmethod
+            def get_quote(_ticker):
+                raise RuntimeError("Fast quote temporarily unavailable")
+
+            @staticmethod
+            def get_history(_ticker, **_kwargs):
+                return history
+
+        with patch(
+            "saas.router.get_market_data_provider",
+            return_value=Provider(),
+        ):
+            price, timestamp = _quote_snapshot("PNW")
+        self.assertEqual(price, 105.25)
+        self.assertEqual(timestamp, "2026-07-23T00:00:00")
 
 
 if __name__ == "__main__":
