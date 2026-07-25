@@ -109,7 +109,7 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
               <span className={`h-3 w-3 rounded-full ${dashboard.runner.health === "degraded" ? "bg-rose-400" : dashboard.runner.health === "running" ? "animate-pulse bg-amber-300" : "bg-emerald-400"}`} />
             </div>
             <dl className="mt-4 grid gap-3 text-xs sm:grid-cols-2">
-              <div><dt className="text-slate-500">Last successful run</dt><dd className="mt-1 text-slate-300">{dateTime(dashboard.runner.last_successful_run?.completed_at)}</dd></div>
+              <div><dt className="text-slate-500">Last run</dt><dd className="mt-1 text-slate-300">{dateTime(dashboard.runner.last_run?.completed_at)}</dd></div>
               <div><dt className="text-slate-500">Next scheduled run</dt><dd className="mt-1 text-slate-300">{dateTime(dashboard.runner.next_scheduled_run)}</dd></div>
             </dl>
           </div>
