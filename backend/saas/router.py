@@ -14,6 +14,7 @@ from providers import get_market_data_provider
 from engines.institutional_engine import calculate_institutional_analysis
 from learning.learning_engine import build_learning_context, build_learning_dashboard, build_learning_trade_update
 from forward_validation import build_dashboard as build_forward_validation_dashboard
+from forward_validation.setup_clarity import enrich_dashboard
 from forward_validation.runner import (
     SupabaseForwardValidationStore,
     run_for_user as run_forward_validation_for_user,
@@ -219,7 +220,9 @@ def _forward_validation_store(user: CurrentUser) -> SupabaseForwardValidationSto
 def _forward_validation_dashboard(store: SupabaseForwardValidationStore, user_id: str) -> dict[str, Any]:
     signals = store.list_signals(user_id)
     outcomes = store.list_outcomes(user_id)
-    dashboard = build_forward_validation_dashboard(signals, outcomes)
+    dashboard = enrich_dashboard(
+        build_forward_validation_dashboard(signals, outcomes)
+    )
     dashboard["runner"] = runner_health(store.list_runs(user_id))
     completed = dashboard["metrics"]["total_sample_size"]
     dashboard["sample_progress"] = {

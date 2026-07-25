@@ -4,6 +4,7 @@
     "all_chart_values_match_ledger": true,
     "all_signal_checks_passed": true,
     "all_signals_audited": true,
+    "concentration_counts_all_active_signals": true,
     "expected_signal_count": true,
     "no_duplicate_signals": true,
     "no_missing_raw_data": true,
@@ -11,6 +12,56 @@
     "no_signal_above_five_percent_risk": true
   },
   "classification": "latest_complete_sp500_production_path_replay",
+  "concentration": {
+    "active_signal_count": 12,
+    "dominant_sector_warning": true,
+    "has_warning": true,
+    "related_sector_warning": true,
+    "related_theme": {
+      "count": 9,
+      "percentage": 75.0,
+      "sectors": [
+        "Utilities",
+        "Real Estate"
+      ],
+      "theme": "Rate-sensitive assets"
+    },
+    "sectors": [
+      {
+        "count": 6,
+        "percentage": 50.0,
+        "sector": "Utilities"
+      },
+      {
+        "count": 3,
+        "percentage": 25.0,
+        "sector": "Real Estate"
+      },
+      {
+        "count": 1,
+        "percentage": 8.33,
+        "sector": "Communication Services"
+      },
+      {
+        "count": 1,
+        "percentage": 8.33,
+        "sector": "Financials"
+      },
+      {
+        "count": 1,
+        "percentage": 8.33,
+        "sector": "Health Care"
+      }
+    ],
+    "thresholds": {
+      "single_sector_percent": 30,
+      "two_related_sectors_percent": 50
+    },
+    "warnings": [
+      "Correlation risk: Utilities represents 50.0% of active signals, above the 30% limit.",
+      "Market-theme risk: Utilities, Real Estate represent 75.0% of active signals within the rate-sensitive assets theme."
+    ]
+  },
   "duplicate_signals": [],
   "generated_at": "2026-07-25T15:53:47.822773+00:00",
   "methodology": {
@@ -55,6 +106,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -68,8 +120,12 @@
       },
       "company_name": "AES Corporation",
       "confidence": 67.0,
+      "current_price": 14.829999923706056,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": 0.5598,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-AES",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 14.747448,
         "ema50": 14.655011,
@@ -81,6 +137,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 14.747448,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 0.064410 and the 20-session swing low produced a valid stop.",
@@ -97,6 +154,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Utilities",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 14.829999923706056,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "0.56% above planned entry",
+        "distance_to_entry_percent": 0.5598,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 14.747448,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 14.83,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -126,6 +202,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -139,8 +216,12 @@
       },
       "company_name": "Berkshire Hathaway",
       "confidence": 68.0,
+      "current_price": 490.8500061035156,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": -0.3458,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-BRK-B",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 492.553089,
         "ema50": 489.669426,
@@ -152,6 +233,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 492.553089,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 6.464216 and the 20-session swing low produced a valid stop.",
@@ -168,6 +250,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Financials",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 490.8500061035156,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "0.35% below planned entry",
+        "distance_to_entry_percent": -0.3458,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 492.553089,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 490.850006,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -197,6 +298,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -210,8 +312,12 @@
       },
       "company_name": "Camden Property Trust",
       "confidence": 69.0,
+      "current_price": 112.83999633789062,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": -0.0865,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-CPT",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 112.937684,
         "ema50": 110.696266,
@@ -223,6 +329,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 112.937684,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 2.064305 and the 20-session swing low produced a valid stop.",
@@ -239,6 +346,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Real Estate",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 112.83999633789062,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "0.09% below planned entry",
+        "distance_to_entry_percent": -0.0865,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 112.937684,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 112.839996,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -268,6 +394,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -281,8 +408,12 @@
       },
       "company_name": "Duke Energy",
       "confidence": 73.0,
+      "current_price": 129.25999450683594,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": 2.2866,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-DUK",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 126.370394,
         "ema50": 125.786988,
@@ -294,6 +425,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 126.370394,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 2.325026 and the 20-session swing low produced a valid stop.",
@@ -310,6 +442,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Utilities",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 129.25999450683594,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "2.29% above planned entry",
+        "distance_to_entry_percent": 2.2866,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 126.370394,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 129.259995,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -339,6 +490,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -352,8 +504,12 @@
       },
       "company_name": "Electronic Arts",
       "confidence": 64.0,
+      "current_price": 209.0,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": 1.0414,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-EA",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 206.845938,
         "ema50": 204.838461,
@@ -365,6 +521,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 206.845938,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 0.837069 and the 20-session swing low produced a valid stop.",
@@ -381,6 +538,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Communication Services",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 209.0,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "1.04% above planned entry",
+        "distance_to_entry_percent": 1.0414,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 206.845938,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 209.0,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -410,6 +586,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -423,8 +600,12 @@
       },
       "company_name": "Consolidated Edison",
       "confidence": 76.0,
+      "current_price": 112.79000091552734,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": 1.5455,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-ED",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 111.073387,
         "ema50": 109.753088,
@@ -436,6 +617,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 111.073387,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 2.178092 and the 20-session swing low produced a valid stop.",
@@ -452,6 +634,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Utilities",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 112.79000091552734,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "1.55% above planned entry",
+        "distance_to_entry_percent": 1.5455,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 111.073387,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 112.790001,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -481,6 +682,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -494,8 +696,12 @@
       },
       "company_name": "Evergy",
       "confidence": 71.0,
+      "current_price": 86.6500015258789,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": 1.0991,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-EVRG",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 85.707968,
         "ema50": 84.411554,
@@ -507,6 +713,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 85.707968,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 1.513184 and the 20-session swing low produced a valid stop.",
@@ -523,6 +730,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Utilities",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 86.6500015258789,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "1.10% above planned entry",
+        "distance_to_entry_percent": 1.0991,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 85.707968,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 86.650002,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -552,6 +778,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -565,8 +792,12 @@
       },
       "company_name": "Federal Realty Investment Trust",
       "confidence": 79.0,
+      "current_price": 124.83000183105467,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": 1.3108,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-FRT",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 123.214884,
         "ema50": 120.177425,
@@ -578,6 +809,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 123.214884,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 1.871879 and the 20-session swing low produced a valid stop.",
@@ -594,6 +826,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Real Estate",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 124.83000183105467,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "1.31% above planned entry",
+        "distance_to_entry_percent": 1.3108,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 123.214884,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 124.830002,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -623,6 +874,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -636,8 +888,12 @@
       },
       "company_name": "NextEra Energy",
       "confidence": 68.0,
+      "current_price": 89.79000091552734,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": 1.6738,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-NEE",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 88.311815,
         "ema50": 88.358732,
@@ -649,6 +905,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 88.311815,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 1.572723 and the 20-session swing low produced a valid stop.",
@@ -665,6 +922,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Utilities",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 89.79000091552734,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "1.67% above planned entry",
+        "distance_to_entry_percent": 1.6738,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 88.311815,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 89.790001,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -694,6 +970,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -707,8 +984,12 @@
       },
       "company_name": "Pinnacle West Capital",
       "confidence": 80.0,
+      "current_price": 105.43000030517578,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": -1.0541,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-PNW",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 106.553209,
         "ema50": 104.668177,
@@ -720,6 +1001,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 106.553209,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 2.086089 and the 20-session swing low produced a valid stop.",
@@ -736,6 +1018,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Utilities",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 105.43000030517578,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "1.05% below planned entry",
+        "distance_to_entry_percent": -1.0541,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 106.553209,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 105.43,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -765,6 +1066,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -778,8 +1080,12 @@
       },
       "company_name": "Regency Centers",
       "confidence": 79.0,
+      "current_price": 81.18000030517578,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": 0.5829,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-REG",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 80.709508,
         "ema50": 79.358593,
@@ -791,6 +1097,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 80.709508,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 1.342521 and the 20-session swing low produced a valid stop.",
@@ -807,6 +1114,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Real Estate",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 81.18000030517578,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "0.58% above planned entry",
+        "distance_to_entry_percent": 0.5829,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 80.709508,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 81.18,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",
@@ -836,6 +1162,7 @@
         "chart_values_match_ledger": true,
         "ema20_matches_pullback_entry": true,
         "ema20_matches_replay_ledger": true,
+        "immutable_levels_not_repriced": true,
         "no_lookahead_data": true,
         "qualification_reasons_present": true,
         "raw_signal_candle_present": true,
@@ -849,8 +1176,12 @@
       },
       "company_name": "Bio-Techne",
       "confidence": 70.0,
+      "current_price": 71.7699966430664,
       "data_timestamp": "2026-07-23T00:00:00",
+      "distance_to_entry_percent": 3.8598,
+      "expiry_date": "2026-07-28",
       "id": "LS-2026-07-23-TECH",
+      "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
       "levels": {
         "ema20": 69.102775,
         "ema50": 63.158007,
@@ -862,6 +1193,7 @@
       },
       "market_regime": "The benchmark regime is risk-on based on 50/200-day EMA alignment.",
       "market_regime_score": 90.0,
+      "planned_entry": 69.102775,
       "qualification_reasons": [
         "Market-regime score 90.00 met the frozen minimum of 65.",
         "ATR 1.072591 and the 20-session swing low produced a valid stop.",
@@ -878,6 +1210,25 @@
       "risk_reward_target_1": 2.0,
       "risk_reward_target_2": 4.0,
       "sector": "Health Care",
+      "setup": {
+        "actionable_at_market": false,
+        "beginner_explanation": {
+          "if_price_never_reaches_entry": "No trade is opened. The setup expires after three completed trading sessions and its original levels are not recalculated.",
+          "why_buying_early_changes_risk_reward": "Buying above the planned entry increases the money at risk to the fixed stop and reduces the reward available to the fixed targets.",
+          "why_setup_exists": "The frozen strategy found a risk-on market and a valid long setup, then placed a pullback level near the signal-time EMA20.",
+          "why_waiting_matters": "Waiting keeps the original stop distance, position risk, and reward targets intact. A market order would be a different trade."
+        },
+        "current_price": 71.7699966430664,
+        "current_price_timestamp": "2026-07-23T00:00:00",
+        "distance_to_entry_label": "3.86% above planned entry",
+        "distance_to_entry_percent": 3.8598,
+        "expiry_date": "2026-07-28",
+        "instruction": "Do not buy at market",
+        "invalidation": "The setup expires after 2026-07-28 if price never trades through the fixed pullback entry.",
+        "planned_entry": 69.102775,
+        "status": "waiting_for_entry"
+      },
+      "setup_status": "waiting_for_entry",
       "signal_date": "2026-07-23",
       "signal_price": 71.769997,
       "signal_timestamp": "2026-07-23T20:15:00+00:00",

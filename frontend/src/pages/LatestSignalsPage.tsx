@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import LatestSignalCard from "../components/LatestSignalCard";
 import LatestSignalMethodology from "../components/LatestSignalMethodology";
+import SectorConcentrationBanner from "../components/SectorConcentrationBanner";
 import Sidebar, { type AppPage } from "../components/Sidebar";
 import { getLatestSignalEvidence } from "../services/latestSignals";
 import type { LatestSignalEvidenceSummary } from "../types/latestSignals";
@@ -57,6 +58,7 @@ export default function LatestSignalsPage({ onNavigate }: LatestSignalsPageProps
             <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {[["Signals audited", String(summary.signal_count)], ["Replay date", summary.replay_date], ["Sectors covered", String(summary.sectors.length)], ["Mismatches", String(summary.mismatches.length)]].map(([label, value]) => <div key={label} className="rounded-xl border border-slate-800 bg-slate-900/50 p-5"><p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p><p className="mt-2 text-xl font-semibold text-white">{value}</p></div>)}
             </section>
+            <SectorConcentrationBanner concentration={summary.concentration} />
             <LatestSignalMethodology summary={summary} />
             <section className="space-y-6">
               {summary.signals.map((signal) => <LatestSignalCard key={signal.id} signal={signal} />)}

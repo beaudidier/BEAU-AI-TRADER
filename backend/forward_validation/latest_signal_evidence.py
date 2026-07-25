@@ -13,6 +13,7 @@ import pandas as pd
 
 from strategies import strategy_registry
 from strategies.swing_strategy import MAX_RISK_PCT, STRATEGY_VERSION
+from forward_validation.setup_clarity import sector_concentration, setup_clarity
 
 ROOT = Path(__file__).resolve().parents[2]
 REPLAY_PATH = ROOT / "artifacts" / "production_path_replay.json"
@@ -397,6 +398,32 @@ def generate_latest_signal_evidence() -> dict[str, Any]:
             },
             "checks": checks,
         }
+        evidence["setup"] = setup_clarity(
+            {
+                **recalculated,
+                "expiry_date": item.get("expiry_date"),
+                "current_price": float(close.iloc[-1]),
+                "current_price_timestamp": history.index[-1].isoformat(),
+            },
+            {"status": "waiting_for_entry"},
+        )
+        evidence["setup_status"] = evidence["setup"]["status"]
+        evidence["current_price"] = evidence["setup"]["current_price"]
+        evidence["planned_entry"] = evidence["setup"]["planned_entry"]
+        evidence["distance_to_entry_percent"] = evidence["setup"][
+            "distance_to_entry_percent"
+        ]
+        evidence["expiry_date"] = evidence["setup"]["expiry_date"]
+        evidence["invalidation"] = evidence["setup"]["invalidation"]
+        evidence["checks"]["immutable_levels_not_repriced"] = all(
+            _close(recalculated[field], stored[field])
+            for field in (
+                "proposed_pullback_entry",
+                "stop_loss",
+                "target_1",
+                "target_2",
+            )
+        )
         evidence["chart"] = _render_chart(
             evidence, history, ema20_series, ema50_series
         )
@@ -438,6 +465,14 @@ def generate_latest_signal_evidence() -> dict[str, Any]:
             all(item["checks"].values()) for item in evidence_items
         ),
     }
+    concentration = sector_concentration(evidence_items)
+    check_results["concentration_counts_all_active_signals"] = (
+        concentration["active_signal_count"] == len(evidence_items)
+        and sum(
+            int(item["count"]) for item in concentration["sectors"]
+        )
+        == len(evidence_items)
+    )
     result = {
         "schema_version": 1,
         "generated_at": replay["generated_at"],
@@ -461,6 +496,7 @@ def generate_latest_signal_evidence() -> dict[str, Any]:
         "missing_raw_data": missing_raw_data,
         "mismatches": mismatches,
         "duplicate_signals": duplicate_signals,
+        "concentration": concentration,
         "checks": check_results,
         "all_checks_passed": all(check_results.values()),
         "signals": evidence_items,

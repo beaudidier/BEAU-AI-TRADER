@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import ForwardValidationTable from "../components/ForwardValidationTable";
 import Header from "../components/Header";
 import Sidebar, { type AppPage } from "../components/Sidebar";
+import SectorConcentrationBanner from "../components/SectorConcentrationBanner";
 import { userApi } from "../services/userApi";
 import type { ForwardValidationDashboard, ForwardValidationRun } from "../types/database";
 
@@ -154,6 +155,10 @@ function ForwardValidationPage({ onNavigate }: ForwardValidationPageProps) {
               <Link to="/latest-signals" className="rounded-lg border border-emerald-300/30 bg-emerald-300/10 px-4 py-2.5 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-300/20">Review all {latestReplay.signals_found} signals</Link>
             </div>
           </section>}
+
+          {dashboard.concentration && <div className="mt-5">
+            <SectorConcentrationBanner concentration={dashboard.concentration} />
+          </div>}
 
           <section className="mt-5 grid gap-4 lg:grid-cols-2">
             <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">

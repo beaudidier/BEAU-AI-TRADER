@@ -204,6 +204,11 @@ class ForwardValidationRunnerTests(unittest.TestCase):
         self.assertEqual(len(store.signals), 1)
         self.assertEqual(store.signals[0]["initial_status"], "waiting_for_entry")
         self.assertEqual(store.signals[0]["expiry_date"], "2026-07-30")
+        self.assertEqual(
+            store.outcomes["signal-1"]["setup_status"],
+            "waiting_for_entry",
+        )
+        self.assertEqual(store.outcomes["signal-1"]["current_price"], 100.0)
         self.assertEqual(second["signals_created"], 0)
         self.assertEqual(second["duplicates_prevented"], 1)
 
@@ -288,6 +293,15 @@ class ForwardValidationRunnerTests(unittest.TestCase):
 
         self.assertGreaterEqual(result["outcomes_updated"], 2)
         self.assertEqual(store.outcomes["signal-1"]["status"], "entered")
+        self.assertEqual(
+            store.outcomes["signal-1"]["setup_status"],
+            "entry_triggered",
+        )
+        self.assertEqual(store.outcomes["signal-1"]["current_price"], 100.0)
+        self.assertEqual(
+            store.outcomes["signal-1"]["current_price_timestamp"],
+            "2026-07-27T00:00:00",
+        )
         self.assertEqual(store.paper_trades[0]["market_price"], 100.0)
         self.assertEqual(store.paper_trades[0]["unrealized_pnl"], 10.0)
 

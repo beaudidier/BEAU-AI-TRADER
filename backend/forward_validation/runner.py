@@ -31,6 +31,7 @@ from .health import (
     insufficient_history_outcome,
     symbol_outcome,
 )
+from .setup_clarity import setup_status_from_outcome
 
 RUNNER_VERSION = "forward-validation-runner-v2.1.0"
 ACTIVE_UNIVERSE = "sp500"
@@ -568,13 +569,32 @@ def run_for_user(
                     "signal_id": signal_id,
                     "user_id": user_id,
                     "status": "data_error",
+                    "setup_status": "invalidated",
+                    "invalidation_reason": (
+                        "Completed market data is unavailable, so the pending "
+                        "setup is not actionable."
+                    ),
                     "last_evaluated_at": moment.isoformat(),
                 }
             else:
+                evaluation = evaluate_signal(signal, history)
+                current_price = _finite(history.iloc[-1]["Close"])
                 update = {
                     "signal_id": signal_id,
                     "user_id": user_id,
-                    **evaluate_signal(signal, history),
+                    **evaluation,
+                    "setup_status": setup_status_from_outcome(
+                        evaluation.get("status")
+                    ),
+                    "current_price": (
+                        round(current_price, 6)
+                        if current_price is not None
+                        else None
+                    ),
+                    "current_price_timestamp": pd.Timestamp(
+                        history.index[-1]
+                    ).isoformat(),
+                    "invalidation_reason": None,
                     "last_evaluated_at": moment.isoformat(),
                 }
             store.save_outcome(update)
@@ -650,6 +670,9 @@ def run_for_user(
                         "signal_id": saved["id"],
                         "user_id": user_id,
                         "status": "waiting_for_entry",
+                        "setup_status": "waiting_for_entry",
+                        "current_price": signal["signal_price"],
+                        "current_price_timestamp": signal["data_timestamp"],
                         "last_evaluated_at": moment.isoformat(),
                     }
                 )

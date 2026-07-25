@@ -1,3 +1,5 @@
+import type { SectorConcentration, SetupClarity, SetupStatus } from "./setupClarity";
+
 export type LatestSignalLevels = {
   ema20: number;
   ema50: number;
@@ -14,6 +16,13 @@ export type LatestSignalEvidence = {
   company_name: string;
   sector: string;
   signal_date: string;
+  setup_status: SetupStatus;
+  current_price: number;
+  planned_entry: number;
+  distance_to_entry_percent: number;
+  expiry_date: string;
+  invalidation: string;
+  setup: SetupClarity;
   data_timestamp: string;
   signal_timestamp: string;
   market_regime: string;
@@ -57,6 +66,7 @@ export type LatestSignalEvidenceSummary = {
   missing_raw_data: string[];
   mismatches: Array<{ ticker: string; fields: string[] }>;
   duplicate_signals: string[];
+  concentration: SectorConcentration;
   checks: Record<string, boolean>;
   all_checks_passed: boolean;
   signals: LatestSignalEvidence[];

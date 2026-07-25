@@ -11,6 +11,10 @@ function price(value: number) {
   return `$${value.toFixed(4)}`;
 }
 
+function statusLabel(status: LatestSignalEvidence["setup_status"]) {
+  return status.replaceAll("_", " ").toUpperCase();
+}
+
 export default function LatestSignalCard({ signal }: LatestSignalCardProps) {
   const values = [
     ["Signal price", price(signal.signal_price)],
@@ -28,6 +32,7 @@ export default function LatestSignalCard({ signal }: LatestSignalCardProps) {
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-800 p-5">
         <div>
           <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2.5 py-1 text-xs font-semibold text-cyan-200">{statusLabel(signal.setup_status)}</span>
             <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1 text-xs font-semibold text-emerald-200">VALID REPLAY SIGNAL</span>
             <span className="text-xs font-medium uppercase tracking-wide text-slate-500">{signal.signal_date}</span>
           </div>
@@ -38,6 +43,26 @@ export default function LatestSignalCard({ signal }: LatestSignalCardProps) {
           Open workspace
         </Link>
       </div>
+
+      {signal.setup_status === "waiting_for_entry" && (
+        <section className="border-b border-amber-400/20 bg-amber-400/10 p-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-lg font-semibold text-amber-100">Do not buy at market</p>
+              <p className="mt-1 max-w-3xl text-sm leading-6 text-amber-100/70">This is a pending limit setup. Wait for price to trade through the exact pullback entry; the frozen stop and targets are not recalculated while waiting.</p>
+            </div>
+            <span className="rounded-full bg-amber-300 px-3 py-1 text-xs font-semibold text-amber-950">{signal.setup.distance_to_entry_label}</span>
+          </div>
+          <dl className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="rounded-lg bg-slate-950/50 p-3"><dt className="text-xs text-slate-500">Current completed price</dt><dd className="mt-1 font-semibold text-white">{price(signal.current_price)}</dd></div>
+            <div className="rounded-lg bg-slate-950/50 p-3"><dt className="text-xs text-slate-500">Exact pullback entry</dt><dd className="mt-1 font-semibold text-cyan-200">{price(signal.planned_entry)}</dd></div>
+            <div className="rounded-lg bg-slate-950/50 p-3"><dt className="text-xs text-slate-500">Distance to entry</dt><dd className="mt-1 font-semibold text-white">{signal.setup.distance_to_entry_label}</dd></div>
+            <div className="rounded-lg bg-slate-950/50 p-3"><dt className="text-xs text-slate-500">Expires after</dt><dd className="mt-1 font-semibold text-white">{signal.expiry_date}</dd></div>
+          </dl>
+          <p className="mt-4 text-sm leading-6 text-amber-100"><span className="font-semibold">Invalidation:</span> {signal.invalidation}</p>
+          <p className="mt-2 text-xs text-amber-100/60">Current price as of {signal.setup.current_price_timestamp}.</p>
+        </section>
+      )}
 
       <div className="grid gap-5 p-5 2xl:grid-cols-[minmax(0,1.45fr)_minmax(22rem,0.75fr)]">
         <LatestSignalChart signal={signal} />
@@ -74,6 +99,18 @@ export default function LatestSignalCard({ signal }: LatestSignalCardProps) {
           </div>
         </div>
       </div>
+
+      <section className="border-t border-slate-800 bg-slate-950/30 p-5">
+        <h3 className="text-sm font-semibold text-white">Beginner explanation</h3>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          {[
+            ["Why this setup exists", signal.setup.beginner_explanation.why_setup_exists],
+            ["Why waiting matters", signal.setup.beginner_explanation.why_waiting_matters],
+            ["If price never reaches entry", signal.setup.beginner_explanation.if_price_never_reaches_entry],
+            ["Why buying early changes risk/reward", signal.setup.beginner_explanation.why_buying_early_changes_risk_reward],
+          ].map(([title, detail]) => <div key={title} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3"><p className="text-xs font-semibold text-cyan-200">{title}</p><p className="mt-2 text-sm leading-6 text-slate-400">{detail}</p></div>)}
+        </div>
+      </section>
 
       <div className="border-t border-slate-800 p-5">
         <h3 className="text-sm font-semibold text-emerald-200">Exact qualification reasons</h3>

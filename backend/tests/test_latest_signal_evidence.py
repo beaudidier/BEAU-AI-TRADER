@@ -41,6 +41,35 @@ class LatestSignalEvidenceTests(unittest.TestCase):
         for signal in self.summary["signals"]:
             self.assertTrue(all(signal["checks"].values()), signal["ticker"])
             self.assertLessEqual(signal["risk_percent"], 5)
+            self.assertEqual(signal["setup_status"], "waiting_for_entry")
+            self.assertFalse(signal["setup"]["actionable_at_market"])
+            self.assertEqual(signal["setup"]["instruction"], "Do not buy at market")
+            self.assertEqual(signal["expiry_date"], "2026-07-28")
+            self.assertAlmostEqual(
+                signal["distance_to_entry_percent"],
+                (
+                    (signal["current_price"] - signal["planned_entry"])
+                    / signal["planned_entry"]
+                    * 100
+                ),
+                places=4,
+            )
+
+    def test_latest_signal_sector_concentration_is_explicit(self):
+        concentration = self.summary["concentration"]
+        by_sector = {
+            item["sector"]: item for item in concentration["sectors"]
+        }
+        self.assertEqual(by_sector["Utilities"]["count"], 6)
+        self.assertEqual(by_sector["Utilities"]["percentage"], 50.0)
+        self.assertEqual(by_sector["Real Estate"]["count"], 3)
+        self.assertTrue(concentration["dominant_sector_warning"])
+        self.assertTrue(concentration["related_sector_warning"])
+        self.assertEqual(
+            concentration["related_theme"]["sectors"],
+            ["Utilities", "Real Estate"],
+        )
+        self.assertEqual(concentration["related_theme"]["percentage"], 75.0)
 
     def test_raw_candles_match_signal_and_indicator_ledger(self):
         for signal in self.summary["signals"]:
