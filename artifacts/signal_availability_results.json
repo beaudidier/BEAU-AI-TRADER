@@ -1,0 +1,4907 @@
+{
+  "audit_version": "signal-availability-audit-v1.0.0",
+  "calculation_verification": {
+    "calculation_bug_found": false,
+    "decomposition": "risk% = distance from executable entry to swing low% + 1.5 * ATR%",
+    "maximum_formula_error_percentage_points": 5.6791e-06,
+    "observations_checked": 4260,
+    "production_standalone_mismatches": [],
+    "risk_formula": "risk% = ((expected executable entry - (20-session swing low - 1.5 * ATR)) / expected executable entry) * 100"
+  },
+  "configured_universe_sizes": {
+    "demo": 10,
+    "dow30": 30,
+    "nasdaq100": 30,
+    "sp500": 51
+  },
+  "data_sources": {
+    "AAPL": "local Yahoo cache",
+    "ABBV": "local Yahoo cache",
+    "ABT": "local Yahoo cache",
+    "ACN": "local Yahoo cache",
+    "ADBE": "local Yahoo cache",
+    "ADP": "local Yahoo cache",
+    "AMAT": "local Yahoo cache",
+    "AMD": "local Yahoo cache",
+    "AMGN": "local Yahoo cache",
+    "AMZN": "local Yahoo cache",
+    "AVGO": "local Yahoo cache",
+    "AXP": "local Yahoo cache",
+    "BA": "local Yahoo cache",
+    "BAC": "local Yahoo cache",
+    "BKNG": "local Yahoo cache",
+    "BRK-B": "local Yahoo cache",
+    "CAT": "local Yahoo cache",
+    "CMCSA": "local Yahoo cache",
+    "COST": "local Yahoo cache",
+    "CRM": "local Yahoo cache",
+    "CSCO": "local Yahoo cache",
+    "CVX": "local Yahoo cache",
+    "DHR": "local Yahoo cache",
+    "DIS": "local Yahoo cache",
+    "GE": "local Yahoo cache",
+    "GILD": "local Yahoo cache",
+    "GOOG": "local Yahoo cache",
+    "GOOGL": "local Yahoo cache",
+    "GS": "local Yahoo cache",
+    "HD": "local Yahoo cache",
+    "HON": "local Yahoo cache",
+    "IBM": "local Yahoo cache",
+    "INTC": "local Yahoo cache",
+    "INTU": "local Yahoo cache",
+    "ISRG": "local Yahoo cache",
+    "JNJ": "local Yahoo cache",
+    "JPM": "local Yahoo cache",
+    "KO": "local Yahoo cache",
+    "LIN": "local Yahoo cache",
+    "LLY": "local Yahoo cache",
+    "MA": "local Yahoo cache",
+    "MCD": "local Yahoo cache",
+    "META": "local Yahoo cache",
+    "MMM": "local Yahoo cache",
+    "MRK": "local Yahoo cache",
+    "MSFT": "local Yahoo cache",
+    "MU": "local Yahoo cache",
+    "NFLX": "local Yahoo cache",
+    "NKE": "local Yahoo cache",
+    "NOW": "local Yahoo cache",
+    "NVDA": "local Yahoo cache",
+    "ORCL": "local Yahoo cache",
+    "PANW": "Yahoo Finance",
+    "PEP": "local Yahoo cache",
+    "PG": "local Yahoo cache",
+    "PLTR": "local Yahoo cache",
+    "PM": "local Yahoo cache",
+    "QCOM": "local Yahoo cache",
+    "SBUX": "local Yahoo cache",
+    "SHW": "local Yahoo cache",
+    "SPGI": "local Yahoo cache",
+    "SPY": "local Yahoo cache",
+    "TMO": "local Yahoo cache",
+    "TMUS": "local Yahoo cache",
+    "TRV": "local Yahoo cache",
+    "TSLA": "local Yahoo cache",
+    "TXN": "local Yahoo cache",
+    "UNH": "local Yahoo cache",
+    "V": "local Yahoo cache",
+    "VRTX": "local Yahoo cache",
+    "WMT": "local Yahoo cache",
+    "XOM": "local Yahoo cache"
+  },
+  "diagnosis": {
+    "demo_universe_too_small_for_availability": true,
+    "regime_dependency_conclusion": "Not identifiable from this 60-session sample because every audited session was classified Strong risk-on.",
+    "risk_rule_functioning_as_intended": true,
+    "stop_formula_arithmetic_bug": false,
+    "stop_formula_relative_to_cap": "In the largest configured snapshot (S&P 500), 2946 of 3060 completed scans breached the 5% cap. The median rejected risk was 11.02%, decomposed into a 6.67% entry-to-swing-low distance and a 4.19% ATR buffer. The stop formula is therefore structurally wide relative to the frozen cap in this window, but it is not being calculated incorrectly.",
+    "stop_formula_structurally_wide_relative_to_cap": true,
+    "strategy_naturally_selective": true,
+    "volatility_dependency_conclusion": "The risk gate rejected 100% of high-ATR observations in every configured universe; low-ATR observations had materially lower rejection rates in the larger snapshots."
+  },
+  "frozen_rules": {
+    "entry": "signal-time EMA20 pullback limit with production entry slippage",
+    "market_regime_minimum": 65,
+    "maximum_risk_percent": 5.0,
+    "stop_atr_buffer": 1.5,
+    "swing_low_lookback_sessions": 20,
+    "target_1_r": 2.0,
+    "target_2_r": 4.0
+  },
+  "generated_at": "2026-07-25T14:13:53.836169+00:00",
+  "methodology": {
+    "completion_estimate": "Only signals with the full 3-session entry window plus 30-session maximum holding window inside the audit period were used to estimate completion rate.",
+    "history_window": "The rolling two-calendar-year window matches the production provider request period=2y.",
+    "look_ahead_control": "Every signal calculation received only candles through that session.",
+    "observation_reuse": "A ticker/date result was calculated once and reused only when that ticker belonged to multiple configured universes.",
+    "pipeline": "Registered production swing_trading strategy"
+  },
+  "period": {
+    "benchmark": "SPY",
+    "completed_us_trading_days": 60,
+    "end": "2026-07-23",
+    "start": "2026-04-28"
+  },
+  "production_records_changed": false,
+  "provider_load_warnings": {},
+  "runner_version": "forward-validation-runner-v1.0.0",
+  "strategy_version": "regime-gated-pullback-v1.0.0",
+  "universes": {
+    "demo": {
+      "average_valid_signals_per_week": 0.0833,
+      "configured_symbol_count": 10,
+      "configured_symbols": [
+        "MU",
+        "NVDA",
+        "AMD",
+        "TSLA",
+        "AAPL",
+        "MSFT",
+        "META",
+        "AMZN",
+        "GOOGL",
+        "PLTR"
+      ],
+      "daily": [
+        {
+          "date": "2026-04-28",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9249,
+          "median_distance_to_swing_low_percent": 15.5284,
+          "median_risk_percent": 19.7853,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-04-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8618,
+          "median_distance_to_swing_low_percent": 13.7981,
+          "median_risk_percent": 18.0908,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-04-30",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.2537,
+          "median_distance_to_swing_low_percent": 13.7835,
+          "median_risk_percent": 18.5495,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.2066,
+          "median_distance_to_swing_low_percent": 12.9384,
+          "median_risk_percent": 17.5343,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-04",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1735,
+          "median_distance_to_swing_low_percent": 13.0824,
+          "median_risk_percent": 17.6151,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-05",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1101,
+          "median_distance_to_swing_low_percent": 11.2038,
+          "median_risk_percent": 16.1062,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-06",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.2204,
+          "median_distance_to_swing_low_percent": 11.9888,
+          "median_risk_percent": 16.5824,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-07",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1907,
+          "median_distance_to_swing_low_percent": 10.5825,
+          "median_risk_percent": 15.1028,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1293,
+          "median_distance_to_swing_low_percent": 9.3371,
+          "median_risk_percent": 14.6479,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-11",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.113,
+          "median_distance_to_swing_low_percent": 6.9333,
+          "median_risk_percent": 12.4004,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-12",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1007,
+          "median_distance_to_swing_low_percent": 6.9353,
+          "median_risk_percent": 11.9716,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-13",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1205,
+          "median_distance_to_swing_low_percent": 7.1852,
+          "median_risk_percent": 12.6941,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-14",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1109,
+          "median_distance_to_swing_low_percent": 7.1693,
+          "median_risk_percent": 13.1605,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1419,
+          "median_distance_to_swing_low_percent": 7.3486,
+          "median_risk_percent": 13.3265,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-18",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1755,
+          "median_distance_to_swing_low_percent": 7.701,
+          "median_risk_percent": 13.4987,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-19",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.177,
+          "median_distance_to_swing_low_percent": 8.0891,
+          "median_risk_percent": 13.4673,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-20",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.127,
+          "median_distance_to_swing_low_percent": 8.5453,
+          "median_risk_percent": 13.5601,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-21",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1472,
+          "median_distance_to_swing_low_percent": 8.9158,
+          "median_risk_percent": 13.6036,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0933,
+          "median_distance_to_swing_low_percent": 9.2211,
+          "median_risk_percent": 13.1485,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-26",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0326,
+          "median_distance_to_swing_low_percent": 9.1417,
+          "median_risk_percent": 12.9666,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-27",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.01,
+          "median_distance_to_swing_low_percent": 9.3643,
+          "median_risk_percent": 13.0457,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-28",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9751,
+          "median_distance_to_swing_low_percent": 7.8407,
+          "median_risk_percent": 12.7138,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0664,
+          "median_distance_to_swing_low_percent": 7.7535,
+          "median_risk_percent": 12.3675,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 9,
+          "rejection_reasons": {
+            "risk_above_5_percent": 9
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 1
+        },
+        {
+          "date": "2026-06-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1918,
+          "median_distance_to_swing_low_percent": 8.3167,
+          "median_risk_percent": 12.4842,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-02",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.2752,
+          "median_distance_to_swing_low_percent": 8.3275,
+          "median_risk_percent": 12.4884,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-03",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3318,
+          "median_distance_to_swing_low_percent": 7.1595,
+          "median_risk_percent": 11.9475,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-04",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.2534,
+          "median_distance_to_swing_low_percent": 5.7432,
+          "median_risk_percent": 10.2444,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-05",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.5414,
+          "median_distance_to_swing_low_percent": 5.7403,
+          "median_risk_percent": 10.5819,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4963,
+          "median_distance_to_swing_low_percent": 5.8561,
+          "median_risk_percent": 10.3646,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-09",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.5566,
+          "median_distance_to_swing_low_percent": 6.7382,
+          "median_risk_percent": 11.8787,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-10",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.5834,
+          "median_distance_to_swing_low_percent": 6.6972,
+          "median_risk_percent": 11.8511,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-11",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.5355,
+          "median_distance_to_swing_low_percent": 7.651,
+          "median_risk_percent": 12.3059,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-12",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4484,
+          "median_distance_to_swing_low_percent": 7.4961,
+          "median_risk_percent": 12.0911,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.537,
+          "median_distance_to_swing_low_percent": 7.3589,
+          "median_risk_percent": 11.9855,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-16",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4566,
+          "median_distance_to_swing_low_percent": 7.1647,
+          "median_risk_percent": 11.7648,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-17",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.5299,
+          "median_distance_to_swing_low_percent": 6.8405,
+          "median_risk_percent": 11.8653,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-18",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4994,
+          "median_distance_to_swing_low_percent": 6.6497,
+          "median_risk_percent": 11.8569,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4699,
+          "median_distance_to_swing_low_percent": 6.9011,
+          "median_risk_percent": 12.4625,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-23",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4525,
+          "median_distance_to_swing_low_percent": 6.7016,
+          "median_risk_percent": 12.1271,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-24",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3908,
+          "median_distance_to_swing_low_percent": 6.8766,
+          "median_risk_percent": 11.8589,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-25",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4415,
+          "median_distance_to_swing_low_percent": 7.4653,
+          "median_risk_percent": 13.0117,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-26",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4644,
+          "median_distance_to_swing_low_percent": 7.759,
+          "median_risk_percent": 13.3998,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.5403,
+          "median_distance_to_swing_low_percent": 7.846,
+          "median_risk_percent": 13.7865,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-30",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4521,
+          "median_distance_to_swing_low_percent": 8.0649,
+          "median_risk_percent": 13.889,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.6149,
+          "median_distance_to_swing_low_percent": 8.3585,
+          "median_risk_percent": 13.8515,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-02",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.6981,
+          "median_distance_to_swing_low_percent": 8.2631,
+          "median_risk_percent": 13.8287,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-06",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.6302,
+          "median_distance_to_swing_low_percent": 8.5407,
+          "median_risk_percent": 13.8495,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-07",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.6466,
+          "median_distance_to_swing_low_percent": 8.6165,
+          "median_risk_percent": 14.0445,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.667,
+          "median_distance_to_swing_low_percent": 8.5447,
+          "median_risk_percent": 14.0254,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-09",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.8306,
+          "median_distance_to_swing_low_percent": 8.8317,
+          "median_risk_percent": 14.6115,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-10",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.9625,
+          "median_distance_to_swing_low_percent": 9.5176,
+          "median_risk_percent": 14.9926,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-13",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.9327,
+          "median_distance_to_swing_low_percent": 9.1419,
+          "median_risk_percent": 14.8882,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-14",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.8873,
+          "median_distance_to_swing_low_percent": 9.0504,
+          "median_risk_percent": 14.6625,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.8872,
+          "median_distance_to_swing_low_percent": 9.1684,
+          "median_risk_percent": 14.8623,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-16",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.8339,
+          "median_distance_to_swing_low_percent": 9.2475,
+          "median_risk_percent": 15.2162,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-17",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.9395,
+          "median_distance_to_swing_low_percent": 11.2222,
+          "median_risk_percent": 15.54,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-20",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.8464,
+          "median_distance_to_swing_low_percent": 11.2062,
+          "median_risk_percent": 15.92,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-21",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.7299,
+          "median_distance_to_swing_low_percent": 11.4692,
+          "median_risk_percent": 16.0811,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.7643,
+          "median_distance_to_swing_low_percent": 11.6877,
+          "median_risk_percent": 16.2048,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-23",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.7756,
+          "median_distance_to_swing_low_percent": 13.1466,
+          "median_risk_percent": 18.4311,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 10,
+          "rejection_reasons": {
+            "risk_above_5_percent": 10
+          },
+          "symbols_requested": 10,
+          "symbols_scanned": 10,
+          "valid_signals": 0
+        }
+      ],
+      "days_with_zero_signals": 59,
+      "estimated_trading_days_to_100_completed_trades": null,
+      "estimated_weeks_to_100_completed_trades": null,
+      "estimated_weeks_to_100_signals": 1200.0,
+      "label": "Demo 10",
+      "outcome_estimate": {
+        "completed_trades": 0,
+        "entered_signals": 0,
+        "expired_signals": 1,
+        "mature_signal_completion_rate_percent": 0.0,
+        "mature_signals": 1,
+        "status_counts": {
+          "expired": 1
+        }
+      },
+      "provider_failures": 0,
+      "rejected_signals": 599,
+      "rejection_reasons": {
+        "risk_above_5_percent": 599
+      },
+      "risk_limit_analysis": {
+        "above_10_percent": 518,
+        "above_7_5_percent": 583,
+        "by_market_regime": {
+          "Strong risk-on": {
+            "completed_scans": 600,
+            "risk_limit_rejection_rate_percent": 99.83,
+            "risk_limit_rejections": 599
+          }
+        },
+        "by_sector": {
+          "Communication Services": 119,
+          "Consumer Discretionary": 120,
+          "Technology": 360
+        },
+        "by_volatility": {
+          "High (>4% ATR)": {
+            "completed_scans": 231,
+            "risk_limit_rejection_rate_percent": 100.0,
+            "risk_limit_rejections": 231
+          },
+          "Low (<2% ATR)": {
+            "completed_scans": 7,
+            "risk_limit_rejection_rate_percent": 100.0,
+            "risk_limit_rejections": 7
+          },
+          "Moderate (2-4% ATR)": {
+            "completed_scans": 362,
+            "risk_limit_rejection_rate_percent": 99.72,
+            "risk_limit_rejections": 361
+          }
+        },
+        "exclusive_bands": {
+          "over_10": 518,
+          "over_5_to_7_5": 16,
+          "over_7_5_to_10": 65
+        },
+        "median_atr_buffer_percent": 5.2124,
+        "median_distance_to_swing_low_percent": 8.4658,
+        "median_risk_percent": 14.0564,
+        "only_slightly_above_5_to_7_5_percent": 16,
+        "sector_dominance_detected": true,
+        "top_sector": "Technology",
+        "top_sector_share_percent": 60.1,
+        "total": 599
+      },
+      "sessions": 60,
+      "signals_per_trading_day": 0.0167,
+      "symbols_scanned": 600,
+      "valid_signals": 1,
+      "zero_signal_frequency_percent": 98.33
+    },
+    "dow30": {
+      "average_valid_signals_per_week": 6.4167,
+      "configured_symbol_count": 30,
+      "configured_symbols": [
+        "AAPL",
+        "AMGN",
+        "AMZN",
+        "AXP",
+        "BA",
+        "CAT",
+        "CRM",
+        "CSCO",
+        "CVX",
+        "DIS",
+        "GS",
+        "HD",
+        "HON",
+        "IBM",
+        "INTC",
+        "JNJ",
+        "JPM",
+        "KO",
+        "MCD",
+        "MMM",
+        "MRK",
+        "MSFT",
+        "NKE",
+        "NVDA",
+        "PG",
+        "SHW",
+        "TRV",
+        "UNH",
+        "V",
+        "WMT"
+      ],
+      "daily": [
+        {
+          "date": "2026-04-28",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4788,
+          "median_distance_to_swing_low_percent": 7.449,
+          "median_risk_percent": 10.8256,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-04-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4967,
+          "median_distance_to_swing_low_percent": 6.6405,
+          "median_risk_percent": 10.5875,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-04-30",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5383,
+          "median_distance_to_swing_low_percent": 6.742,
+          "median_risk_percent": 10.4929,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-05-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5568,
+          "median_distance_to_swing_low_percent": 6.4331,
+          "median_risk_percent": 10.1238,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-05-04",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5372,
+          "median_distance_to_swing_low_percent": 6.3688,
+          "median_risk_percent": 10.003,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-05-05",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5393,
+          "median_distance_to_swing_low_percent": 5.5857,
+          "median_risk_percent": 9.183,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-06",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5411,
+          "median_distance_to_swing_low_percent": 5.6029,
+          "median_risk_percent": 9.3886,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-07",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5277,
+          "median_distance_to_swing_low_percent": 5.4583,
+          "median_risk_percent": 9.2589,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4957,
+          "median_distance_to_swing_low_percent": 5.4723,
+          "median_risk_percent": 9.2434,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-05-11",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5135,
+          "median_distance_to_swing_low_percent": 5.1983,
+          "median_risk_percent": 9.1535,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-05-12",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4976,
+          "median_distance_to_swing_low_percent": 4.9032,
+          "median_risk_percent": 8.6527,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-05-13",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4684,
+          "median_distance_to_swing_low_percent": 5.3181,
+          "median_risk_percent": 8.6884,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-05-14",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.3848,
+          "median_distance_to_swing_low_percent": 5.014,
+          "median_risk_percent": 8.4426,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-05-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4133,
+          "median_distance_to_swing_low_percent": 4.9242,
+          "median_risk_percent": 8.1985,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-05-18",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4457,
+          "median_distance_to_swing_low_percent": 4.9278,
+          "median_risk_percent": 8.3275,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-19",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.437,
+          "median_distance_to_swing_low_percent": 5.0416,
+          "median_risk_percent": 8.2961,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-20",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.496,
+          "median_distance_to_swing_low_percent": 5.0232,
+          "median_risk_percent": 8.1732,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-21",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5149,
+          "median_distance_to_swing_low_percent": 5.1656,
+          "median_risk_percent": 8.8896,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4976,
+          "median_distance_to_swing_low_percent": 5.549,
+          "median_risk_percent": 9.3165,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-26",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5613,
+          "median_distance_to_swing_low_percent": 5.4266,
+          "median_risk_percent": 9.2685,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 29,
+          "rejection_reasons": {
+            "risk_above_5_percent": 29
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 1
+        },
+        {
+          "date": "2026-05-27",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4984,
+          "median_distance_to_swing_low_percent": 5.1447,
+          "median_risk_percent": 9.2327,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-28",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4745,
+          "median_distance_to_swing_low_percent": 4.986,
+          "median_risk_percent": 8.7908,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4769,
+          "median_distance_to_swing_low_percent": 4.9649,
+          "median_risk_percent": 8.6346,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4829,
+          "median_distance_to_swing_low_percent": 4.9472,
+          "median_risk_percent": 8.6642,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-02",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.4426,
+          "median_distance_to_swing_low_percent": 4.8027,
+          "median_risk_percent": 8.7279,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-03",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5068,
+          "median_distance_to_swing_low_percent": 5.3178,
+          "median_risk_percent": 9.379,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-04",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6223,
+          "median_distance_to_swing_low_percent": 5.0136,
+          "median_risk_percent": 8.9888,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-06-05",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5766,
+          "median_distance_to_swing_low_percent": 4.9362,
+          "median_risk_percent": 9.147,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-06-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5641,
+          "median_distance_to_swing_low_percent": 4.9861,
+          "median_risk_percent": 9.1647,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-06-09",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5918,
+          "median_distance_to_swing_low_percent": 5.0937,
+          "median_risk_percent": 9.12,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-06-10",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5625,
+          "median_distance_to_swing_low_percent": 5.1907,
+          "median_risk_percent": 9.362,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-06-11",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6173,
+          "median_distance_to_swing_low_percent": 5.3424,
+          "median_risk_percent": 9.6287,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-06-12",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5513,
+          "median_distance_to_swing_low_percent": 5.4212,
+          "median_risk_percent": 9.8935,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5905,
+          "median_distance_to_swing_low_percent": 5.678,
+          "median_risk_percent": 9.9627,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-16",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5451,
+          "median_distance_to_swing_low_percent": 5.7677,
+          "median_risk_percent": 9.9101,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-17",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6184,
+          "median_distance_to_swing_low_percent": 5.9597,
+          "median_risk_percent": 10.0193,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-18",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6688,
+          "median_distance_to_swing_low_percent": 5.896,
+          "median_risk_percent": 9.911,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6372,
+          "median_distance_to_swing_low_percent": 5.8733,
+          "median_risk_percent": 9.7033,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-23",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.587,
+          "median_distance_to_swing_low_percent": 5.9737,
+          "median_risk_percent": 9.7005,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-24",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.588,
+          "median_distance_to_swing_low_percent": 6.0425,
+          "median_risk_percent": 10.1146,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-25",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7206,
+          "median_distance_to_swing_low_percent": 6.6502,
+          "median_risk_percent": 10.6386,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-26",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7175,
+          "median_distance_to_swing_low_percent": 6.9317,
+          "median_risk_percent": 10.8543,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6635,
+          "median_distance_to_swing_low_percent": 7.1264,
+          "median_risk_percent": 10.9819,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-30",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6083,
+          "median_distance_to_swing_low_percent": 7.0614,
+          "median_risk_percent": 11.528,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6134,
+          "median_distance_to_swing_low_percent": 6.995,
+          "median_risk_percent": 11.8258,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-02",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6379,
+          "median_distance_to_swing_low_percent": 6.6589,
+          "median_risk_percent": 11.144,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-06",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6447,
+          "median_distance_to_swing_low_percent": 6.5775,
+          "median_risk_percent": 11.0005,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-07",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.708,
+          "median_distance_to_swing_low_percent": 6.8476,
+          "median_risk_percent": 11.2457,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.771,
+          "median_distance_to_swing_low_percent": 6.6786,
+          "median_risk_percent": 11.3379,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-09",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7193,
+          "median_distance_to_swing_low_percent": 6.4935,
+          "median_risk_percent": 10.9563,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-10",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6419,
+          "median_distance_to_swing_low_percent": 6.5153,
+          "median_risk_percent": 10.4118,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-13",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6454,
+          "median_distance_to_swing_low_percent": 6.3102,
+          "median_risk_percent": 10.217,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-14",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5703,
+          "median_distance_to_swing_low_percent": 5.4384,
+          "median_risk_percent": 9.8907,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.5845,
+          "median_distance_to_swing_low_percent": 5.9328,
+          "median_risk_percent": 10.0528,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-16",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.641,
+          "median_distance_to_swing_low_percent": 6.328,
+          "median_risk_percent": 10.3069,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-17",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7158,
+          "median_distance_to_swing_low_percent": 6.4599,
+          "median_risk_percent": 10.6141,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-20",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7289,
+          "median_distance_to_swing_low_percent": 6.3077,
+          "median_risk_percent": 10.136,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-21",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6791,
+          "median_distance_to_swing_low_percent": 6.1519,
+          "median_risk_percent": 10.1059,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6041,
+          "median_distance_to_swing_low_percent": 5.4358,
+          "median_risk_percent": 9.4566,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        },
+        {
+          "date": "2026-07-23",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.701,
+          "median_distance_to_swing_low_percent": 5.6518,
+          "median_risk_percent": 9.6042,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 28,
+          "rejection_reasons": {
+            "risk_above_5_percent": 28
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 2
+        }
+      ],
+      "days_with_zero_signals": 24,
+      "estimated_trading_days_to_100_completed_trades": 129.9,
+      "estimated_weeks_to_100_completed_trades": 26.0,
+      "estimated_weeks_to_100_signals": 15.6,
+      "label": "Dow 30",
+      "outcome_estimate": {
+        "completed_trades": 27,
+        "entered_signals": 27,
+        "expired_signals": 18,
+        "mature_signal_completion_rate_percent": 60.0,
+        "mature_signals": 45,
+        "status_counts": {
+          "completed": 24,
+          "expired": 18,
+          "stopped": 3
+        }
+      },
+      "provider_failures": 0,
+      "rejected_signals": 1723,
+      "rejection_reasons": {
+        "risk_above_5_percent": 1723
+      },
+      "risk_limit_analysis": {
+        "above_10_percent": 843,
+        "above_7_5_percent": 1350,
+        "by_market_regime": {
+          "Strong risk-on": {
+            "completed_scans": 1800,
+            "risk_limit_rejection_rate_percent": 95.72,
+            "risk_limit_rejections": 1723
+          }
+        },
+        "by_sector": {
+          "Communication Services": 60,
+          "Consumer Discretionary": 240,
+          "Consumer Staples": 176,
+          "Energy": 60,
+          "Financials": 297,
+          "Health Care": 240,
+          "Industrials": 205,
+          "Materials": 60,
+          "Technology": 385
+        },
+        "by_volatility": {
+          "High (>4% ATR)": {
+            "completed_scans": 178,
+            "risk_limit_rejection_rate_percent": 100.0,
+            "risk_limit_rejections": 178
+          },
+          "Low (<2% ATR)": {
+            "completed_scans": 278,
+            "risk_limit_rejection_rate_percent": 72.66,
+            "risk_limit_rejections": 202
+          },
+          "Moderate (2-4% ATR)": {
+            "completed_scans": 1344,
+            "risk_limit_rejection_rate_percent": 99.93,
+            "risk_limit_rejections": 1343
+          }
+        },
+        "exclusive_bands": {
+          "over_10": 843,
+          "over_5_to_7_5": 373,
+          "over_7_5_to_10": 507
+        },
+        "median_atr_buffer_percent": 3.8675,
+        "median_distance_to_swing_low_percent": 5.8824,
+        "median_risk_percent": 9.9434,
+        "only_slightly_above_5_to_7_5_percent": 373,
+        "sector_dominance_detected": false,
+        "top_sector": "Technology",
+        "top_sector_share_percent": 22.34,
+        "total": 1723
+      },
+      "sessions": 60,
+      "signals_per_trading_day": 1.2833,
+      "symbols_scanned": 1800,
+      "valid_signals": 77,
+      "zero_signal_frequency_percent": 40.0
+    },
+    "nasdaq100": {
+      "average_valid_signals_per_week": 8.8333,
+      "configured_symbol_count": 30,
+      "configured_symbols": [
+        "NVDA",
+        "MSFT",
+        "AAPL",
+        "AMZN",
+        "META",
+        "AVGO",
+        "GOOGL",
+        "GOOG",
+        "TSLA",
+        "COST",
+        "NFLX",
+        "AMD",
+        "ADBE",
+        "PEP",
+        "CSCO",
+        "TMUS",
+        "INTC",
+        "CMCSA",
+        "INTU",
+        "QCOM",
+        "AMGN",
+        "TXN",
+        "HON",
+        "AMAT",
+        "BKNG",
+        "SBUX",
+        "VRTX",
+        "PANW",
+        "ADP",
+        "GILD"
+      ],
+      "daily": [
+        {
+          "date": "2026-04-28",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9249,
+          "median_distance_to_swing_low_percent": 10.3417,
+          "median_risk_percent": 14.5719,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-04-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9017,
+          "median_distance_to_swing_low_percent": 10.2638,
+          "median_risk_percent": 14.5292,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-04-30",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1219,
+          "median_distance_to_swing_low_percent": 10.6728,
+          "median_risk_percent": 14.8286,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1145,
+          "median_distance_to_swing_low_percent": 9.2111,
+          "median_risk_percent": 13.9937,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-04",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0531,
+          "median_distance_to_swing_low_percent": 8.8815,
+          "median_risk_percent": 13.5421,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-05",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0251,
+          "median_distance_to_swing_low_percent": 7.0795,
+          "median_risk_percent": 11.6954,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-06",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9539,
+          "median_distance_to_swing_low_percent": 7.0757,
+          "median_risk_percent": 11.7567,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-07",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8734,
+          "median_distance_to_swing_low_percent": 6.8016,
+          "median_risk_percent": 11.341,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7671,
+          "median_distance_to_swing_low_percent": 7.237,
+          "median_risk_percent": 12.2857,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-11",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7509,
+          "median_distance_to_swing_low_percent": 6.6403,
+          "median_risk_percent": 11.3759,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-12",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7971,
+          "median_distance_to_swing_low_percent": 6.1187,
+          "median_risk_percent": 10.8286,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-13",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.829,
+          "median_distance_to_swing_low_percent": 6.3283,
+          "median_risk_percent": 10.6737,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-14",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8115,
+          "median_distance_to_swing_low_percent": 6.1975,
+          "median_risk_percent": 10.3998,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8235,
+          "median_distance_to_swing_low_percent": 6.4787,
+          "median_risk_percent": 10.4848,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-18",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8687,
+          "median_distance_to_swing_low_percent": 6.3852,
+          "median_risk_percent": 10.6909,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-19",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8558,
+          "median_distance_to_swing_low_percent": 6.3881,
+          "median_risk_percent": 10.8281,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-20",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.827,
+          "median_distance_to_swing_low_percent": 6.2002,
+          "median_risk_percent": 10.7508,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-21",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8094,
+          "median_distance_to_swing_low_percent": 6.025,
+          "median_risk_percent": 10.8032,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.744,
+          "median_distance_to_swing_low_percent": 5.8481,
+          "median_risk_percent": 10.6722,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-26",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6734,
+          "median_distance_to_swing_low_percent": 5.9197,
+          "median_risk_percent": 10.7759,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-27",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6439,
+          "median_distance_to_swing_low_percent": 5.3574,
+          "median_risk_percent": 9.8699,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-28",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.638,
+          "median_distance_to_swing_low_percent": 4.8006,
+          "median_risk_percent": 8.6454,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.618,
+          "median_distance_to_swing_low_percent": 5.5844,
+          "median_risk_percent": 9.889,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 29,
+          "rejection_reasons": {
+            "risk_above_5_percent": 29
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 1
+        },
+        {
+          "date": "2026-06-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6922,
+          "median_distance_to_swing_low_percent": 6.8196,
+          "median_risk_percent": 10.6325,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-02",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.653,
+          "median_distance_to_swing_low_percent": 6.5298,
+          "median_risk_percent": 10.7079,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-03",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8058,
+          "median_distance_to_swing_low_percent": 6.6106,
+          "median_risk_percent": 10.8031,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-04",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9208,
+          "median_distance_to_swing_low_percent": 6.3334,
+          "median_risk_percent": 10.6449,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-05",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9768,
+          "median_distance_to_swing_low_percent": 6.1734,
+          "median_risk_percent": 10.5851,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9318,
+          "median_distance_to_swing_low_percent": 5.8814,
+          "median_risk_percent": 10.3646,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-09",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9248,
+          "median_distance_to_swing_low_percent": 6.4906,
+          "median_risk_percent": 10.649,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-10",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9367,
+          "median_distance_to_swing_low_percent": 6.5011,
+          "median_risk_percent": 10.9622,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-11",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0466,
+          "median_distance_to_swing_low_percent": 6.7167,
+          "median_risk_percent": 11.6403,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-12",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0211,
+          "median_distance_to_swing_low_percent": 6.5897,
+          "median_risk_percent": 11.3784,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1402,
+          "median_distance_to_swing_low_percent": 6.8041,
+          "median_risk_percent": 11.5375,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-16",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0442,
+          "median_distance_to_swing_low_percent": 7.0311,
+          "median_risk_percent": 11.2438,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-17",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0816,
+          "median_distance_to_swing_low_percent": 6.8405,
+          "median_risk_percent": 11.6197,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-18",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0952,
+          "median_distance_to_swing_low_percent": 6.6681,
+          "median_risk_percent": 11.5054,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.2244,
+          "median_distance_to_swing_low_percent": 6.6399,
+          "median_risk_percent": 11.5859,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-23",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.1736,
+          "median_distance_to_swing_low_percent": 6.5316,
+          "median_risk_percent": 11.2407,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-24",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.2129,
+          "median_distance_to_swing_low_percent": 6.6367,
+          "median_risk_percent": 11.1997,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-25",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.2097,
+          "median_distance_to_swing_low_percent": 7.1752,
+          "median_risk_percent": 12.5502,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-26",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.2863,
+          "median_distance_to_swing_low_percent": 7.3836,
+          "median_risk_percent": 12.7424,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.5343,
+          "median_distance_to_swing_low_percent": 7.7111,
+          "median_risk_percent": 12.858,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-30",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4225,
+          "median_distance_to_swing_low_percent": 7.926,
+          "median_risk_percent": 13.166,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4742,
+          "median_distance_to_swing_low_percent": 7.7761,
+          "median_risk_percent": 12.9736,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-02",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4623,
+          "median_distance_to_swing_low_percent": 7.9199,
+          "median_risk_percent": 12.9402,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-06",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3843,
+          "median_distance_to_swing_low_percent": 7.8596,
+          "median_risk_percent": 13.033,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-07",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3775,
+          "median_distance_to_swing_low_percent": 7.8376,
+          "median_risk_percent": 13.0536,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4038,
+          "median_distance_to_swing_low_percent": 7.8956,
+          "median_risk_percent": 12.9095,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 30,
+          "rejection_reasons": {
+            "risk_above_5_percent": 30
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-09",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3919,
+          "median_distance_to_swing_low_percent": 7.9909,
+          "median_risk_percent": 13.0963,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-10",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3769,
+          "median_distance_to_swing_low_percent": 8.1647,
+          "median_risk_percent": 13.1225,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-13",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3606,
+          "median_distance_to_swing_low_percent": 7.7121,
+          "median_risk_percent": 13.0398,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-14",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3509,
+          "median_distance_to_swing_low_percent": 7.324,
+          "median_risk_percent": 12.3698,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3916,
+          "median_distance_to_swing_low_percent": 7.6417,
+          "median_risk_percent": 12.7772,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-16",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3482,
+          "median_distance_to_swing_low_percent": 7.6246,
+          "median_risk_percent": 13.0118,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-17",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4928,
+          "median_distance_to_swing_low_percent": 7.744,
+          "median_risk_percent": 13.5022,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-20",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.4224,
+          "median_distance_to_swing_low_percent": 7.5848,
+          "median_risk_percent": 13.2006,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-21",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.3145,
+          "median_distance_to_swing_low_percent": 7.3523,
+          "median_risk_percent": 12.8777,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.2823,
+          "median_distance_to_swing_low_percent": 7.4106,
+          "median_risk_percent": 12.8817,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-23",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.5228,
+          "median_distance_to_swing_low_percent": 7.8866,
+          "median_risk_percent": 14.3692,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 27,
+          "rejection_reasons": {
+            "risk_above_5_percent": 27
+          },
+          "symbols_requested": 30,
+          "symbols_scanned": 30,
+          "valid_signals": 3
+        }
+      ],
+      "days_with_zero_signals": 24,
+      "estimated_trading_days_to_100_completed_trades": 109.4,
+      "estimated_weeks_to_100_completed_trades": 21.9,
+      "estimated_weeks_to_100_signals": 11.3,
+      "label": "Nasdaq 100",
+      "outcome_estimate": {
+        "completed_trades": 30,
+        "entered_signals": 30,
+        "expired_signals": 28,
+        "mature_signal_completion_rate_percent": 51.72,
+        "mature_signals": 58,
+        "status_counts": {
+          "completed": 30,
+          "expired": 28
+        }
+      },
+      "provider_failures": 0,
+      "rejected_signals": 1694,
+      "rejection_reasons": {
+        "risk_above_5_percent": 1694
+      },
+      "risk_limit_analysis": {
+        "above_10_percent": 1207,
+        "above_7_5_percent": 1503,
+        "by_market_regime": {
+          "Strong risk-on": {
+            "completed_scans": 1800,
+            "risk_limit_rejection_rate_percent": 94.11,
+            "risk_limit_rejections": 1694
+          }
+        },
+        "by_sector": {
+          "Communication Services": 324,
+          "Consumer Discretionary": 240,
+          "Consumer Staples": 120,
+          "Health Care": 180,
+          "Industrials": 85,
+          "Technology": 745
+        },
+        "by_volatility": {
+          "High (>4% ATR)": {
+            "completed_scans": 509,
+            "risk_limit_rejection_rate_percent": 100.0,
+            "risk_limit_rejections": 509
+          },
+          "Low (<2% ATR)": {
+            "completed_scans": 205,
+            "risk_limit_rejection_rate_percent": 48.78,
+            "risk_limit_rejections": 100
+          },
+          "Moderate (2-4% ATR)": {
+            "completed_scans": 1086,
+            "risk_limit_rejection_rate_percent": 99.91,
+            "risk_limit_rejections": 1085
+          }
+        },
+        "exclusive_bands": {
+          "over_10": 1207,
+          "over_5_to_7_5": 191,
+          "over_7_5_to_10": 296
+        },
+        "median_atr_buffer_percent": 4.8952,
+        "median_distance_to_swing_low_percent": 7.3048,
+        "median_risk_percent": 12.4442,
+        "only_slightly_above_5_to_7_5_percent": 191,
+        "sector_dominance_detected": false,
+        "top_sector": "Technology",
+        "top_sector_share_percent": 43.98,
+        "total": 1694
+      },
+      "sessions": 60,
+      "signals_per_trading_day": 1.7667,
+      "symbols_scanned": 1800,
+      "valid_signals": 106,
+      "zero_signal_frequency_percent": 40.0
+    },
+    "sp500": {
+      "average_valid_signals_per_week": 9.5,
+      "configured_symbol_count": 51,
+      "configured_symbols": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "AMZN",
+        "META",
+        "GOOGL",
+        "GOOG",
+        "BRK-B",
+        "AVGO",
+        "TSLA",
+        "LLY",
+        "JPM",
+        "V",
+        "UNH",
+        "XOM",
+        "MA",
+        "COST",
+        "PG",
+        "JNJ",
+        "HD",
+        "MRK",
+        "ABBV",
+        "CVX",
+        "KO",
+        "PEP",
+        "ADBE",
+        "CRM",
+        "WMT",
+        "BAC",
+        "NFLX",
+        "AMD",
+        "CSCO",
+        "TMO",
+        "ACN",
+        "MCD",
+        "LIN",
+        "ABT",
+        "DHR",
+        "ORCL",
+        "QCOM",
+        "TXN",
+        "PM",
+        "IBM",
+        "AMGN",
+        "GE",
+        "CAT",
+        "INTU",
+        "NOW",
+        "ISRG",
+        "GS",
+        "SPGI"
+      ],
+      "daily": [
+        {
+          "date": "2026-04-28",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6366,
+          "median_distance_to_swing_low_percent": 7.3289,
+          "median_risk_percent": 11.2795,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-04-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6914,
+          "median_distance_to_swing_low_percent": 6.991,
+          "median_risk_percent": 11.0331,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-04-30",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8811,
+          "median_distance_to_swing_low_percent": 7.1888,
+          "median_risk_percent": 11.4889,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8144,
+          "median_distance_to_swing_low_percent": 6.9546,
+          "median_risk_percent": 11.4479,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-04",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.778,
+          "median_distance_to_swing_low_percent": 6.8397,
+          "median_risk_percent": 11.5367,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-05",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7411,
+          "median_distance_to_swing_low_percent": 6.8232,
+          "median_risk_percent": 11.1359,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 47,
+          "rejection_reasons": {
+            "risk_above_5_percent": 47
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 4
+        },
+        {
+          "date": "2026-05-06",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7295,
+          "median_distance_to_swing_low_percent": 6.5665,
+          "median_risk_percent": 10.7417,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 47,
+          "rejection_reasons": {
+            "risk_above_5_percent": 47
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 4
+        },
+        {
+          "date": "2026-05-07",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7033,
+          "median_distance_to_swing_low_percent": 6.2077,
+          "median_risk_percent": 10.4179,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 46,
+          "rejection_reasons": {
+            "risk_above_5_percent": 46
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 5
+        },
+        {
+          "date": "2026-05-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6124,
+          "median_distance_to_swing_low_percent": 6.2914,
+          "median_risk_percent": 10.3486,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-11",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6455,
+          "median_distance_to_swing_low_percent": 6.3431,
+          "median_risk_percent": 10.7289,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-12",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6253,
+          "median_distance_to_swing_low_percent": 5.7741,
+          "median_risk_percent": 10.4024,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-13",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6345,
+          "median_distance_to_swing_low_percent": 6.2142,
+          "median_risk_percent": 10.9154,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-14",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6167,
+          "median_distance_to_swing_low_percent": 6.1962,
+          "median_risk_percent": 10.4381,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.629,
+          "median_distance_to_swing_low_percent": 6.2905,
+          "median_risk_percent": 10.2255,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-05-18",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6511,
+          "median_distance_to_swing_low_percent": 6.0985,
+          "median_risk_percent": 10.2589,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-19",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6514,
+          "median_distance_to_swing_low_percent": 6.2683,
+          "median_risk_percent": 10.6427,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-20",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7252,
+          "median_distance_to_swing_low_percent": 6.3321,
+          "median_risk_percent": 10.6624,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-21",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6952,
+          "median_distance_to_swing_low_percent": 6.2726,
+          "median_risk_percent": 10.5838,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6145,
+          "median_distance_to_swing_low_percent": 6.1246,
+          "median_risk_percent": 10.6683,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-26",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6437,
+          "median_distance_to_swing_low_percent": 5.9609,
+          "median_risk_percent": 10.3994,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 50,
+          "rejection_reasons": {
+            "risk_above_5_percent": 50
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 1
+        },
+        {
+          "date": "2026-05-27",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6098,
+          "median_distance_to_swing_low_percent": 6.0362,
+          "median_risk_percent": 10.5845,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-28",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.61,
+          "median_distance_to_swing_low_percent": 5.6463,
+          "median_risk_percent": 10.041,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-05-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.565,
+          "median_distance_to_swing_low_percent": 5.5477,
+          "median_risk_percent": 9.8984,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 50,
+          "rejection_reasons": {
+            "risk_above_5_percent": 50
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 1
+        },
+        {
+          "date": "2026-06-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6085,
+          "median_distance_to_swing_low_percent": 5.5725,
+          "median_risk_percent": 10.0562,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 47,
+          "rejection_reasons": {
+            "risk_above_5_percent": 47
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 4
+        },
+        {
+          "date": "2026-06-02",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.61,
+          "median_distance_to_swing_low_percent": 5.8118,
+          "median_risk_percent": 10.2707,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 47,
+          "rejection_reasons": {
+            "risk_above_5_percent": 47
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 4
+        },
+        {
+          "date": "2026-06-03",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6809,
+          "median_distance_to_swing_low_percent": 6.4449,
+          "median_risk_percent": 9.865,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 47,
+          "rejection_reasons": {
+            "risk_above_5_percent": 47
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 4
+        },
+        {
+          "date": "2026-06-04",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6972,
+          "median_distance_to_swing_low_percent": 5.9416,
+          "median_risk_percent": 10.0634,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-05",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7014,
+          "median_distance_to_swing_low_percent": 5.7163,
+          "median_risk_percent": 10.2104,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7413,
+          "median_distance_to_swing_low_percent": 5.6691,
+          "median_risk_percent": 10.2813,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-09",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7302,
+          "median_distance_to_swing_low_percent": 6.0914,
+          "median_risk_percent": 10.0663,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-10",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8028,
+          "median_distance_to_swing_low_percent": 6.1024,
+          "median_risk_percent": 10.391,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-11",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8159,
+          "median_distance_to_swing_low_percent": 5.8591,
+          "median_risk_percent": 10.665,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-06-12",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7942,
+          "median_distance_to_swing_low_percent": 6.1645,
+          "median_risk_percent": 10.6802,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7607,
+          "median_distance_to_swing_low_percent": 6.2254,
+          "median_risk_percent": 10.6286,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-16",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7296,
+          "median_distance_to_swing_low_percent": 6.4883,
+          "median_risk_percent": 10.827,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-17",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7564,
+          "median_distance_to_swing_low_percent": 6.3337,
+          "median_risk_percent": 10.6918,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-18",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7041,
+          "median_distance_to_swing_low_percent": 6.3591,
+          "median_risk_percent": 10.2797,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7829,
+          "median_distance_to_swing_low_percent": 5.878,
+          "median_risk_percent": 9.8146,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-23",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8095,
+          "median_distance_to_swing_low_percent": 5.945,
+          "median_risk_percent": 9.9408,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-24",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8598,
+          "median_distance_to_swing_low_percent": 6.0889,
+          "median_risk_percent": 10.0092,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-25",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8993,
+          "median_distance_to_swing_low_percent": 6.7723,
+          "median_risk_percent": 10.6931,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-26",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8974,
+          "median_distance_to_swing_low_percent": 6.8285,
+          "median_risk_percent": 11.0894,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-29",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8732,
+          "median_distance_to_swing_low_percent": 7.046,
+          "median_risk_percent": 11.2898,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-06-30",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.834,
+          "median_distance_to_swing_low_percent": 7.0876,
+          "median_risk_percent": 11.6325,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-01",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8225,
+          "median_distance_to_swing_low_percent": 7.3716,
+          "median_risk_percent": 12.0076,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-02",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8325,
+          "median_distance_to_swing_low_percent": 6.8356,
+          "median_risk_percent": 11.2301,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-06",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9112,
+          "median_distance_to_swing_low_percent": 7.0511,
+          "median_risk_percent": 11.4485,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-07",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8186,
+          "median_distance_to_swing_low_percent": 7.154,
+          "median_risk_percent": 11.7883,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-08",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.847,
+          "median_distance_to_swing_low_percent": 7.2688,
+          "median_risk_percent": 11.8935,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 51,
+          "rejection_reasons": {
+            "risk_above_5_percent": 51
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 0
+        },
+        {
+          "date": "2026-07-09",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.8078,
+          "median_distance_to_swing_low_percent": 7.2951,
+          "median_risk_percent": 12.1092,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-10",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7609,
+          "median_distance_to_swing_low_percent": 7.3033,
+          "median_risk_percent": 12.1312,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-13",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.6954,
+          "median_distance_to_swing_low_percent": 6.6852,
+          "median_risk_percent": 11.8607,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-14",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7324,
+          "median_distance_to_swing_low_percent": 6.6981,
+          "median_risk_percent": 11.466,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-15",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.7173,
+          "median_distance_to_swing_low_percent": 6.8376,
+          "median_risk_percent": 12.3465,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-16",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9057,
+          "median_distance_to_swing_low_percent": 7.2808,
+          "median_risk_percent": 12.5957,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-17",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9467,
+          "median_distance_to_swing_low_percent": 7.6828,
+          "median_risk_percent": 12.7628,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-20",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9834,
+          "median_distance_to_swing_low_percent": 7.5711,
+          "median_risk_percent": 12.6032,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-21",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0048,
+          "median_distance_to_swing_low_percent": 7.0232,
+          "median_risk_percent": 11.8813,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-22",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 2.9282,
+          "median_distance_to_swing_low_percent": 6.8583,
+          "median_risk_percent": 11.3811,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        },
+        {
+          "date": "2026-07-23",
+          "market_regime": "Strong risk-on",
+          "market_regime_score": 90.0,
+          "median_atr_percent": 3.0404,
+          "median_distance_to_swing_low_percent": 7.3373,
+          "median_risk_percent": 11.0664,
+          "provider_failure_reasons": {},
+          "provider_failure_symbols": [],
+          "provider_failures": 0,
+          "rejected_signals": 48,
+          "rejection_reasons": {
+            "risk_above_5_percent": 48
+          },
+          "symbols_requested": 51,
+          "symbols_scanned": 51,
+          "valid_signals": 3
+        }
+      ],
+      "days_with_zero_signals": 23,
+      "estimated_trading_days_to_100_completed_trades": 91.4,
+      "estimated_weeks_to_100_completed_trades": 18.3,
+      "estimated_weeks_to_100_signals": 10.5,
+      "label": "S&P 500",
+      "outcome_estimate": {
+        "completed_trades": 38,
+        "entered_signals": 38,
+        "expired_signals": 28,
+        "mature_signal_completion_rate_percent": 57.58,
+        "mature_signals": 66,
+        "status_counts": {
+          "completed": 34,
+          "expired": 28,
+          "stopped": 4
+        }
+      },
+      "provider_failures": 0,
+      "rejected_signals": 2946,
+      "rejection_reasons": {
+        "risk_above_5_percent": 2946
+      },
+      "risk_limit_analysis": {
+        "above_10_percent": 1756,
+        "above_7_5_percent": 2457,
+        "by_market_regime": {
+          "Strong risk-on": {
+            "completed_scans": 3060,
+            "risk_limit_rejection_rate_percent": 96.27,
+            "risk_limit_rejections": 2946
+          }
+        },
+        "by_sector": {
+          "Communication Services": 204,
+          "Consumer Discretionary": 240,
+          "Consumer Staples": 356,
+          "Energy": 120,
+          "Financials": 381,
+          "Health Care": 600,
+          "Industrials": 120,
+          "Materials": 60,
+          "Technology": 865
+        },
+        "by_volatility": {
+          "High (>4% ATR)": {
+            "completed_scans": 638,
+            "risk_limit_rejection_rate_percent": 100.0,
+            "risk_limit_rejections": 638
+          },
+          "Low (<2% ATR)": {
+            "completed_scans": 382,
+            "risk_limit_rejection_rate_percent": 70.94,
+            "risk_limit_rejections": 271
+          },
+          "Moderate (2-4% ATR)": {
+            "completed_scans": 2040,
+            "risk_limit_rejection_rate_percent": 99.85,
+            "risk_limit_rejections": 2037
+          }
+        },
+        "exclusive_bands": {
+          "over_10": 1756,
+          "over_5_to_7_5": 489,
+          "over_7_5_to_10": 701
+        },
+        "median_atr_buffer_percent": 4.188,
+        "median_distance_to_swing_low_percent": 6.6676,
+        "median_risk_percent": 11.0174,
+        "only_slightly_above_5_to_7_5_percent": 489,
+        "sector_dominance_detected": false,
+        "top_sector": "Technology",
+        "top_sector_share_percent": 29.36,
+        "total": 2946
+      },
+      "sessions": 60,
+      "signals_per_trading_day": 1.9,
+      "symbols_scanned": 3060,
+      "valid_signals": 114,
+      "zero_signal_frequency_percent": 38.33
+    }
+  }
+}
