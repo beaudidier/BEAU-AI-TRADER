@@ -33,7 +33,12 @@ from strategies.swing_strategy import (
     STRATEGY_VERSION,
     evaluate_signal,
 )
-from universe.stock_universe import DOW30, NASDAQ100, SP500
+from universe.stock_universe import (
+    DOW30,
+    NASDAQ100,
+    SP500,
+    stock_constituent_metadata,
+)
 
 from .production_replay import (
     _compare_production_and_standalone,
@@ -47,6 +52,12 @@ SESSION_COUNT = 60
 MINIMUM_HISTORY = 200
 OUTPUT = Path(__file__).resolve().parents[2] / "artifacts"
 DEFAULT_CACHE = OUTPUT / "pullback_robustness_dataset"
+PREVIOUS_AUDIT = {
+    "demo": {"symbol_count": 10, "valid_signals": 1, "zero_signal_days": 59},
+    "dow30": {"symbol_count": 30, "valid_signals": 77, "zero_signal_days": 24},
+    "nasdaq100": {"symbol_count": 30, "valid_signals": 106, "zero_signal_days": 24},
+    "sp500": {"symbol_count": 51, "valid_signals": 114, "zero_signal_days": 23},
+}
 
 UNIVERSES = {
     "demo": list(WATCHLIST),
@@ -80,6 +91,13 @@ SECTOR_BY_TICKER.update(
         "SPGI": "Financials",
         "TRV": "Financials",
         "VRTX": "Health Care",
+    }
+)
+SECTOR_BY_TICKER.update(
+    {
+        symbol: str(item["sector"])
+        for symbol, item in stock_constituent_metadata().items()
+        if item.get("sector")
     }
 )
 
@@ -633,6 +651,18 @@ def run_signal_availability_audit(
         failures = sum(
             item["status"] == "provider_failure" for item in universe_observations
         )
+        failure_symbols = sorted(
+            {
+                item["ticker"]
+                for item in universe_observations
+                if item["status"] == "provider_failure"
+            }
+        )
+        failure_reasons = Counter(
+            item["provider_error"]
+            for item in universe_observations
+            if item["status"] == "provider_failure"
+        )
         zero_days = sum(row["valid_signals"] == 0 for row in daily)
         signals_per_day = valid / len(sessions)
         signal_observations = [
@@ -664,6 +694,8 @@ def run_signal_availability_audit(
             "valid_signals": valid,
             "rejected_signals": rejected,
             "provider_failures": failures,
+            "provider_failure_symbols": failure_symbols,
+            "provider_failure_reasons": dict(sorted(failure_reasons.items())),
             "rejection_reasons": dict(sorted(reason_counts.items())),
             "signals_per_trading_day": round(signals_per_day, 4),
             "days_with_zero_signals": zero_days,
@@ -706,6 +738,23 @@ def run_signal_availability_audit(
             f"No scan in the largest configured snapshot ({largest_universe['label']}) "
             "breached the frozen 5% cap."
         )
+    previous_comparison = {}
+    for universe_id, universe in universe_results.items():
+        previous = PREVIOUS_AUDIT.get(universe_id)
+        if previous is None:
+            continue
+        previous_comparison[universe_id] = {
+            "previous_symbol_count": previous["symbol_count"],
+            "corrected_symbol_count": universe["configured_symbol_count"],
+            "previous_valid_signals": previous["valid_signals"],
+            "corrected_valid_signals": universe["valid_signals"],
+            "valid_signal_change": universe["valid_signals"] - previous["valid_signals"],
+            "previous_zero_signal_days": previous["zero_signal_days"],
+            "corrected_zero_signal_days": universe["days_with_zero_signals"],
+            "zero_signal_day_change": (
+                universe["days_with_zero_signals"] - previous["zero_signal_days"]
+            ),
+        }
     return {
         "audit_version": AUDIT_VERSION,
         "runner_version": RUNNER_VERSION,
@@ -760,6 +809,23 @@ def run_signal_availability_audit(
             ),
         },
         "universes": universe_results,
+        "previous_audit_comparison": previous_comparison,
+        "conclusion_change": {
+            "broad_universe_availability_changed": (
+                universe_results.get("nasdaq100", {}).get("days_with_zero_signals")
+                == 0
+                and universe_results.get("sp500", {}).get("days_with_zero_signals")
+                == 0
+            ),
+            "risk_limit_conclusion_changed": False,
+            "summary": (
+                "Completing the Nasdaq-100 and S&P 500 universes eliminated zero-signal "
+                "days in this window and materially shortened the estimated time to 100 "
+                "completed trades. The prior conclusions that Demo 10 is too small, the "
+                "5% calculation is correct, and the frozen stop geometry is structurally "
+                "wide relative to that cap did not change."
+            ),
+        },
         "diagnosis": {
             "stop_formula_arithmetic_bug": False,
             "stop_formula_structurally_wide_relative_to_cap": stop_structurally_wide,
@@ -844,11 +910,35 @@ def render_report(result: dict[str, Any]) -> str:
                 "window. It is an availability estimate, not a performance forecast."
             ),
             "",
-            "The production universe labels are historical local snapshots: the configured "
-            f"S&P 500 contains **{result['configured_universe_sizes']['sp500']}** names and "
-            f"the configured Nasdaq 100 contains **{result['configured_universe_sizes']['nasdaq100']}**. "
-            "This audit intentionally preserved those exact memberships. The labels must not "
-            "be interpreted as complete current index membership.",
+            "The index memberships come from the committed, timestamped constituent "
+            "snapshot. Runtime scans read that snapshot and do not scrape public sources.",
+            "",
+            "## Change from the truncated-universe audit",
+            "",
+            "| Universe | Previous names | Corrected names | Previous signals | Corrected signals | Previous zero days | Corrected zero days |",
+            "|---|---:|---:|---:|---:|---:|---:|",
+        ]
+    )
+    for universe_id, comparison in result["previous_audit_comparison"].items():
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    result["universes"][universe_id]["label"],
+                    str(comparison["previous_symbol_count"]),
+                    str(comparison["corrected_symbol_count"]),
+                    str(comparison["previous_valid_signals"]),
+                    str(comparison["corrected_valid_signals"]),
+                    str(comparison["previous_zero_signal_days"]),
+                    str(comparison["corrected_zero_signal_days"]),
+                ]
+            )
+            + " |"
+        )
+    lines.extend(
+        [
+            "",
+            f"**Conclusion change:** {result['conclusion_change']['summary']}",
             "",
             "## Direct findings",
             "",
@@ -893,6 +983,15 @@ def render_report(result: dict[str, Any]) -> str:
                 f"- Valid signals: **{universe['valid_signals']}**",
                 f"- Rejected setups: **{universe['rejected_signals']}**",
                 f"- Provider failures: **{universe['provider_failures']}**",
+                "- Symbols without the required historical window: "
+                + (
+                    ", ".join(
+                        f"`{symbol}`"
+                        for symbol in universe["provider_failure_symbols"]
+                    )
+                    if universe["provider_failure_symbols"]
+                    else "none"
+                ),
                 f"- Signals per trading day: **{universe['signals_per_trading_day']:.4f}**",
                 f"- Zero-signal frequency: **{universe['zero_signal_frequency_percent']:.2f}%**",
                 f"- Average valid signals per week: **{universe['average_valid_signals_per_week']:.4f}**",
@@ -1001,8 +1100,8 @@ def render_report(result: dict[str, Any]) -> str:
             "## Data and limitations",
             "",
             "- Yahoo Finance adjusted daily OHLCV was loaded through the existing provider path; validated local Yahoo cache files were reused when current.",
-            "- Current configured index snapshots are incomplete versus their labels; conclusions apply only to the exact symbols listed in the artifact.",
-            "- Sector labels come from the repository's frozen multi-sector research universe, supplemented only for configured symbols absent from that map.",
+            "- Index memberships and sectors come from the timestamped local constituent snapshot.",
+            "- The All US Stocks universe is not replayed automatically because large scans require explicit user action; this audit retains the four-universe Milestone 39 scope.",
             "- The completion-time estimate assumes future signal availability resembles this 60-session window and is not a profitability claim.",
             "- Historical examples do not guarantee future signals or results.",
             "- Production records changed: **NO**.",

@@ -24,7 +24,11 @@ from coach.coach_engine import analyze_completed_trade
 from saas.middleware import RateLimitReadyMiddleware
 from saas.router import router as saas_router
 from briefing import build_daily_briefing
-from universe.universe_registry import scan_jobs
+from universe.universe_registry import (
+    all_universe_health,
+    scan_jobs,
+    universe_health,
+)
 from validation.validation_engine import validation_store
 from providers import get_market_data_provider
 from strategies import StrategyNotFoundError, StrategyUnavailableError, strategy_registry
@@ -89,6 +93,22 @@ def root():
 @app.get("/strategies")
 def list_strategies():
     return strategy_registry.serialize()
+
+
+@app.get("/universes/health")
+def list_universe_health(market: str = Query(default="stocks")):
+    try:
+        return {"market": market, "universes": all_universe_health(market)}
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@app.get("/universes/{market}/{universe}/health")
+def get_universe_health(market: str, universe: str):
+    try:
+        return universe_health(market, universe)
+    except ValueError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
 
 
 @app.get("/briefing")
@@ -179,7 +199,12 @@ def get_scan_job_results(job_id: str):
     job = scan_jobs.get(job_id)
     if job is None:
         raise HTTPException(status_code=404, detail="Scan job not found")
-    return {"job": job.summary(), "results": job.results, "failed_symbols": job.failures}
+    return {
+        "job": job.summary(),
+        "results": job.results,
+        "failed_symbols": job.failures,
+        "failure_reasons": job.failure_reasons,
+    }
 
 
 @app.get("/stocks/{ticker}/history")

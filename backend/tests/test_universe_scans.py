@@ -30,10 +30,18 @@ class UniverseScanTests(unittest.TestCase):
         registry = ScanJobRegistry(cache_seconds=300)
         symbols = universe_symbols("stocks", "demo")
         key = f"stocks:demo:{','.join(symbols)}"
-        registry.cache[key] = (time.monotonic(), [{"ticker": "NVDA", "score": 80}])
+        registry.cache[key] = (
+            time.monotonic(),
+            [{"ticker": "NVDA", "score": 80}],
+            ["AMD"],
+            {"AMD": "No usable market history"},
+        )
         job = registry.start("stocks", "demo")
         self.assertEqual(job.status, "completed")
         self.assertEqual(job.results[0]["ticker"], "NVDA")
+        self.assertEqual(job.failed_symbols, 1)
+        self.assertEqual(job.failures, ["AMD"])
+        self.assertEqual(job.failure_reasons["AMD"], "No usable market history")
 
 
 if __name__ == "__main__":

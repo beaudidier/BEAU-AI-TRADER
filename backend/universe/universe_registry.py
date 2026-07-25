@@ -60,6 +60,7 @@ class ScanJob:
     completed_at: str | None = None
     results: list[dict[str, Any]] = field(default_factory=list)
     failures: list[str] = field(default_factory=list)
+    failure_reasons: dict[str, str] = field(default_factory=dict)
 
     def summary(self) -> dict[str, Any]:
         total = len(self.symbols)
@@ -70,7 +71,15 @@ class ScanJobRegistry:
     def __init__(self, batch_size: int = 10, concurrency_limit: int = 4, symbol_timeout: float = 20, retries: int = 1, cache_seconds: int = 300):
         self.batch_size, self.concurrency_limit, self.symbol_timeout, self.retries, self.cache_seconds = batch_size, concurrency_limit, symbol_timeout, retries, cache_seconds
         self.jobs: dict[str, ScanJob] = {}
-        self.cache: dict[str, tuple[float, list[dict[str, Any]]]] = {}
+        self.cache: dict[
+            str,
+            tuple[
+                float,
+                list[dict[str, Any]],
+                list[str],
+                dict[str, str],
+            ],
+        ] = {}
         self.active: dict[str, str] = {}
         self.lock = threading.Lock()
         self.executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="market-scan")
@@ -81,7 +90,23 @@ class ScanJobRegistry:
         with self.lock:
             cached = self.cache.get(key)
             if cached and time.monotonic() - cached[0] < self.cache_seconds:
-                job = ScanJob(job_id=str(uuid.uuid4()), market=market, universe=universe, symbols=symbols, status="completed", completed_symbols=len(cached[1]), started_at=_now(), completed_at=_now(), results=cached[1].copy())
+                results = cached[1].copy()
+                failures = cached[2].copy()
+                failure_reasons = cached[3].copy()
+                job = ScanJob(
+                    job_id=str(uuid.uuid4()),
+                    market=market,
+                    universe=universe,
+                    symbols=symbols,
+                    status="completed",
+                    completed_symbols=len(results),
+                    failed_symbols=len(failures),
+                    started_at=_now(),
+                    completed_at=_now(),
+                    results=results,
+                    failures=failures,
+                    failure_reasons=failure_reasons,
+                )
                 self.jobs[job.job_id] = job
                 return job
             active_id = self.active.get(key)
@@ -113,13 +138,27 @@ class ScanJobRegistry:
                         try:
                             job.results.append(future.result(timeout=self.symbol_timeout))
                             job.completed_symbols += 1
-                        except Exception:
+                        except Exception as error:
                             job.failed_symbols += 1
                             job.failures.append(symbol)
+                            job.failure_reasons[symbol] = str(error) or type(error).__name__
             job.results.sort(key=lambda item: item["score"], reverse=True)
             job.status = "completed"
+            provider = PROVIDERS.get(job.market)
+            if provider is not None and hasattr(provider, "record_scan_result"):
+                provider.record_scan_result(
+                    job.universe,
+                    job.symbols,
+                    job.failures,
+                    _now(),
+                )
             with self.lock:
-                self.cache[key] = (time.monotonic(), job.results.copy())
+                self.cache[key] = (
+                    time.monotonic(),
+                    job.results.copy(),
+                    job.failures.copy(),
+                    job.failure_reasons.copy(),
+                )
         finally:
             job.completed_at = _now()
             with self.lock:
@@ -130,3 +169,35 @@ class ScanJobRegistry:
 
 
 scan_jobs = ScanJobRegistry()
+
+
+def universe_health(market: str, universe: str) -> dict[str, Any]:
+    provider = PROVIDERS.get(market)
+    if provider is None or universe not in provider.supported_universes():
+        raise ValueError("Unsupported market or universe")
+    if not hasattr(provider, "health"):
+        symbols = provider.symbols(universe)
+        return {
+            "market": market,
+            "universe": universe,
+            "expected_count": len(symbols),
+            "actual_count": len(symbols),
+            "available_count": len(symbols),
+            "failed_count": 0,
+            "freshness": "snapshot",
+            "source": "Local deterministic snapshot",
+            "health_status": "healthy",
+        }
+    return provider.health(universe)
+
+
+def all_universe_health(market: str = "stocks") -> list[dict[str, Any]]:
+    provider = PROVIDERS.get(market)
+    if provider is None:
+        raise ValueError("Unsupported market")
+    if hasattr(provider, "all_health"):
+        return provider.all_health()
+    return [
+        universe_health(market, universe)
+        for universe in sorted(provider.supported_universes() - {"custom"})
+    ]

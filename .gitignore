@@ -12,4 +12,5 @@ artifacts/calibration_dataset/
 artifacts/pullback_robustness_dataset/
 artifacts/*_trades.csv
 artifacts/locked_holdout_dataset/
+artifacts/universe_market_availability_cache.json
 !*.env.example

@@ -7,18 +7,29 @@ The frozen Regime-Gated Pullback strategy was replayed through the registered pr
 | Configured universe | Names | Valid signals | Signals/day | Zero-signal days | Valid/week | Estimated weeks to 100 completed |
 |---|---:|---:|---:|---:|---:|---:|
 | Demo 10 | 10 | 1 | 0.017 | 59 (98.33%) | 0.083 | n/a |
-| Dow 30 | 30 | 77 | 1.283 | 24 (40.00%) | 6.417 | 26.0 |
-| Nasdaq 100 | 30 | 106 | 1.767 | 24 (40.00%) | 8.833 | 21.9 |
-| S&P 500 | 51 | 114 | 1.900 | 23 (38.33%) | 9.500 | 18.3 |
+| Dow 30 | 30 | 43 | 0.717 | 23 (38.33%) | 3.583 | 44.3 |
+| Nasdaq 100 | 103 | 208 | 3.467 | 0 (0.00%) | 17.333 | 10.0 |
+| S&P 500 | 503 | 565 | 9.417 | 0 (0.00%) | 47.083 | 3.9 |
 
 The estimate to 100 completed trades uses the observed completion rate only for signals with enough later candles for the full entry and holding window. It is an availability estimate, not a performance forecast.
 
-The production universe labels are historical local snapshots: the configured S&P 500 contains **51** names and the configured Nasdaq 100 contains **30**. This audit intentionally preserved those exact memberships. The labels must not be interpreted as complete current index membership.
+The index memberships come from the committed, timestamped constituent snapshot. Runtime scans read that snapshot and do not scrape public sources.
+
+## Change from the truncated-universe audit
+
+| Universe | Previous names | Corrected names | Previous signals | Corrected signals | Previous zero days | Corrected zero days |
+|---|---:|---:|---:|---:|---:|---:|
+| Demo 10 | 10 | 10 | 1 | 1 | 59 | 59 |
+| Dow 30 | 30 | 30 | 77 | 43 | 24 | 23 |
+| Nasdaq 100 | 30 | 103 | 106 | 208 | 24 | 0 |
+| S&P 500 | 51 | 503 | 114 | 565 | 23 | 0 |
+
+**Conclusion change:** Completing the Nasdaq-100 and S&P 500 universes eliminated zero-signal days in this window and materially shortened the estimated time to 100 completed trades. The prior conclusions that Demo 10 is too small, the 5% calculation is correct, and the frozen stop geometry is structurally wide relative to that cap did not change.
 
 ## Direct findings
 
 - Stop formula arithmetic bug: **NO**
-- Stop geometry structurally wide relative to the 5% cap in this window: **YES**. In the largest configured snapshot (S&P 500), 2946 of 3060 completed scans breached the 5% cap. The median rejected risk was 11.02%, decomposed into a 6.67% entry-to-swing-low distance and a 4.19% ATR buffer. The stop formula is therefore structurally wide relative to the frozen cap in this window, but it is not being calculated incorrectly.
+- Stop geometry structurally wide relative to the 5% cap in this window: **YES**. In the largest configured snapshot (S&P 500), 29375 of 29940 completed scans breached the 5% cap. The median rejected risk was 11.19%, decomposed into a 6.65% entry-to-swing-low distance and a 4.43% ATR buffer. The stop formula is therefore structurally wide relative to the frozen cap in this window, but it is not being calculated incorrectly.
 - Demo universe too small for practical signal availability: **YES**
 - 5% rule functioning as implemented: **YES**
 - Frozen strategy naturally selective in this window: **YES**
@@ -28,8 +39,8 @@ The production universe labels are historical local snapshots: the configured S&
 ## Calculation integrity
 
 - Production/standalone mismatches: **0**
-- Risk observations checked: **4260**
-- Maximum formula error: **0.0000056791 percentage points**
+- Risk observations checked: **30660**
+- Maximum formula error: **0.0000113591 percentage points**
 - Calculation bug found: **NO**
 - Formula: `risk% = ((expected executable entry - (20-session swing low - 1.5 * ATR)) / expected executable entry) * 100`
 - Decomposition: `risk% = distance from executable entry to swing low% + 1.5 * ATR%`
@@ -45,6 +56,7 @@ The executable entry includes the production entry slippage. The stop is the sig
 - Valid signals: **1**
 - Rejected setups: **599**
 - Provider failures: **0**
+- Symbols without the required historical window: none
 - Signals per trading day: **0.0167**
 - Zero-signal frequency: **98.33%**
 - Average valid signals per week: **0.0833**
@@ -84,28 +96,29 @@ Risk-limit rejection rate by market regime:
 
 - Configured names: **30**
 - Completed symbol/date scans: **1800**
-- Valid signals: **77**
-- Rejected setups: **1723**
+- Valid signals: **43**
+- Rejected setups: **1757**
 - Provider failures: **0**
-- Signals per trading day: **1.2833**
-- Zero-signal frequency: **40.00%**
-- Average valid signals per week: **6.4167**
-- Mature signals used for outcome estimate: **45**
-- Mature signal completion rate: **60.00%**
-- Estimated weeks to issue 100 signals: **15.6**
-- Estimated weeks to 100 completed trades: **26.0**
-- Rejection reasons: `risk_above_5_percent` 1723
+- Symbols without the required historical window: none
+- Signals per trading day: **0.7167**
+- Zero-signal frequency: **38.33%**
+- Average valid signals per week: **3.5833**
+- Mature signals used for outcome estimate: **27**
+- Mature signal completion rate: **62.96%**
+- Estimated weeks to issue 100 signals: **27.9**
+- Estimated weeks to 100 completed trades: **44.3**
+- Rejection reasons: `risk_above_5_percent` 1757
 
 5% risk-limit distribution:
 
-- Total risk-limit rejections: **1723**
-- Only slightly above 5% (greater than 5% through 7.5%): **373**
-- Above 7.5%: **1350**
-- Above 10%: **843**
-- Median rejected risk: **9.94%**
-- Median entry-to-swing-low distance: **5.88%**
-- Median 1.5 ATR buffer: **3.87%**
-- Largest rejection sector: **Technology** (22.34%)
+- Total risk-limit rejections: **1757**
+- Only slightly above 5% (greater than 5% through 7.5%): **349**
+- Above 7.5%: **1408**
+- Above 10%: **893**
+- Median rejected risk: **10.04%**
+- Median entry-to-swing-low distance: **5.99%**
+- Median 1.5 ATR buffer: **3.91%**
+- Largest rejection sector: **Financials** (16.90%)
 - One-sector dominance (>50%): **NO**
 
 Risk-limit rejection rate by volatility:
@@ -113,98 +126,100 @@ Risk-limit rejection rate by volatility:
 | ATR bucket | Completed scans | Risk rejections | Rate |
 |---|---:|---:|---:|
 | High (>4% ATR) | 178 | 178 | 100.00% |
-| Low (<2% ATR) | 278 | 202 | 72.66% |
-| Moderate (2-4% ATR) | 1344 | 1343 | 99.93% |
+| Low (<2% ATR) | 218 | 177 | 81.19% |
+| Moderate (2-4% ATR) | 1404 | 1402 | 99.86% |
 
 Risk-limit rejection rate by market regime:
 
 | Regime | Completed scans | Risk rejections | Rate |
 |---|---:|---:|---:|
-| Strong risk-on | 1800 | 1723 | 95.72% |
+| Strong risk-on | 1800 | 1757 | 97.61% |
 
 ### Nasdaq 100
 
-- Configured names: **30**
-- Completed symbol/date scans: **1800**
-- Valid signals: **106**
-- Rejected setups: **1694**
-- Provider failures: **0**
-- Signals per trading day: **1.7667**
-- Zero-signal frequency: **40.00%**
-- Average valid signals per week: **8.8333**
-- Mature signals used for outcome estimate: **58**
-- Mature signal completion rate: **51.72%**
-- Estimated weeks to issue 100 signals: **11.3**
-- Estimated weeks to 100 completed trades: **21.9**
-- Rejection reasons: `risk_above_5_percent` 1694
+- Configured names: **103**
+- Completed symbol/date scans: **5880**
+- Valid signals: **208**
+- Rejected setups: **5672**
+- Provider failures: **300**
+- Symbols without the required historical window: `CRWV`, `HONA`, `NBIS`, `SNDK`, `SPCX`
+- Signals per trading day: **3.4667**
+- Zero-signal frequency: **0.00%**
+- Average valid signals per week: **17.3333**
+- Mature signals used for outcome estimate: **125**
+- Mature signal completion rate: **57.60%**
+- Estimated weeks to issue 100 signals: **5.8**
+- Estimated weeks to 100 completed trades: **10.0**
+- Rejection reasons: `risk_above_5_percent` 5672
 
 5% risk-limit distribution:
 
-- Total risk-limit rejections: **1694**
-- Only slightly above 5% (greater than 5% through 7.5%): **191**
-- Above 7.5%: **1503**
-- Above 10%: **1207**
-- Median rejected risk: **12.44%**
-- Median entry-to-swing-low distance: **7.30%**
-- Median 1.5 ATR buffer: **4.90%**
-- Largest rejection sector: **Technology** (43.98%)
+- Total risk-limit rejections: **5672**
+- Only slightly above 5% (greater than 5% through 7.5%): **618**
+- Above 7.5%: **5054**
+- Above 10%: **4070**
+- Median rejected risk: **13.20%**
+- Median entry-to-swing-low distance: **7.88%**
+- Median 1.5 ATR buffer: **5.23%**
+- Largest rejection sector: **Technology** (44.25%)
 - One-sector dominance (>50%): **NO**
 
 Risk-limit rejection rate by volatility:
 
 | ATR bucket | Completed scans | Risk rejections | Rate |
 |---|---:|---:|---:|
-| High (>4% ATR) | 509 | 509 | 100.00% |
-| Low (<2% ATR) | 205 | 100 | 48.78% |
-| Moderate (2-4% ATR) | 1086 | 1085 | 99.91% |
+| High (>4% ATR) | 2264 | 2264 | 100.00% |
+| Low (<2% ATR) | 484 | 277 | 57.23% |
+| Moderate (2-4% ATR) | 3132 | 3131 | 99.97% |
 
 Risk-limit rejection rate by market regime:
 
 | Regime | Completed scans | Risk rejections | Rate |
 |---|---:|---:|---:|
-| Strong risk-on | 1800 | 1694 | 94.11% |
+| Strong risk-on | 5880 | 5672 | 96.46% |
 
 ### S&P 500
 
-- Configured names: **51**
-- Completed symbol/date scans: **3060**
-- Valid signals: **114**
-- Rejected setups: **2946**
-- Provider failures: **0**
-- Signals per trading day: **1.9000**
-- Zero-signal frequency: **38.33%**
-- Average valid signals per week: **9.5000**
-- Mature signals used for outcome estimate: **66**
-- Mature signal completion rate: **57.58%**
-- Estimated weeks to issue 100 signals: **10.5**
-- Estimated weeks to 100 completed trades: **18.3**
-- Rejection reasons: `risk_above_5_percent` 2946
+- Configured names: **503**
+- Completed symbol/date scans: **29940**
+- Valid signals: **565**
+- Rejected setups: **29375**
+- Provider failures: **240**
+- Symbols without the required historical window: `FDXF`, `HONA`, `Q`, `SNDK`
+- Signals per trading day: **9.4167**
+- Zero-signal frequency: **0.00%**
+- Average valid signals per week: **47.0833**
+- Mature signals used for outcome estimate: **361**
+- Mature signal completion rate: **54.85%**
+- Estimated weeks to issue 100 signals: **2.1**
+- Estimated weeks to 100 completed trades: **3.9**
+- Rejection reasons: `risk_above_5_percent` 29375
 
 5% risk-limit distribution:
 
-- Total risk-limit rejections: **2946**
-- Only slightly above 5% (greater than 5% through 7.5%): **489**
-- Above 7.5%: **2457**
-- Above 10%: **1756**
-- Median rejected risk: **11.02%**
-- Median entry-to-swing-low distance: **6.67%**
-- Median 1.5 ATR buffer: **4.19%**
-- Largest rejection sector: **Technology** (29.36%)
+- Total risk-limit rejections: **29375**
+- Only slightly above 5% (greater than 5% through 7.5%): **4346**
+- Above 7.5%: **25029**
+- Above 10%: **17771**
+- Median rejected risk: **11.19%**
+- Median entry-to-swing-low distance: **6.65%**
+- Median 1.5 ATR buffer: **4.43%**
+- Largest rejection sector: **Industrials** (15.65%)
 - One-sector dominance (>50%): **NO**
 
 Risk-limit rejection rate by volatility:
 
 | ATR bucket | Completed scans | Risk rejections | Rate |
 |---|---:|---:|---:|
-| High (>4% ATR) | 638 | 638 | 100.00% |
-| Low (<2% ATR) | 382 | 271 | 70.94% |
-| Moderate (2-4% ATR) | 2040 | 2037 | 99.85% |
+| High (>4% ATR) | 6288 | 6288 | 100.00% |
+| Low (<2% ATR) | 2999 | 2461 | 82.06% |
+| Moderate (2-4% ATR) | 20653 | 20626 | 99.87% |
 
 Risk-limit rejection rate by market regime:
 
 | Regime | Completed scans | Risk rejections | Rate |
 |---|---:|---:|---:|
-| Strong risk-on | 3060 | 2946 | 96.27% |
+| Strong risk-on | 29940 | 29375 | 98.11% |
 
 ## Per-date audit
 
@@ -272,186 +287,186 @@ Each row is the exact aggregate required for one configured universe and one com
 | Demo 10 | 2026-07-21 | 10 | 0 | 10 | 0 | Strong risk-on (90) | 16.08 | 11.47 | 3.73 | risk_above_5_percent:10 |
 | Demo 10 | 2026-07-22 | 10 | 0 | 10 | 0 | Strong risk-on (90) | 16.20 | 11.69 | 3.76 | risk_above_5_percent:10 |
 | Demo 10 | 2026-07-23 | 10 | 0 | 10 | 0 | Strong risk-on (90) | 18.43 | 13.15 | 3.78 | risk_above_5_percent:10 |
-| Dow 30 | 2026-04-28 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.83 | 7.45 | 2.48 | risk_above_5_percent:28 |
-| Dow 30 | 2026-04-29 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.59 | 6.64 | 2.50 | risk_above_5_percent:28 |
-| Dow 30 | 2026-04-30 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.49 | 6.74 | 2.54 | risk_above_5_percent:28 |
-| Dow 30 | 2026-05-01 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.12 | 6.43 | 2.56 | risk_above_5_percent:28 |
-| Dow 30 | 2026-05-04 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.00 | 6.37 | 2.54 | risk_above_5_percent:28 |
-| Dow 30 | 2026-05-05 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 9.18 | 5.59 | 2.54 | risk_above_5_percent:27 |
-| Dow 30 | 2026-05-06 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 9.39 | 5.60 | 2.54 | risk_above_5_percent:27 |
-| Dow 30 | 2026-05-07 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 9.26 | 5.46 | 2.53 | risk_above_5_percent:27 |
-| Dow 30 | 2026-05-08 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.24 | 5.47 | 2.50 | risk_above_5_percent:28 |
-| Dow 30 | 2026-05-11 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.15 | 5.20 | 2.51 | risk_above_5_percent:28 |
-| Dow 30 | 2026-05-12 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 8.65 | 4.90 | 2.50 | risk_above_5_percent:28 |
-| Dow 30 | 2026-05-13 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 8.69 | 5.32 | 2.47 | risk_above_5_percent:28 |
-| Dow 30 | 2026-05-14 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 8.44 | 5.01 | 2.38 | risk_above_5_percent:28 |
-| Dow 30 | 2026-05-15 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 8.20 | 4.92 | 2.41 | risk_above_5_percent:28 |
-| Dow 30 | 2026-05-18 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 8.33 | 4.93 | 2.45 | risk_above_5_percent:30 |
-| Dow 30 | 2026-05-19 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 8.30 | 5.04 | 2.44 | risk_above_5_percent:30 |
-| Dow 30 | 2026-05-20 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 8.17 | 5.02 | 2.50 | risk_above_5_percent:30 |
-| Dow 30 | 2026-05-21 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 8.89 | 5.17 | 2.51 | risk_above_5_percent:30 |
-| Dow 30 | 2026-05-22 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.32 | 5.55 | 2.50 | risk_above_5_percent:30 |
-| Dow 30 | 2026-05-26 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.27 | 5.43 | 2.56 | risk_above_5_percent:29 |
-| Dow 30 | 2026-05-27 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.23 | 5.14 | 2.50 | risk_above_5_percent:30 |
+| Dow 30 | 2026-04-28 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.98 | 7.61 | 2.48 | risk_above_5_percent:29 |
+| Dow 30 | 2026-04-29 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.73 | 7.07 | 2.50 | risk_above_5_percent:29 |
+| Dow 30 | 2026-04-30 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.83 | 7.13 | 2.61 | risk_above_5_percent:29 |
+| Dow 30 | 2026-05-01 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.37 | 6.55 | 2.62 | risk_above_5_percent:29 |
+| Dow 30 | 2026-05-04 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.27 | 6.51 | 2.61 | risk_above_5_percent:29 |
+| Dow 30 | 2026-05-05 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.76 | 5.70 | 2.57 | risk_above_5_percent:28 |
+| Dow 30 | 2026-05-06 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.58 | 5.72 | 2.58 | risk_above_5_percent:28 |
+| Dow 30 | 2026-05-07 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.42 | 5.66 | 2.56 | risk_above_5_percent:28 |
+| Dow 30 | 2026-05-08 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.33 | 5.52 | 2.52 | risk_above_5_percent:29 |
+| Dow 30 | 2026-05-11 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.45 | 5.25 | 2.54 | risk_above_5_percent:29 |
+| Dow 30 | 2026-05-12 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 8.78 | 4.99 | 2.53 | risk_above_5_percent:29 |
+| Dow 30 | 2026-05-13 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 8.91 | 5.50 | 2.52 | risk_above_5_percent:29 |
+| Dow 30 | 2026-05-14 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 8.71 | 5.19 | 2.44 | risk_above_5_percent:29 |
+| Dow 30 | 2026-05-15 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 8.32 | 4.97 | 2.47 | risk_above_5_percent:29 |
+| Dow 30 | 2026-05-18 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 8.59 | 4.98 | 2.46 | risk_above_5_percent:30 |
+| Dow 30 | 2026-05-19 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 8.53 | 5.40 | 2.48 | risk_above_5_percent:30 |
+| Dow 30 | 2026-05-20 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 8.55 | 5.34 | 2.55 | risk_above_5_percent:30 |
+| Dow 30 | 2026-05-21 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.35 | 5.40 | 2.57 | risk_above_5_percent:30 |
+| Dow 30 | 2026-05-22 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.56 | 5.70 | 2.55 | risk_above_5_percent:30 |
+| Dow 30 | 2026-05-26 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.44 | 5.60 | 2.56 | risk_above_5_percent:29 |
+| Dow 30 | 2026-05-27 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.49 | 5.67 | 2.50 | risk_above_5_percent:30 |
 | Dow 30 | 2026-05-28 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 8.79 | 4.99 | 2.47 | risk_above_5_percent:30 |
-| Dow 30 | 2026-05-29 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 8.63 | 4.96 | 2.48 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-01 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 8.66 | 4.95 | 2.48 | risk_above_5_percent:27 |
-| Dow 30 | 2026-06-02 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 8.73 | 4.80 | 2.44 | risk_above_5_percent:27 |
-| Dow 30 | 2026-06-03 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 9.38 | 5.32 | 2.51 | risk_above_5_percent:27 |
-| Dow 30 | 2026-06-04 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 8.99 | 5.01 | 2.62 | risk_above_5_percent:28 |
-| Dow 30 | 2026-06-05 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.15 | 4.94 | 2.58 | risk_above_5_percent:28 |
-| Dow 30 | 2026-06-08 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.16 | 4.99 | 2.56 | risk_above_5_percent:28 |
-| Dow 30 | 2026-06-09 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.12 | 5.09 | 2.59 | risk_above_5_percent:28 |
-| Dow 30 | 2026-06-10 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.36 | 5.19 | 2.56 | risk_above_5_percent:28 |
-| Dow 30 | 2026-06-11 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.63 | 5.34 | 2.62 | risk_above_5_percent:28 |
-| Dow 30 | 2026-06-12 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.89 | 5.42 | 2.55 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-15 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.96 | 5.68 | 2.59 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-16 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.91 | 5.77 | 2.55 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-17 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.02 | 5.96 | 2.62 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-18 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.91 | 5.90 | 2.67 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-22 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.70 | 5.87 | 2.64 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-23 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.70 | 5.97 | 2.59 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-24 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.11 | 6.04 | 2.59 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-25 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.64 | 6.65 | 2.72 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-26 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.85 | 6.93 | 2.72 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-29 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.98 | 7.13 | 2.66 | risk_above_5_percent:30 |
-| Dow 30 | 2026-06-30 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.53 | 7.06 | 2.61 | risk_above_5_percent:30 |
-| Dow 30 | 2026-07-01 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.83 | 7.00 | 2.61 | risk_above_5_percent:30 |
-| Dow 30 | 2026-07-02 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.14 | 6.66 | 2.64 | risk_above_5_percent:30 |
-| Dow 30 | 2026-07-06 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.00 | 6.58 | 2.64 | risk_above_5_percent:30 |
-| Dow 30 | 2026-07-07 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 11.25 | 6.85 | 2.71 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-08 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.34 | 6.68 | 2.77 | risk_above_5_percent:30 |
-| Dow 30 | 2026-07-09 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.96 | 6.49 | 2.72 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-10 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.41 | 6.52 | 2.64 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-13 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.22 | 6.31 | 2.65 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-14 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.89 | 5.44 | 2.57 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-15 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.05 | 5.93 | 2.58 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-16 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.31 | 6.33 | 2.64 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-17 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.61 | 6.46 | 2.72 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-20 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.14 | 6.31 | 2.73 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-21 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 10.11 | 6.15 | 2.68 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-22 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.46 | 5.44 | 2.60 | risk_above_5_percent:28 |
-| Dow 30 | 2026-07-23 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.60 | 5.65 | 2.70 | risk_above_5_percent:28 |
-| Nasdaq 100 | 2026-04-28 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 14.57 | 10.34 | 2.92 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-04-29 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 14.53 | 10.26 | 2.90 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-04-30 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 14.83 | 10.67 | 3.12 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-01 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 13.99 | 9.21 | 3.11 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-04 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 13.54 | 8.88 | 3.05 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-05 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 11.70 | 7.08 | 3.03 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-06 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 11.76 | 7.08 | 2.95 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-07 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 11.34 | 6.80 | 2.87 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-08 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 12.29 | 7.24 | 2.77 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-11 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 11.38 | 6.64 | 2.75 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-12 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.83 | 6.12 | 2.80 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-13 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.67 | 6.33 | 2.83 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-14 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.40 | 6.20 | 2.81 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-15 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.48 | 6.48 | 2.82 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-05-18 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.69 | 6.39 | 2.87 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-05-19 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.83 | 6.39 | 2.86 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-05-20 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.75 | 6.20 | 2.83 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-05-21 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.80 | 6.03 | 2.81 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-05-22 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.67 | 5.85 | 2.74 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-05-26 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.78 | 5.92 | 2.67 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-05-27 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.87 | 5.36 | 2.64 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-05-28 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 8.65 | 4.80 | 2.64 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-05-29 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.89 | 5.58 | 2.62 | risk_above_5_percent:29 |
-| Nasdaq 100 | 2026-06-01 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.63 | 6.82 | 2.69 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-06-02 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.71 | 6.53 | 2.65 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-06-03 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.80 | 6.61 | 2.81 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-06-04 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.64 | 6.33 | 2.92 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-06-05 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.59 | 6.17 | 2.98 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-06-08 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.36 | 5.88 | 2.93 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-06-09 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.65 | 6.49 | 2.92 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-06-10 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 10.96 | 6.50 | 2.94 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-06-11 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 11.64 | 6.72 | 3.05 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-06-12 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.38 | 6.59 | 3.02 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-15 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.54 | 6.80 | 3.14 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-16 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.24 | 7.03 | 3.04 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-17 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.62 | 6.84 | 3.08 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-18 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.51 | 6.67 | 3.10 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-22 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.59 | 6.64 | 3.22 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-23 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.24 | 6.53 | 3.17 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-24 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.20 | 6.64 | 3.21 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-25 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 12.55 | 7.18 | 3.21 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-26 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 12.74 | 7.38 | 3.29 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-29 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 12.86 | 7.71 | 3.53 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-06-30 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 13.17 | 7.93 | 3.42 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-07-01 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 12.97 | 7.78 | 3.47 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-07-02 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 12.94 | 7.92 | 3.46 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-07-06 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 13.03 | 7.86 | 3.38 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-07-07 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 13.05 | 7.84 | 3.38 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-08 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 12.91 | 7.90 | 3.40 | risk_above_5_percent:30 |
-| Nasdaq 100 | 2026-07-09 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 13.10 | 7.99 | 3.39 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-10 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 13.12 | 8.16 | 3.38 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-13 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 13.04 | 7.71 | 3.36 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-14 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 12.37 | 7.32 | 3.35 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-15 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 12.78 | 7.64 | 3.39 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-16 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 13.01 | 7.62 | 3.35 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-17 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 13.50 | 7.74 | 3.49 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-20 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 13.20 | 7.58 | 3.42 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-21 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 12.88 | 7.35 | 3.31 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-22 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 12.88 | 7.41 | 3.28 | risk_above_5_percent:27 |
-| Nasdaq 100 | 2026-07-23 | 30 | 3 | 27 | 0 | Strong risk-on (90) | 14.37 | 7.89 | 3.52 | risk_above_5_percent:27 |
-| S&P 500 | 2026-04-28 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.28 | 7.33 | 2.64 | risk_above_5_percent:48 |
-| S&P 500 | 2026-04-29 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.03 | 6.99 | 2.69 | risk_above_5_percent:48 |
-| S&P 500 | 2026-04-30 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.49 | 7.19 | 2.88 | risk_above_5_percent:48 |
-| S&P 500 | 2026-05-01 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.45 | 6.95 | 2.81 | risk_above_5_percent:48 |
-| S&P 500 | 2026-05-04 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.54 | 6.84 | 2.78 | risk_above_5_percent:48 |
-| S&P 500 | 2026-05-05 | 51 | 4 | 47 | 0 | Strong risk-on (90) | 11.14 | 6.82 | 2.74 | risk_above_5_percent:47 |
-| S&P 500 | 2026-05-06 | 51 | 4 | 47 | 0 | Strong risk-on (90) | 10.74 | 6.57 | 2.73 | risk_above_5_percent:47 |
-| S&P 500 | 2026-05-07 | 51 | 5 | 46 | 0 | Strong risk-on (90) | 10.42 | 6.21 | 2.70 | risk_above_5_percent:46 |
-| S&P 500 | 2026-05-08 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.35 | 6.29 | 2.61 | risk_above_5_percent:48 |
-| S&P 500 | 2026-05-11 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.73 | 6.34 | 2.65 | risk_above_5_percent:48 |
-| S&P 500 | 2026-05-12 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.40 | 5.77 | 2.63 | risk_above_5_percent:48 |
-| S&P 500 | 2026-05-13 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.92 | 6.21 | 2.63 | risk_above_5_percent:48 |
-| S&P 500 | 2026-05-14 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.44 | 6.20 | 2.62 | risk_above_5_percent:48 |
-| S&P 500 | 2026-05-15 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.23 | 6.29 | 2.63 | risk_above_5_percent:48 |
-| S&P 500 | 2026-05-18 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.26 | 6.10 | 2.65 | risk_above_5_percent:51 |
-| S&P 500 | 2026-05-19 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.64 | 6.27 | 2.65 | risk_above_5_percent:51 |
-| S&P 500 | 2026-05-20 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.66 | 6.33 | 2.73 | risk_above_5_percent:51 |
-| S&P 500 | 2026-05-21 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.58 | 6.27 | 2.70 | risk_above_5_percent:51 |
-| S&P 500 | 2026-05-22 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.67 | 6.12 | 2.61 | risk_above_5_percent:51 |
-| S&P 500 | 2026-05-26 | 51 | 1 | 50 | 0 | Strong risk-on (90) | 10.40 | 5.96 | 2.64 | risk_above_5_percent:50 |
-| S&P 500 | 2026-05-27 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.58 | 6.04 | 2.61 | risk_above_5_percent:51 |
-| S&P 500 | 2026-05-28 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.04 | 5.65 | 2.61 | risk_above_5_percent:51 |
-| S&P 500 | 2026-05-29 | 51 | 1 | 50 | 0 | Strong risk-on (90) | 9.90 | 5.55 | 2.56 | risk_above_5_percent:50 |
-| S&P 500 | 2026-06-01 | 51 | 4 | 47 | 0 | Strong risk-on (90) | 10.06 | 5.57 | 2.61 | risk_above_5_percent:47 |
-| S&P 500 | 2026-06-02 | 51 | 4 | 47 | 0 | Strong risk-on (90) | 10.27 | 5.81 | 2.61 | risk_above_5_percent:47 |
-| S&P 500 | 2026-06-03 | 51 | 4 | 47 | 0 | Strong risk-on (90) | 9.87 | 6.44 | 2.68 | risk_above_5_percent:47 |
-| S&P 500 | 2026-06-04 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.06 | 5.94 | 2.70 | risk_above_5_percent:48 |
-| S&P 500 | 2026-06-05 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.21 | 5.72 | 2.70 | risk_above_5_percent:48 |
-| S&P 500 | 2026-06-08 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.28 | 5.67 | 2.74 | risk_above_5_percent:48 |
-| S&P 500 | 2026-06-09 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.07 | 6.09 | 2.73 | risk_above_5_percent:48 |
-| S&P 500 | 2026-06-10 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.39 | 6.10 | 2.80 | risk_above_5_percent:48 |
-| S&P 500 | 2026-06-11 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 10.66 | 5.86 | 2.82 | risk_above_5_percent:48 |
-| S&P 500 | 2026-06-12 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.68 | 6.16 | 2.79 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-15 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.63 | 6.23 | 2.76 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-16 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.83 | 6.49 | 2.73 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-17 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.69 | 6.33 | 2.76 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-18 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.28 | 6.36 | 2.70 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-22 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 9.81 | 5.88 | 2.78 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-23 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 9.94 | 5.95 | 2.81 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-24 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.01 | 6.09 | 2.86 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-25 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 10.69 | 6.77 | 2.90 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-26 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 11.09 | 6.83 | 2.90 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-29 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 11.29 | 7.05 | 2.87 | risk_above_5_percent:51 |
-| S&P 500 | 2026-06-30 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 11.63 | 7.09 | 2.83 | risk_above_5_percent:51 |
-| S&P 500 | 2026-07-01 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 12.01 | 7.37 | 2.82 | risk_above_5_percent:51 |
-| S&P 500 | 2026-07-02 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 11.23 | 6.84 | 2.83 | risk_above_5_percent:51 |
-| S&P 500 | 2026-07-06 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 11.45 | 7.05 | 2.91 | risk_above_5_percent:51 |
-| S&P 500 | 2026-07-07 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.79 | 7.15 | 2.82 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-08 | 51 | 0 | 51 | 0 | Strong risk-on (90) | 11.89 | 7.27 | 2.85 | risk_above_5_percent:51 |
-| S&P 500 | 2026-07-09 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 12.11 | 7.30 | 2.81 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-10 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 12.13 | 7.30 | 2.76 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-13 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.86 | 6.69 | 2.70 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-14 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.47 | 6.70 | 2.73 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-15 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 12.35 | 6.84 | 2.72 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-16 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 12.60 | 7.28 | 2.91 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-17 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 12.76 | 7.68 | 2.95 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-20 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 12.60 | 7.57 | 2.98 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-21 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.88 | 7.02 | 3.00 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-22 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.38 | 6.86 | 2.93 | risk_above_5_percent:48 |
-| S&P 500 | 2026-07-23 | 51 | 3 | 48 | 0 | Strong risk-on (90) | 11.07 | 7.34 | 3.04 | risk_above_5_percent:48 |
+| Dow 30 | 2026-05-29 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 8.63 | 4.96 | 2.49 | risk_above_5_percent:29 |
+| Dow 30 | 2026-06-01 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 8.66 | 4.95 | 2.48 | risk_above_5_percent:28 |
+| Dow 30 | 2026-06-02 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.15 | 5.02 | 2.48 | risk_above_5_percent:28 |
+| Dow 30 | 2026-06-03 | 30 | 2 | 28 | 0 | Strong risk-on (90) | 9.38 | 5.40 | 2.54 | risk_above_5_percent:28 |
+| Dow 30 | 2026-06-04 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.27 | 5.13 | 2.66 | risk_above_5_percent:29 |
+| Dow 30 | 2026-06-05 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.15 | 4.97 | 2.63 | risk_above_5_percent:29 |
+| Dow 30 | 2026-06-08 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.16 | 4.99 | 2.63 | risk_above_5_percent:29 |
+| Dow 30 | 2026-06-09 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.12 | 5.09 | 2.66 | risk_above_5_percent:29 |
+| Dow 30 | 2026-06-10 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.36 | 5.19 | 2.62 | risk_above_5_percent:29 |
+| Dow 30 | 2026-06-11 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.76 | 5.48 | 2.69 | risk_above_5_percent:29 |
+| Dow 30 | 2026-06-12 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.92 | 5.51 | 2.65 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-15 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.21 | 5.75 | 2.67 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-16 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.39 | 6.00 | 2.63 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-17 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.30 | 6.11 | 2.64 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-18 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.04 | 6.04 | 2.69 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-22 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.77 | 5.99 | 2.66 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-23 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 9.77 | 6.02 | 2.68 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-24 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 10.31 | 6.09 | 2.75 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-25 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.04 | 6.98 | 2.78 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-26 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.13 | 7.04 | 2.76 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-29 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.25 | 7.24 | 2.75 | risk_above_5_percent:30 |
+| Dow 30 | 2026-06-30 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.63 | 7.31 | 2.71 | risk_above_5_percent:30 |
+| Dow 30 | 2026-07-01 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.93 | 7.32 | 2.72 | risk_above_5_percent:30 |
+| Dow 30 | 2026-07-02 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.60 | 6.98 | 2.75 | risk_above_5_percent:30 |
+| Dow 30 | 2026-07-06 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.42 | 7.07 | 2.76 | risk_above_5_percent:30 |
+| Dow 30 | 2026-07-07 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 11.49 | 7.11 | 2.79 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-08 | 30 | 0 | 30 | 0 | Strong risk-on (90) | 11.64 | 6.91 | 2.80 | risk_above_5_percent:30 |
+| Dow 30 | 2026-07-09 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 11.23 | 6.63 | 2.78 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-10 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.81 | 6.69 | 2.69 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-13 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.28 | 6.41 | 2.67 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-14 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.93 | 6.01 | 2.62 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-15 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.13 | 6.27 | 2.66 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-16 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.50 | 6.77 | 2.73 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-17 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.96 | 6.75 | 2.76 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-20 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.66 | 6.47 | 2.80 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-21 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.43 | 6.32 | 2.78 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-22 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 9.78 | 5.81 | 2.71 | risk_above_5_percent:29 |
+| Dow 30 | 2026-07-23 | 30 | 1 | 29 | 0 | Strong risk-on (90) | 10.22 | 5.74 | 2.82 | risk_above_5_percent:29 |
+| Nasdaq 100 | 2026-04-28 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 14.47 | 10.07 | 3.16 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-04-29 | 98 | 6 | 92 | 5 | Strong risk-on (90) | 14.76 | 10.13 | 3.20 | risk_above_5_percent:92 |
+| Nasdaq 100 | 2026-04-30 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 14.83 | 10.30 | 3.26 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-05-01 | 98 | 6 | 92 | 5 | Strong risk-on (90) | 14.34 | 9.70 | 3.22 | risk_above_5_percent:92 |
+| Nasdaq 100 | 2026-05-04 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 14.81 | 9.60 | 3.17 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-05-05 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 13.28 | 8.45 | 3.20 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-05-06 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 13.52 | 8.53 | 3.26 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-05-07 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 12.97 | 8.15 | 3.30 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-05-08 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 13.19 | 8.25 | 3.33 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-05-11 | 98 | 6 | 92 | 5 | Strong risk-on (90) | 12.85 | 7.07 | 3.30 | risk_above_5_percent:92 |
+| Nasdaq 100 | 2026-05-12 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 12.69 | 7.19 | 3.27 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-05-13 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 12.64 | 7.40 | 3.22 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-05-14 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 12.38 | 7.17 | 3.21 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-05-15 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 12.19 | 7.27 | 3.15 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-05-18 | 98 | 2 | 96 | 5 | Strong risk-on (90) | 12.66 | 7.37 | 3.23 | risk_above_5_percent:96 |
+| Nasdaq 100 | 2026-05-19 | 98 | 2 | 96 | 5 | Strong risk-on (90) | 12.33 | 7.34 | 3.17 | risk_above_5_percent:96 |
+| Nasdaq 100 | 2026-05-20 | 98 | 3 | 95 | 5 | Strong risk-on (90) | 12.55 | 7.24 | 3.31 | risk_above_5_percent:95 |
+| Nasdaq 100 | 2026-05-21 | 98 | 3 | 95 | 5 | Strong risk-on (90) | 12.07 | 7.03 | 3.33 | risk_above_5_percent:95 |
+| Nasdaq 100 | 2026-05-22 | 98 | 3 | 95 | 5 | Strong risk-on (90) | 12.13 | 7.29 | 3.38 | risk_above_5_percent:95 |
+| Nasdaq 100 | 2026-05-26 | 98 | 2 | 96 | 5 | Strong risk-on (90) | 11.82 | 7.08 | 3.33 | risk_above_5_percent:96 |
+| Nasdaq 100 | 2026-05-27 | 98 | 2 | 96 | 5 | Strong risk-on (90) | 12.03 | 6.57 | 3.35 | risk_above_5_percent:96 |
+| Nasdaq 100 | 2026-05-28 | 98 | 3 | 95 | 5 | Strong risk-on (90) | 11.67 | 6.41 | 3.38 | risk_above_5_percent:95 |
+| Nasdaq 100 | 2026-05-29 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 11.67 | 7.00 | 3.33 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-06-01 | 98 | 6 | 92 | 5 | Strong risk-on (90) | 11.91 | 7.29 | 3.37 | risk_above_5_percent:92 |
+| Nasdaq 100 | 2026-06-02 | 98 | 6 | 92 | 5 | Strong risk-on (90) | 12.53 | 7.83 | 3.46 | risk_above_5_percent:92 |
+| Nasdaq 100 | 2026-06-03 | 98 | 6 | 92 | 5 | Strong risk-on (90) | 12.77 | 7.51 | 3.42 | risk_above_5_percent:92 |
+| Nasdaq 100 | 2026-06-04 | 98 | 6 | 92 | 5 | Strong risk-on (90) | 12.54 | 7.61 | 3.51 | risk_above_5_percent:92 |
+| Nasdaq 100 | 2026-06-05 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 12.43 | 7.43 | 3.56 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-06-08 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 12.40 | 7.28 | 3.55 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-06-09 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 12.70 | 7.57 | 3.57 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-06-10 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 12.54 | 7.22 | 3.53 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-06-11 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 12.31 | 7.39 | 3.56 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-06-12 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 12.09 | 7.24 | 3.55 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-15 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 12.04 | 7.31 | 3.52 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-16 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 12.06 | 7.20 | 3.54 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-17 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 11.91 | 7.13 | 3.53 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-18 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 12.12 | 7.22 | 3.47 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-22 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 11.92 | 6.68 | 3.41 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-23 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 11.63 | 6.65 | 3.33 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-24 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 11.44 | 6.42 | 3.32 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-25 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 12.50 | 7.13 | 3.31 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-26 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 12.74 | 7.30 | 3.45 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-29 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 13.01 | 7.57 | 3.54 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-06-30 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 12.94 | 7.69 | 3.45 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-07-01 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 12.83 | 7.85 | 3.70 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-07-02 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 12.90 | 8.01 | 3.66 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-07-06 | 98 | 1 | 97 | 5 | Strong risk-on (90) | 13.08 | 7.87 | 3.60 | risk_above_5_percent:97 |
+| Nasdaq 100 | 2026-07-07 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 13.23 | 8.00 | 3.53 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-07-08 | 98 | 2 | 96 | 5 | Strong risk-on (90) | 13.26 | 8.05 | 3.50 | risk_above_5_percent:96 |
+| Nasdaq 100 | 2026-07-09 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 13.36 | 8.36 | 3.48 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-07-10 | 98 | 5 | 93 | 5 | Strong risk-on (90) | 13.62 | 8.34 | 3.47 | risk_above_5_percent:93 |
+| Nasdaq 100 | 2026-07-13 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 13.51 | 8.05 | 3.39 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-07-14 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 12.93 | 7.92 | 3.37 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-07-15 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 13.49 | 8.10 | 3.44 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-07-16 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 13.41 | 7.92 | 3.46 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-07-17 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 14.60 | 8.98 | 3.60 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-07-20 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 14.28 | 8.61 | 3.53 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-07-21 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 14.51 | 8.54 | 3.42 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-07-22 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 14.21 | 8.41 | 3.34 | risk_above_5_percent:94 |
+| Nasdaq 100 | 2026-07-23 | 98 | 4 | 94 | 5 | Strong risk-on (90) | 14.78 | 8.41 | 3.61 | risk_above_5_percent:94 |
+| S&P 500 | 2026-04-28 | 499 | 14 | 485 | 4 | Strong risk-on (90) | 12.12 | 7.65 | 2.83 | risk_above_5_percent:485 |
+| S&P 500 | 2026-04-29 | 499 | 15 | 484 | 4 | Strong risk-on (90) | 11.68 | 7.21 | 2.86 | risk_above_5_percent:484 |
+| S&P 500 | 2026-04-30 | 499 | 14 | 485 | 4 | Strong risk-on (90) | 11.92 | 7.41 | 2.89 | risk_above_5_percent:485 |
+| S&P 500 | 2026-05-01 | 499 | 14 | 485 | 4 | Strong risk-on (90) | 11.36 | 6.84 | 2.87 | risk_above_5_percent:485 |
+| S&P 500 | 2026-05-04 | 499 | 10 | 489 | 4 | Strong risk-on (90) | 11.41 | 6.74 | 2.85 | risk_above_5_percent:489 |
+| S&P 500 | 2026-05-05 | 499 | 17 | 482 | 4 | Strong risk-on (90) | 10.63 | 6.21 | 2.86 | risk_above_5_percent:482 |
+| S&P 500 | 2026-05-06 | 499 | 15 | 484 | 4 | Strong risk-on (90) | 10.74 | 6.16 | 2.96 | risk_above_5_percent:484 |
+| S&P 500 | 2026-05-07 | 499 | 20 | 479 | 4 | Strong risk-on (90) | 10.86 | 6.20 | 2.93 | risk_above_5_percent:479 |
+| S&P 500 | 2026-05-08 | 499 | 18 | 481 | 4 | Strong risk-on (90) | 10.86 | 6.30 | 2.90 | risk_above_5_percent:481 |
+| S&P 500 | 2026-05-11 | 499 | 17 | 482 | 4 | Strong risk-on (90) | 10.88 | 6.19 | 2.94 | risk_above_5_percent:482 |
+| S&P 500 | 2026-05-12 | 499 | 17 | 482 | 4 | Strong risk-on (90) | 10.80 | 6.14 | 2.92 | risk_above_5_percent:482 |
+| S&P 500 | 2026-05-13 | 499 | 14 | 485 | 4 | Strong risk-on (90) | 10.87 | 6.38 | 2.94 | risk_above_5_percent:485 |
+| S&P 500 | 2026-05-14 | 499 | 16 | 483 | 4 | Strong risk-on (90) | 10.62 | 6.20 | 2.92 | risk_above_5_percent:483 |
+| S&P 500 | 2026-05-15 | 499 | 14 | 485 | 4 | Strong risk-on (90) | 10.77 | 6.27 | 2.90 | risk_above_5_percent:485 |
+| S&P 500 | 2026-05-18 | 499 | 9 | 490 | 4 | Strong risk-on (90) | 10.70 | 6.20 | 2.90 | risk_above_5_percent:490 |
+| S&P 500 | 2026-05-19 | 499 | 8 | 491 | 4 | Strong risk-on (90) | 10.85 | 6.35 | 2.90 | risk_above_5_percent:491 |
+| S&P 500 | 2026-05-20 | 499 | 9 | 490 | 4 | Strong risk-on (90) | 11.01 | 6.35 | 2.90 | risk_above_5_percent:490 |
+| S&P 500 | 2026-05-21 | 499 | 11 | 488 | 4 | Strong risk-on (90) | 10.96 | 6.29 | 2.93 | risk_above_5_percent:488 |
+| S&P 500 | 2026-05-22 | 499 | 10 | 489 | 4 | Strong risk-on (90) | 10.96 | 6.28 | 2.88 | risk_above_5_percent:489 |
+| S&P 500 | 2026-05-26 | 499 | 9 | 490 | 4 | Strong risk-on (90) | 10.87 | 6.19 | 2.85 | risk_above_5_percent:490 |
+| S&P 500 | 2026-05-27 | 499 | 7 | 492 | 4 | Strong risk-on (90) | 10.75 | 6.13 | 2.86 | risk_above_5_percent:492 |
+| S&P 500 | 2026-05-28 | 499 | 7 | 492 | 4 | Strong risk-on (90) | 10.68 | 6.17 | 2.85 | risk_above_5_percent:492 |
+| S&P 500 | 2026-05-29 | 499 | 9 | 490 | 4 | Strong risk-on (90) | 10.69 | 6.15 | 2.83 | risk_above_5_percent:490 |
+| S&P 500 | 2026-06-01 | 499 | 14 | 485 | 4 | Strong risk-on (90) | 10.79 | 6.23 | 2.85 | risk_above_5_percent:485 |
+| S&P 500 | 2026-06-02 | 499 | 15 | 484 | 4 | Strong risk-on (90) | 10.77 | 6.26 | 2.86 | risk_above_5_percent:484 |
+| S&P 500 | 2026-06-03 | 499 | 15 | 484 | 4 | Strong risk-on (90) | 10.67 | 6.24 | 2.85 | risk_above_5_percent:484 |
+| S&P 500 | 2026-06-04 | 499 | 13 | 486 | 4 | Strong risk-on (90) | 10.69 | 6.28 | 2.89 | risk_above_5_percent:486 |
+| S&P 500 | 2026-06-05 | 499 | 10 | 489 | 4 | Strong risk-on (90) | 10.74 | 6.28 | 2.88 | risk_above_5_percent:489 |
+| S&P 500 | 2026-06-08 | 499 | 9 | 490 | 4 | Strong risk-on (90) | 10.54 | 6.17 | 2.85 | risk_above_5_percent:490 |
+| S&P 500 | 2026-06-09 | 499 | 8 | 491 | 4 | Strong risk-on (90) | 10.81 | 6.39 | 2.88 | risk_above_5_percent:491 |
+| S&P 500 | 2026-06-10 | 499 | 8 | 491 | 4 | Strong risk-on (90) | 10.88 | 6.45 | 2.89 | risk_above_5_percent:491 |
+| S&P 500 | 2026-06-11 | 499 | 8 | 491 | 4 | Strong risk-on (90) | 11.05 | 6.51 | 2.93 | risk_above_5_percent:491 |
+| S&P 500 | 2026-06-12 | 499 | 2 | 497 | 4 | Strong risk-on (90) | 10.93 | 6.55 | 2.93 | risk_above_5_percent:497 |
+| S&P 500 | 2026-06-15 | 499 | 2 | 497 | 4 | Strong risk-on (90) | 11.02 | 6.64 | 2.91 | risk_above_5_percent:497 |
+| S&P 500 | 2026-06-16 | 499 | 2 | 497 | 4 | Strong risk-on (90) | 11.03 | 6.70 | 2.88 | risk_above_5_percent:497 |
+| S&P 500 | 2026-06-17 | 499 | 2 | 497 | 4 | Strong risk-on (90) | 11.18 | 6.68 | 2.92 | risk_above_5_percent:497 |
+| S&P 500 | 2026-06-18 | 499 | 2 | 497 | 4 | Strong risk-on (90) | 11.13 | 6.61 | 2.94 | risk_above_5_percent:497 |
+| S&P 500 | 2026-06-22 | 499 | 3 | 496 | 4 | Strong risk-on (90) | 10.96 | 6.37 | 2.98 | risk_above_5_percent:496 |
+| S&P 500 | 2026-06-23 | 499 | 3 | 496 | 4 | Strong risk-on (90) | 10.74 | 6.20 | 2.96 | risk_above_5_percent:496 |
+| S&P 500 | 2026-06-24 | 499 | 3 | 496 | 4 | Strong risk-on (90) | 10.80 | 6.34 | 2.99 | risk_above_5_percent:496 |
+| S&P 500 | 2026-06-25 | 499 | 2 | 497 | 4 | Strong risk-on (90) | 11.19 | 6.77 | 3.02 | risk_above_5_percent:497 |
+| S&P 500 | 2026-06-26 | 499 | 2 | 497 | 4 | Strong risk-on (90) | 11.37 | 6.87 | 3.01 | risk_above_5_percent:497 |
+| S&P 500 | 2026-06-29 | 499 | 2 | 497 | 4 | Strong risk-on (90) | 11.63 | 7.15 | 2.99 | risk_above_5_percent:497 |
+| S&P 500 | 2026-06-30 | 499 | 2 | 497 | 4 | Strong risk-on (90) | 11.62 | 7.07 | 2.97 | risk_above_5_percent:497 |
+| S&P 500 | 2026-07-01 | 499 | 2 | 497 | 4 | Strong risk-on (90) | 11.70 | 6.97 | 3.00 | risk_above_5_percent:497 |
+| S&P 500 | 2026-07-02 | 499 | 3 | 496 | 4 | Strong risk-on (90) | 11.56 | 6.90 | 3.06 | risk_above_5_percent:496 |
+| S&P 500 | 2026-07-06 | 499 | 3 | 496 | 4 | Strong risk-on (90) | 11.49 | 6.95 | 3.06 | risk_above_5_percent:496 |
+| S&P 500 | 2026-07-07 | 499 | 9 | 490 | 4 | Strong risk-on (90) | 11.67 | 7.07 | 3.06 | risk_above_5_percent:490 |
+| S&P 500 | 2026-07-08 | 499 | 4 | 495 | 4 | Strong risk-on (90) | 11.56 | 6.99 | 3.06 | risk_above_5_percent:495 |
+| S&P 500 | 2026-07-09 | 499 | 10 | 489 | 4 | Strong risk-on (90) | 11.47 | 6.93 | 3.04 | risk_above_5_percent:489 |
+| S&P 500 | 2026-07-10 | 499 | 10 | 489 | 4 | Strong risk-on (90) | 11.40 | 6.90 | 2.97 | risk_above_5_percent:489 |
+| S&P 500 | 2026-07-13 | 499 | 11 | 488 | 4 | Strong risk-on (90) | 11.10 | 6.68 | 2.93 | risk_above_5_percent:488 |
+| S&P 500 | 2026-07-14 | 499 | 11 | 488 | 4 | Strong risk-on (90) | 10.96 | 6.57 | 2.93 | risk_above_5_percent:488 |
+| S&P 500 | 2026-07-15 | 499 | 10 | 489 | 4 | Strong risk-on (90) | 11.10 | 6.58 | 2.94 | risk_above_5_percent:489 |
+| S&P 500 | 2026-07-16 | 499 | 10 | 489 | 4 | Strong risk-on (90) | 11.31 | 6.77 | 2.98 | risk_above_5_percent:489 |
+| S&P 500 | 2026-07-17 | 499 | 8 | 491 | 4 | Strong risk-on (90) | 11.51 | 7.02 | 3.01 | risk_above_5_percent:491 |
+| S&P 500 | 2026-07-20 | 499 | 10 | 489 | 4 | Strong risk-on (90) | 11.32 | 6.93 | 2.98 | risk_above_5_percent:489 |
+| S&P 500 | 2026-07-21 | 499 | 11 | 488 | 4 | Strong risk-on (90) | 11.08 | 6.69 | 3.00 | risk_above_5_percent:488 |
+| S&P 500 | 2026-07-22 | 499 | 15 | 484 | 4 | Strong risk-on (90) | 10.66 | 6.19 | 2.96 | risk_above_5_percent:484 |
+| S&P 500 | 2026-07-23 | 499 | 17 | 482 | 4 | Strong risk-on (90) | 10.67 | 6.12 | 3.02 | risk_above_5_percent:482 |
 
 ## Interpretation
 
@@ -462,8 +477,8 @@ The Demo 10 result measures a ten-name list and therefore cannot represent broad
 ## Data and limitations
 
 - Yahoo Finance adjusted daily OHLCV was loaded through the existing provider path; validated local Yahoo cache files were reused when current.
-- Current configured index snapshots are incomplete versus their labels; conclusions apply only to the exact symbols listed in the artifact.
-- Sector labels come from the repository's frozen multi-sector research universe, supplemented only for configured symbols absent from that map.
+- Index memberships and sectors come from the timestamped local constituent snapshot.
+- The All US Stocks universe is not replayed automatically because large scans require explicit user action; this audit retains the four-universe Milestone 39 scope.
 - The completion-time estimate assumes future signal availability resembles this 60-session window and is not a profitability claim.
 - Historical examples do not guarantee future signals or results.
 - Production records changed: **NO**.
