@@ -179,12 +179,14 @@ class InviteRegistrationTests(unittest.TestCase):
             sql,
         )
 
-    def test_registration_service_requires_verification_and_cleans_up(self):
+    def test_registration_service_uses_admin_invite_and_cleans_up(self):
         source = EDGE_FUNCTION.read_text()
-        self.assertIn("email_confirm: false", source)
-        self.assertIn('/auth/v1/resend', source)
+        self.assertIn('/auth/v1/invite', source)
+        self.assertIn('method: "PUT"', source)
+        self.assertIn("JSON.stringify({ password })", source)
         self.assertIn("consume_beta_invite", source)
         self.assertIn('method: "DELETE"', source)
+        self.assertNotIn('/auth/v1/resend', source)
         self.assertNotIn("console.log", source)
 
     def test_public_registration_remains_disabled(self):

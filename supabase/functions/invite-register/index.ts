@@ -73,10 +73,9 @@ Deno.serve(async (request) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
   const confirmRedirect = Deno.env.get("INVITE_CONFIRM_REDIRECT") ??
     "https://beau-ai-trader.vercel.app/login?verified=1";
-  if (!supabaseUrl || !serviceRoleKey || !anonKey) {
+  if (!supabaseUrl || !serviceRoleKey) {
     return response(request, 503, {
       error: "service_unavailable",
       message: "Private beta registration is temporarily unavailable.",
@@ -162,42 +161,63 @@ Deno.serve(async (request) => {
     return inviteRejection(request, "exhausted");
   }
 
-  const createResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+  const inviteUrl = new URL(`${supabaseUrl}/auth/v1/invite`);
+  inviteUrl.searchParams.set("redirect_to", confirmRedirect);
+  const createResponse = await fetch(inviteUrl, {
     method: "POST",
     headers: serviceHeaders,
     body: JSON.stringify({
       email,
-      password,
-      email_confirm: false,
-      user_metadata: { access: "private_beta_invite" },
+      data: { access: "private_beta_invite" },
     }),
   });
   if (!createResponse.ok) {
-    return response(request, 409, {
-      error: "account_exists",
-      message: "This email already has an account. Sign in instead.",
+    const rateLimited = createResponse.status === 429;
+    const accountExists = [400, 409, 422].includes(createResponse.status);
+    const failureStatus = rateLimited ? 429 : accountExists ? 409 : 503;
+    return response(request, failureStatus, {
+      error: rateLimited
+        ? "email_rate_limited"
+        : accountExists
+        ? "account_exists"
+        : "verification_unavailable",
+      message: rateLimited
+        ? "Too many verification emails were requested. Please wait a few minutes and try again."
+        : accountExists
+        ? "This email already has an account. Sign in instead."
+        : "The verification email could not be sent. Please try again.",
     });
   }
   const createdUser = await createResponse.json();
 
-  const resendUrl = new URL(`${supabaseUrl}/auth/v1/resend`);
-  resendUrl.searchParams.set("redirect_to", confirmRedirect);
-  const confirmationResponse = await fetch(resendUrl, {
-    method: "POST",
-    headers: {
-      "apikey": anonKey,
-      "Content-Type": "application/json",
+  const passwordResponse = await fetch(
+    `${supabaseUrl}/auth/v1/admin/users/${createdUser.id}`,
+    {
+      method: "PUT",
+      headers: serviceHeaders,
+      body: JSON.stringify({ password }),
     },
-    body: JSON.stringify({ type: "signup", email }),
-  });
-  if (!confirmationResponse.ok) {
+  );
+  if (!passwordResponse.ok) {
     await fetch(`${supabaseUrl}/auth/v1/admin/users/${createdUser.id}`, {
       method: "DELETE",
       headers: serviceHeaders,
     });
     return response(request, 503, {
-      error: "verification_unavailable",
-      message: "The verification email could not be sent. Please try again.",
+      error: "account_setup_failed",
+      message: "Your account could not be prepared. Please try again.",
+    });
+  }
+
+  const invitedUser = await passwordResponse.json();
+  if (!invitedUser?.id || invitedUser.id !== createdUser.id) {
+    await fetch(`${supabaseUrl}/auth/v1/admin/users/${createdUser.id}`, {
+      method: "DELETE",
+      headers: serviceHeaders,
+    });
+    return response(request, 503, {
+      error: "account_setup_failed",
+      message: "Your account could not be prepared. Please try again.",
     });
   }
 
