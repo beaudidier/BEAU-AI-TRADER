@@ -1,0 +1,166 @@
+{
+  "audit_status": "completed",
+  "source": {
+    "trade_ledger": "artifacts/ai_calibration_trades.csv",
+    "ohlcv_cache": "artifacts/calibration_dataset/*.csv",
+    "scope": "out-of-sample chronological 30% of the recorded ledger",
+    "out_of_sample_trades": 300,
+    "bootstrap_samples": 10000,
+    "random_seed": 20260725
+  },
+  "execution_verification": {
+    "ledger_replay": {
+      "replayed": 999,
+      "exact_matches": 999,
+      "failures": []
+    },
+    "out_of_sample_replay": {
+      "replayed": 300,
+      "exact_matches": 300,
+      "failures": []
+    },
+    "entry": {
+      "next_candle_open_with_slippage": 300,
+      "total": 300
+    },
+    "stop_and_target": {
+      "stop_first_same_candle_ambiguities": 0,
+      "stop_exits": 75,
+      "target_2_exits": 151,
+      "time_cap_mark_to_market_exits": 74
+    },
+    "partial_exit_accounting": {
+      "tp1_hits": 202,
+      "tp2_hits": 151,
+      "partial_exits_recorded": 0,
+      "remaining_position_tracking": false,
+      "tp1_hits_with_non_positive_final_r": 37,
+      "tp1_hits_with_positive_final_r": 165
+    },
+    "plan_gap_consistency": {
+      "target_1_at_or_below_actual_next_open": 33,
+      "target_2_at_or_below_actual_next_open": 1,
+      "note": "Targets are built from the prior-close plan entry but R is measured from the next-open fill."
+    },
+    "costs": {
+      "configured_slippage_bps_per_side": 5,
+      "configured_transaction_cost_bps_per_side": 5,
+      "cost_formula_bps_excluding_entry_fill_slippage": 20,
+      "approximate_effective_round_trip_bps_including_entry_fill_slippage": 25
+    },
+    "r_multiple": "(exit_price - next_open_fill - cost) / (next_open_fill - planned_stop_loss); no TP1 partial realization is included.",
+    "win_loss": "A trade is a win only when its final recorded R multiple is greater than zero.",
+    "drawdown": "The calibration artifact sums R multiples after sorting all ticker signals by date. It is not a capital-weighted portfolio equity curve and concurrent ticker trades remain interleaved.",
+    "duplicate_or_overlapping_same_ticker_positions": 0,
+    "incomplete_positions": 0
+  },
+  "confidence_bands": {
+    "0-59": {
+      "trades": 72,
+      "bootstrap_95_ci": {
+        "win_rate": [
+          40.2778,
+          62.5
+        ],
+        "expectancy_r": [
+          0.2148,
+          1.0743
+        ],
+        "profit_factor": [
+          1.3832,
+          3.9717
+        ],
+        "average_r": [
+          0.2148,
+          1.0743
+        ]
+      },
+      "tp1_hits_with_non_positive_final_r": 1
+    },
+    "60-74": {
+      "trades": 128,
+      "bootstrap_95_ci": {
+        "win_rate": [
+          48.4375,
+          65.625
+        ],
+        "expectancy_r": [
+          -0.192,
+          0.1093
+        ],
+        "profit_factor": [
+          0.5192,
+          1.3968
+        ],
+        "average_r": [
+          -0.192,
+          0.1093
+        ]
+      },
+      "tp1_hits_with_non_positive_final_r": 18
+    },
+    "75-89": {
+      "trades": 100,
+      "bootstrap_95_ci": {
+        "win_rate": [
+          67.0,
+          84.0
+        ],
+        "expectancy_r": [
+          -0.0584,
+          0.1229
+        ],
+        "profit_factor": [
+          0.7554,
+          2.1428
+        ],
+        "average_r": [
+          -0.0584,
+          0.1229
+        ]
+      },
+      "tp1_hits_with_non_positive_final_r": 18
+    },
+    "90-100": {
+      "trades": 0,
+      "bootstrap_95_ci": {
+        "win_rate": null,
+        "expectancy_r": null,
+        "profit_factor": null,
+        "average_r": null
+      },
+      "tp1_hits_with_non_positive_final_r": 0
+    }
+  },
+  "baselines": {
+    "buy_and_hold_equal_weight": {
+      "trades": 30,
+      "win_rate": 76.6667,
+      "average_return_pct": 10.3223,
+      "profit_factor": 2.9524,
+      "definition": "One equal-weight long position per ticker from the first out-of-sample entry date to the final out-of-sample exit date."
+    },
+    "ema20_ema50_crossover": {
+      "trades": 49,
+      "win_rate": 40.8163,
+      "average_return_pct": 1.4167,
+      "profit_factor": 1.3444,
+      "definition": "Long on daily EMA20 crossing above EMA50; exit on a cross below or after 30 sessions. Uses the same cost formula."
+    },
+    "random_matched": {
+      "trades": 300,
+      "win_rate": 58.6667,
+      "average_return_pct": 0.884,
+      "profit_factor": 1.4172,
+      "definition": "Seeded random entries matched to each observed trade's ticker, calendar month, holding-time and total trade count; uses the same cost formula."
+    },
+    "all_valid_setups": {
+      "trades": 300,
+      "win_rate": 62.0,
+      "average_return_pct": 0.5422,
+      "profit_factor": 1.1919,
+      "average_r": 0.1455,
+      "definition": "Every valid plan generated in the out-of-sample ledger, with no confidence filter (all score bands)."
+    }
+  }
+}
