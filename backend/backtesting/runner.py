@@ -97,11 +97,12 @@ def run_backtest(
 
         if active is None:
             history = data.iloc[:index]
-            plan = build_trade_signal(ticker, history, cash, risk_percent)
-            if plan and is_actionable_score(plan["confidence_score"]) and plan["confidence_score"] >= minimum_confidence:
-                entry = entry_fill_price(plan["entry"], SLIPPAGE_BPS)
+            executable_entry = entry_fill_price(float(candle["Open"]), SLIPPAGE_BPS)
+            plan = build_trade_signal(ticker, history, cash, risk_percent, executable_entry=executable_entry)
+            if plan and plan["trade_allowed"] and is_actionable_score(plan["confidence_score"]) and plan["confidence_score"] >= minimum_confidence:
+                entry = plan["entry"]
                 shares = plan["position_size"]
-                if shares > 0 and low <= entry <= high:
+                if shares > 0:
                     entry_cost = transaction_cost(entry, shares, TRANSACTION_COST_BPS)
                     cash -= shares * entry + entry_cost
                     active = {

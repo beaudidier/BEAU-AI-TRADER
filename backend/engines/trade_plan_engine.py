@@ -16,10 +16,13 @@ def calculate_trade_plan(
     support: float,
     resistance: float,
     atr: float,
+    executable_entry: float | None = None,
+    signal_price: float | None = None,
 ) -> dict:
-    """Build a risk-managed trade plan from validated daily market data."""
+    """Build a trade plan, recalculating every level from an executable entry."""
 
     current_price = safe_float(df["Close"].iloc[-1])
+    signal_price = safe_float(signal_price if signal_price is not None else current_price)
     account_size = safe_float(account_size)
     risk_percent = safe_float(risk_percent)
     support = safe_float(support)
@@ -27,21 +30,27 @@ def calculate_trade_plan(
     atr = safe_float(atr)
     confidence = safe_float(confidence_output.get("confidence"))
 
-    if any(value is None for value in (current_price, account_size, risk_percent, support, resistance, atr, confidence)):
+    if any(value is None for value in (current_price, signal_price, account_size, risk_percent, support, resistance, atr, confidence)):
         raise ValueError("Missing or invalid market data")
     if current_price <= 0 or account_size <= 0 or risk_percent <= 0 or atr <= 0:
         raise ValueError("Price, account size, risk percentage, and ATR must be positive")
     if support <= 0 or resistance <= support:
         raise ValueError("Support and resistance levels are invalid")
 
-    entry = min(current_price, support + (atr * 0.25))
+    signal_entry = min(signal_price, support + (atr * 0.25))
+    signal_stop = min(support - (atr * 0.5), signal_entry - (atr * 1.5))
+    signal_risk = signal_entry - signal_stop
+    signal_target_1 = max(resistance, signal_entry + (signal_risk * 1.5))
+    entry = safe_float(executable_entry if executable_entry is not None else signal_entry)
+    if entry is None or entry <= 0:
+        raise ValueError("Executable entry must be positive")
     stop_loss = min(support - (atr * 0.5), entry - (atr * 1.5))
 
     if entry <= 0 or stop_loss <= 0 or stop_loss >= entry:
         raise ValueError("Unable to calculate a safe stop loss")
 
     risk_per_share = entry - stop_loss
-    target_1 = max(resistance, entry + (risk_per_share * 1.5))
+    target_1 = resistance
     target_2 = max(resistance + risk_per_share, entry + (risk_per_share * 3))
     reward_target_1 = max(0.0, target_1 - entry)
     reward_target_2 = max(0.0, target_2 - entry)
@@ -60,13 +69,20 @@ def calculate_trade_plan(
         f"Risk is capped at {risk_percent:.2f}% of the account",
     ]
     warnings = []
+    rejection_reasons = []
 
+    if executable_entry is not None and entry >= signal_target_1:
+        rejection_reasons.append("Opening gap moved the executable entry to or above the original Target 1")
+    if executable_entry is not None and entry > signal_entry + atr:
+        rejection_reasons.append("Opening gap moved too far above the original setup")
+    if target_1 <= entry:
+        rejection_reasons.append("Target 1 is at or below the executable entry")
     if risk_reward_target_1 < 1.5:
-        warnings.append("Target 1 risk/reward is below the 1.5 minimum")
+        rejection_reasons.append("Target 1 risk/reward is below the 1.5 minimum")
     if confidence < 90:
         warnings.append("Confidence is below the 90 threshold for STRONG BUY")
     if position_size == 0:
-        warnings.append("Account size and risk settings do not allow a position")
+        rejection_reasons.append("Account size and risk settings do not allow a position")
     if current_price > entry + atr:
         warnings.append("Current price is above the suggested entry; wait for a pullback")
 
@@ -74,7 +90,9 @@ def calculate_trade_plan(
 
     result = {
         "ticker": ticker.upper(),
+        "signal_price": round(signal_price, 2),
         "current_price": round(current_price, 2),
+        "proposed_executable_entry": round(entry, 2),
         "entry": round(entry, 2),
         "stop_loss": round(stop_loss, 2),
         "target_1": round(target_1, 2),
@@ -92,6 +110,8 @@ def calculate_trade_plan(
         "confidence_score": round(confidence),
         "reasons": reasons,
         "warnings": warnings,
+        "trade_allowed": not rejection_reasons,
+        "rejection_reasons": rejection_reasons,
     }
     result["explanation"] = build_explanation(confidence, support=support, resistance=resistance, plan=result)
     return result

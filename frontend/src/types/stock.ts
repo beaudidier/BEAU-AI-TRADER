@@ -55,7 +55,9 @@ export type StockChartData = {
 
 export type TradePlan = {
   ticker: string;
+  signal_price: number;
   current_price: number;
+  proposed_executable_entry: number;
   entry: number;
   stop_loss: number;
   target_1: number;
@@ -73,6 +75,8 @@ export type TradePlan = {
   confidence_score: number;
   reasons: string[];
   warnings: string[];
+  trade_allowed: boolean;
+  rejection_reasons: string[];
   explanation: ExplainableRecommendation;
 };
 

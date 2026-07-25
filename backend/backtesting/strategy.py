@@ -7,8 +7,8 @@ from engines.trade_plan_engine import calculate_trade_plan
 from support_resistance import calculate_support_resistance
 
 
-def build_trade_signal(ticker: str, history: pd.DataFrame, account_size: float, risk_percent: float) -> dict | None:
-    """Produce an executable trade plan from data available at the prior close."""
+def build_trade_signal(ticker: str, history: pd.DataFrame, account_size: float, risk_percent: float, executable_entry: float | None = None) -> dict | None:
+    """Produce a plan from the prior close, optionally recalculated at the next open."""
 
     if not has_valid_market_data(history, minimum_rows=200):
         return None
@@ -31,6 +31,7 @@ def build_trade_signal(ticker: str, history: pd.DataFrame, account_size: float, 
             support=levels["support"],
             resistance=levels["resistance"],
             atr=atr,
+            executable_entry=executable_entry,
         )
     except ValueError:
         return None

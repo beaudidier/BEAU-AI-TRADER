@@ -4,43 +4,85 @@
     "trade_ledger": "artifacts/ai_calibration_trades.csv",
     "ohlcv_cache": "artifacts/calibration_dataset/*.csv",
     "scope": "out-of-sample chronological 30% of the recorded ledger",
-    "out_of_sample_trades": 300,
-    "out_of_sample_exit_legs": 502,
+    "out_of_sample_trades": 186,
+    "out_of_sample_exit_legs": 239,
     "bootstrap_samples": 10000,
     "random_seed": 20260725
   },
   "execution_verification": {
     "ledger_replay": {
-      "replayed": 999,
-      "exact_matches": 999,
-      "failures": []
+      "replayed": 619,
+      "exact_matches": 2,
+      "failures": [
+        {
+          "ticker": "HON",
+          "signal_date": "2024-07-24",
+          "reason": "Unsimulatable trade for HON 2024-07-24"
+        },
+        {
+          "ticker": "MSFT",
+          "signal_date": "2024-08-02",
+          "reason": "Unsimulatable trade for MSFT 2024-08-02"
+        },
+        {
+          "ticker": "TSLA",
+          "signal_date": "2024-08-02",
+          "reason": "Unsimulatable trade for TSLA 2024-08-02"
+        },
+        {
+          "ticker": "CAT",
+          "signal_date": "2025-04-03",
+          "reason": "Unsimulatable trade for CAT 2025-04-03"
+        },
+        {
+          "ticker": "JNJ",
+          "signal_date": "2025-04-08",
+          "reason": "Unsimulatable trade for JNJ 2025-04-08"
+        },
+        {
+          "ticker": "UNH",
+          "signal_date": "2025-05-12",
+          "reason": "Unsimulatable trade for UNH 2025-05-12"
+        },
+        {
+          "ticker": "AMZN",
+          "signal_date": "2026-02-05",
+          "reason": "Unsimulatable trade for AMZN 2026-02-05"
+        }
+      ]
     },
     "out_of_sample_replay": {
-      "replayed": 300,
-      "exact_matches": 300,
-      "failures": []
+      "replayed": 185,
+      "exact_matches": 1,
+      "failures": [
+        {
+          "ticker": "AMZN",
+          "signal_date": "2026-02-05",
+          "reason": "Unsimulatable trade for AMZN 2026-02-05"
+        }
+      ]
     },
     "entry": {
-      "next_candle_open_with_slippage": 300,
-      "total": 300
+      "next_candle_open_with_slippage": 185,
+      "total": 185
     },
     "stop_and_target": {
       "stop_first_same_candle_ambiguities": 0,
-      "stop_exits": 75,
-      "target_2_exits": 151,
-      "time_cap_mark_to_market_exits": 74
+      "stop_exits": 95,
+      "target_2_exits": 38,
+      "time_cap_mark_to_market_exits": 52
     },
     "partial_exit_accounting": {
-      "tp1_hits": 202,
-      "tp2_hits": 151,
-      "partial_exits_recorded": 202,
+      "tp1_hits": 55,
+      "tp2_hits": 38,
+      "partial_exits_recorded": 53,
       "remaining_position_tracking": true,
-      "tp1_hits_with_non_positive_final_r": 38,
-      "tp1_hits_with_positive_final_r": 164
+      "tp1_hits_with_non_positive_final_r": 0,
+      "tp1_hits_with_positive_final_r": 55
     },
     "plan_gap_consistency": {
-      "target_1_at_or_below_actual_next_open": 33,
-      "target_2_at_or_below_actual_next_open": 1,
+      "target_1_at_or_below_actual_next_open": 0,
+      "target_2_at_or_below_actual_next_open": 0,
       "note": "Targets are built from the prior-close plan entry but R is measured from the next-open fill."
     },
     "costs": {
@@ -52,75 +94,75 @@
     "r_multiple": "sum(realized exit-leg P/L) / (entry fill - planned stop loss) / initial shares.",
     "win_loss": "A trade is a win only when its final recorded R multiple is greater than zero.",
     "drawdown": "The calibration artifact sums R multiples after sorting all ticker signals by date. It is not a capital-weighted portfolio equity curve and concurrent ticker trades remain interleaved.",
-    "duplicate_or_overlapping_same_ticker_positions": 0,
+    "duplicate_or_overlapping_same_ticker_positions": 35,
     "incomplete_positions": 0
   },
   "confidence_bands": {
     "0-59": {
-      "trades": 72,
+      "trades": 74,
       "bootstrap_95_ci": {
         "win_rate": [
-          41.6667,
-          63.8889
+          31.0811,
+          52.7027
         ],
         "expectancy_r": [
-          0.1745,
-          0.9757
+          0.0494,
+          0.8721
         ],
         "profit_factor": [
-          1.3178,
-          3.7719
+          1.0729,
+          2.8562
         ],
         "average_r": [
-          0.1745,
-          0.9757
+          0.0494,
+          0.8721
         ]
       },
       "tp1_hits_with_non_positive_final_r": 0
     },
     "60-74": {
-      "trades": 128,
+      "trades": 91,
       "bootstrap_95_ci": {
         "win_rate": [
-          48.4375,
-          65.625
+          31.8681,
+          51.6484
         ],
         "expectancy_r": [
-          -0.1739,
-          0.0971
+          -0.112,
+          0.5184
         ],
         "profit_factor": [
-          0.4949,
-          1.4055
+          0.8302,
+          2.0823
         ],
         "average_r": [
-          -0.1739,
-          0.0971
+          -0.112,
+          0.5184
         ]
       },
-      "tp1_hits_with_non_positive_final_r": 18
+      "tp1_hits_with_non_positive_final_r": 0
     },
     "75-89": {
-      "trades": 100,
+      "trades": 21,
       "bootstrap_95_ci": {
         "win_rate": [
-          65.0,
-          82.0
+          9.5238,
+          47.619
         ],
         "expectancy_r": [
-          -0.052,
-          0.0714
+          -0.707,
+          0.6137
         ],
         "profit_factor": [
-          0.6719,
-          2.0307
+          0.2451,
+          2.1311
         ],
         "average_r": [
-          -0.052,
-          0.0714
+          -0.707,
+          0.6137
         ]
       },
-      "tp1_hits_with_non_positive_final_r": 20
+      "tp1_hits_with_non_positive_final_r": 0
     },
     "90-100": {
       "trades": 0,
@@ -136,31 +178,31 @@
   "baselines": {
     "buy_and_hold_equal_weight": {
       "trades": 30,
-      "win_rate": 76.6667,
-      "average_return_pct": 10.3723,
-      "profit_factor": 2.9662,
+      "win_rate": 73.3333,
+      "average_return_pct": 11.6403,
+      "profit_factor": 3.5826,
       "definition": "One equal-weight long position per ticker from the first out-of-sample entry date to the final out-of-sample exit date."
     },
     "ema20_ema50_crossover": {
-      "trades": 49,
-      "win_rate": 40.8163,
-      "average_return_pct": 1.4668,
-      "profit_factor": 1.3591,
+      "trades": 47,
+      "win_rate": 42.5532,
+      "average_return_pct": 1.8552,
+      "profit_factor": 1.4718,
       "definition": "Long on daily EMA20 crossing above EMA50; exit on a cross below or after 30 sessions. Uses the same cost formula."
     },
     "random_matched": {
-      "trades": 300,
-      "win_rate": 55.6667,
-      "average_return_pct": 0.8368,
-      "profit_factor": 1.3781,
+      "trades": 186,
+      "win_rate": 41.3978,
+      "average_return_pct": -0.2535,
+      "profit_factor": 0.8984,
       "definition": "Seeded random entries matched to each observed trade's ticker, calendar month, holding-time and total trade count; uses the same cost formula."
     },
     "all_valid_setups": {
-      "trades": 300,
-      "win_rate": 61.6667,
-      "average_return_pct": 0.3396,
-      "profit_factor": 1.1502,
-      "average_r": 0.1215,
+      "trades": 186,
+      "win_rate": 40.3226,
+      "average_return_pct": 0.9616,
+      "profit_factor": 1.3715,
+      "average_r": 0.2675,
       "definition": "Every valid plan generated in the out-of-sample ledger, with no confidence filter (all score bands)."
     }
   },
@@ -169,110 +211,110 @@
     "overall": {
       "win_rate": {
         "previous": 62.0,
-        "corrected": 61.67,
-        "change": -0.33
+        "corrected": 40.86,
+        "change": -21.14
       },
       "average_return": {
         "previous": 0.5422,
-        "corrected": 0.3396,
-        "change": -0.2026
+        "corrected": 0.9877,
+        "change": 0.4455
       },
       "average_r_multiple": {
         "previous": 0.1455,
-        "corrected": 0.1215,
-        "change": -0.024
+        "corrected": 0.2732,
+        "change": 0.1277
       },
       "profit_factor": {
         "previous": 1.4691,
-        "corrected": 1.449,
-        "change": -0.0201
+        "corrected": 1.4633,
+        "change": -0.0058
       },
       "maximum_drawdown": {
         "previous": -15.2058,
-        "corrected": -14.1255,
-        "change": 1.0803
+        "corrected": -18.1572,
+        "change": -2.9514
       }
     },
     "bands": {
       "0-59": {
         "win_rate": {
           "previous": 51.39,
-          "corrected": 52.78,
-          "change": 1.39
+          "corrected": 42.11,
+          "change": -9.28
         },
         "average_return": {
           "previous": 2.9325,
-          "corrected": 2.5393,
-          "change": -0.3932
+          "corrected": 1.6717,
+          "change": -1.2608
         },
         "average_r_multiple": {
           "previous": 0.6346,
-          "corrected": 0.5631,
-          "change": -0.0715
+          "corrected": 0.4259,
+          "change": -0.2087
         },
         "profit_factor": {
           "previous": 2.3692,
-          "corrected": 2.2401,
-          "change": -0.1291
+          "corrected": 1.7374,
+          "change": -0.6318
         },
         "maximum_drawdown": {
           "previous": -5.3408,
-          "corrected": -5.2576,
-          "change": 0.0832
+          "corrected": -9.563,
+          "change": -4.2222
         }
       },
       "60-74": {
         "win_rate": {
           "previous": 57.03,
-          "corrected": 57.03,
-          "change": 0.0
+          "corrected": 42.7,
+          "change": -14.33
         },
         "average_return": {
           "previous": -0.4793,
-          "corrected": -0.4866,
-          "change": -0.0073
+          "corrected": 0.8774,
+          "change": 1.3567
         },
         "average_r_multiple": {
           "previous": -0.0439,
-          "corrected": -0.0415,
-          "change": 0.0024
+          "corrected": 0.2197,
+          "change": 0.2636
         },
         "profit_factor": {
           "previous": 0.8683,
-          "corrected": 0.8575,
-          "change": -0.0108
+          "corrected": 1.3893,
+          "change": 0.521
         },
         "maximum_drawdown": {
           "previous": -17.2594,
-          "corrected": -15.0853,
-          "change": 2.1741
+          "corrected": -7.3862,
+          "change": 9.8732
         }
       },
       "75-89": {
         "win_rate": {
           "previous": 76.0,
-          "corrected": 74.0,
-          "change": -2.0
+          "corrected": 28.57,
+          "change": -47.43
         },
         "average_return": {
           "previous": 0.1286,
-          "corrected": -0.1867,
-          "change": -0.3153
+          "corrected": -1.0198,
+          "change": -1.1484
         },
         "average_r_multiple": {
           "previous": 0.0359,
-          "corrected": 0.0122,
-          "change": -0.0237
+          "corrected": -0.0531,
+          "change": -0.089
         },
         "profit_factor": {
           "previous": 1.2112,
-          "corrected": 1.1091,
-          "change": -0.1021
+          "corrected": 0.9282,
+          "change": -0.283
         },
         "maximum_drawdown": {
           "previous": -3.1503,
-          "corrected": -2.1934,
-          "change": 0.9569
+          "corrected": -7.2073,
+          "change": -4.057
         }
       }
     }

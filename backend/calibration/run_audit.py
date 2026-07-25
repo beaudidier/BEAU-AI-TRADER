@@ -8,7 +8,7 @@ from __future__ import annotations
 import csv
 import json
 import time
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -101,16 +101,16 @@ def _load_history(provider, ticker: str, start: date, end: date) -> tuple[pd.Dat
 def run_audit(provider=None) -> dict:
     provider = provider or get_market_data_provider(); end = date.today(); start = end - timedelta(days=3 * 365 + 10)
     benchmark, benchmark_error, benchmark_source = _load_history(provider, "SPY", start, end)
-    trades: list[dict] = []; failures: list[dict] = []; histories: dict[str, pd.DataFrame] = {}
+    trades: list[dict] = []; rejected: list[dict] = []; failures: list[dict] = []; histories: dict[str, pd.DataFrame] = {}
     if benchmark_error: failures.append({"ticker": "SPY", "reason": benchmark_error, "source": benchmark_source})
     for ticker, sector in TICKERS.items():
         data, error, source = _load_history(provider, ticker, start, end)
         if error:
             failures.append({"ticker": ticker, "reason": error, "source": source}); continue
         histories[ticker] = data
-    parameters = {"tickers": len(TICKERS), "start": start.isoformat(), "end": end.isoformat(), "split": "chronological 70/30 by generated trade", "slippage_bps_per_side": SLIPPAGE_BPS, "transaction_cost_bps_per_side": TRANSACTION_COST_BPS, "tp1_portion": TP1_PORTION, "stop_management": "original stop remains in force after TP1", "max_holding_days": MAX_HOLDING_DAYS, "minimum_valid_symbols": 25, "minimum_candles_per_symbol": MINIMUM_CANDLES, "download_retries": DOWNLOAD_RETRIES}
+    parameters = {"tickers": len(TICKERS), "start": start.isoformat(), "end": end.isoformat(), "split": "chronological 70/30 by generated accepted trade", "slippage_bps_per_side": SLIPPAGE_BPS, "transaction_cost_bps_per_side": TRANSACTION_COST_BPS, "tp1_portion": TP1_PORTION, "stop_management": "original stop remains in force after TP1", "executable_entry": "next daily open with adverse slippage", "max_holding_days": MAX_HOLDING_DAYS, "minimum_valid_symbols": 25, "minimum_candles_per_symbol": MINIMUM_CANDLES, "download_retries": DOWNLOAD_RETRIES}
     if len(histories) < 25 or benchmark is None:
-        return {"audit_status": "blocked", "parameters": parameters, "provider_failures": failures, "validated_symbols": sorted(histories), "calibration": {"overall": _metrics([]), "bands": {band: _metrics([]) for band in ("0-59", "60-74", "75-89", "90-100")}}, "out_of_sample": {"overall": _metrics([]), "bands": {band: _metrics([]) for band in ("0-59", "60-74", "75-89", "90-100")}, "factors": {}, "market_regime": {}, "ticker": {}, "sector": {}}, "trades": []}
+        return {"audit_status": "blocked", "parameters": parameters, "provider_failures": failures, "validated_symbols": sorted(histories), "rejected_gap_trades": {"total": 0, "reasons": {}}, "calibration": {"overall": _metrics([]), "bands": {band: _metrics([]) for band in ("0-59", "60-74", "75-89", "90-100")}}, "out_of_sample": {"overall": _metrics([]), "bands": {band: _metrics([]) for band in ("0-59", "60-74", "75-89", "90-100")}, "factors": {}, "market_regime": {}, "ticker": {}, "sector": {}}, "trades": [], "rejected": []}
     for ticker, sector in TICKERS.items():
         data = histories.get(ticker)
         if data is None: continue
@@ -122,8 +122,14 @@ def run_audit(provider=None) -> dict:
             try:
                 analysis = calculate_institutional_analysis(history, benchmark_history); enriched = add_atr(history); atr = safe_float(enriched["ATR"].iloc[-1]); levels = calculate_support_resistance(enriched)
                 if not atr or atr <= 0: continue
-                plan = calculate_trade_plan(ticker, enriched, 10_000, 1, {"confidence": analysis["overall_score"]}, levels["support"], levels["resistance"], atr)
                 entry = entry_fill_price(float(data.iloc[index + 1]["Open"]), SLIPPAGE_BPS)
+                plan = calculate_trade_plan(ticker, enriched, 10_000, 1, {"confidence": analysis["overall_score"]}, levels["support"], levels["resistance"], atr, executable_entry=entry)
+                signal_date = str(data.index[index].date())
+                engines = analysis["engines"]
+                shared = {"trade_id": f"{ticker}-{signal_date}", "ticker": ticker, "sector": sector, "signal_date": signal_date, "entry_date": str(data.index[index + 1].date()), "confidence": analysis["overall_score"], "band": _band(analysis["overall_score"]), "verdict": analysis["recommendation"], "market_regime": "Risk-on" if engines["market_regime"]["score"] >= 60 else "Defensive", **{f"{name}_score": result["score"] for name, result in engines.items()}, "signal_price": plan["signal_price"], "proposed_executable_entry": plan["proposed_executable_entry"]}
+                if not plan["trade_allowed"]:
+                    rejected.append({"record_type": "REJECTED", **shared, "rejection_reasons": " | ".join(plan["rejection_reasons"])})
+                    continue
                 outcome = _simulate(data, index + 1, entry, plan["stop_loss"], plan["target_1"], plan["target_2"])
                 if outcome is None: continue
                 for leg in outcome["exit_legs"]:
@@ -132,24 +138,24 @@ def run_audit(provider=None) -> dict:
                 continue
             # One trade per ticker at a time: signal days inside the next holding window are skipped.
             if trades and trades[-1].get("ticker") == ticker and pd.Timestamp(trades[-1]["exit_date"]) >= data.index[index + 1]: continue
-            engines = analysis["engines"]
-            signal_date = str(data.index[index].date())
-            trades.append({"trade_id": f"{ticker}-{signal_date}", "ticker": ticker, "sector": sector, "signal_date": signal_date, "entry_date": str(data.index[index + 1].date()), "exit_date": str(data.index[outcome["exit_index"]].date()), "confidence": analysis["overall_score"], "band": _band(analysis["overall_score"]), "verdict": analysis["recommendation"], "market_regime": "Risk-on" if engines["market_regime"]["score"] >= 60 else "Defensive", **{f"{name}_score": result["score"] for name, result in engines.items()}, **outcome})
+            trades.append({"record_type": "EXIT", **shared, "exit_date": str(data.index[outcome["exit_index"]].date()), **outcome})
     trades.sort(key=lambda row: row["signal_date"])
     split = int(len(trades) * .7); calibration, oos = trades[:split], trades[split:]
     grouped = lambda rows, field: {key: _metrics([row for row in rows if str(row[field]) == key]) for key in sorted({str(row[field]) for row in rows})}
     bands = lambda rows: {band: _metrics([row for row in rows if row["band"] == band]) for band in ("0-59", "60-74", "75-89", "90-100")}
-    return {"audit_status": "completed", "parameters": parameters, "provider_failures": failures, "validated_symbols": sorted(histories), "calibration": {"overall": _metrics(calibration), "bands": bands(calibration)}, "out_of_sample": {"overall": _metrics(oos), "bands": bands(oos), "factors": {name: grouped(oos, f"{name}_score") for name in ("trend", "momentum", "volume", "support_resistance", "volatility", "relative_strength")}, "market_regime": grouped(oos, "market_regime"), "ticker": grouped(oos, "ticker"), "sector": grouped(oos, "sector")}, "trades": trades}
+    reasons = Counter(reason for row in rejected for reason in row["rejection_reasons"].split(" | ") if reason)
+    return {"audit_status": "completed", "parameters": parameters, "provider_failures": failures, "validated_symbols": sorted(histories), "rejected_gap_trades": {"total": len(rejected), "reasons": dict(sorted(reasons.items()))}, "calibration": {"overall": _metrics(calibration), "bands": bands(calibration)}, "out_of_sample": {"overall": _metrics(oos), "bands": bands(oos), "factors": {name: grouped(oos, f"{name}_score") for name in ("trend", "momentum", "volume", "support_resistance", "volatility", "relative_strength")}, "market_regime": grouped(oos, "market_regime"), "ticker": grouped(oos, "ticker"), "sector": grouped(oos, "sector")}, "trades": trades, "rejected": rejected}
 
 
 def write_artifacts(results: dict) -> None:
-    OUTPUT.mkdir(exist_ok=True); (OUTPUT / "ai_calibration_results.json").write_text(json.dumps({key: value for key, value in results.items() if key != "trades"}, indent=2))
+    OUTPUT.mkdir(exist_ok=True); (OUTPUT / "ai_calibration_results.json").write_text(json.dumps({key: value for key, value in results.items() if key not in {"trades", "rejected"}}, indent=2))
     with (OUTPUT / "ai_calibration_trades.csv").open("w", newline="") as handle:
         rows = []
         for trade in results["trades"]:
             shared = {key: value for key, value in trade.items() if key != "exit_legs"}
             for number, leg in enumerate(trade["exit_legs"], start=1):
                 rows.append({**shared, "leg_number": number, **{f"leg_{key}": value for key, value in leg.items()}})
+        rows.extend(results.get("rejected", []))
         writer = csv.DictWriter(handle, fieldnames=sorted({key for row in rows for key in row}) if rows else ["ticker"], lineterminator="\n"); writer.writeheader(); writer.writerows(rows)
 
 

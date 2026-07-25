@@ -59,6 +59,7 @@ def _number(value: object) -> float:
 def _trade_rows() -> list[dict]:
     with (OUTPUT / "ai_calibration_trades.csv").open(newline="") as handle:
         ledger_rows = list(csv.DictReader(handle))
+    ledger_rows = [row for row in ledger_rows if row.get("record_type", "EXIT") == "EXIT"]
     trades: dict[str, dict] = {}
     for row in ledger_rows:
         trade_id = row["trade_id"]
