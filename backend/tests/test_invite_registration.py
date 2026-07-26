@@ -31,6 +31,21 @@ EDGE_FUNCTION = (
     / "invite-register"
     / "index.ts"
 )
+INVITE_PAGE = (
+    ROOT
+    / "frontend"
+    / "src"
+    / "pages"
+    / "auth"
+    / "InviteRegistrationPage.tsx"
+)
+INVITE_SERVICE = (
+    ROOT
+    / "frontend"
+    / "src"
+    / "services"
+    / "inviteRegistration.ts"
+)
 
 
 class InviteRegistrationTests(unittest.TestCase):
@@ -188,6 +203,29 @@ class InviteRegistrationTests(unittest.TestCase):
         self.assertIn('method: "DELETE"', source)
         self.assertNotIn('/auth/v1/resend', source)
         self.assertNotIn("console.log", source)
+
+    def test_resend_is_scoped_to_consumed_invite_user_and_rate_limited(self):
+        source = EDGE_FUNCTION.read_text()
+        self.assertIn("beta_invite_uses", source)
+        self.assertIn("/auth/v1/admin/users/${userId}", source)
+        self.assertIn("invitedUser.email.toLowerCase() !== email", source)
+        self.assertIn("/auth/v1/otp", source)
+        self.assertIn("create_user: false", source)
+        self.assertIn("cooldown_seconds: 60", source)
+        self.assertIn("over_email_send_rate_limit", source)
+        self.assertIn("over_request_rate_limit", source)
+
+    def test_frontend_prevents_duplicates_and_explains_verification_cooldown(self):
+        page = INVITE_PAGE.read_text()
+        service = INVITE_SERVICE.read_text()
+        self.assertIn("requestInFlight.current", page)
+        self.assertIn("EMAIL_COOLDOWN_KEY", page)
+        self.assertIn("Check your inbox and spam folder", page)
+        self.assertIn("Resend verification", page)
+        self.assertIn("registrationRequest", service)
+        self.assertIn("resendRequest", service)
+        self.assertIn("email_rate_limited", service)
+        self.assertIn("Sign in or request another verification email", service)
 
     def test_public_registration_remains_disabled(self):
         config = (ROOT / "supabase" / "config.toml").read_text()

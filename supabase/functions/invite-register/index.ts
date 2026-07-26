@@ -39,6 +39,35 @@ async function sha256(value: string) {
     .join("");
 }
 
+async function authFailureDetails(authResponse: Response) {
+  const payload = await authResponse.json().catch(() => ({}));
+  return {
+    code: typeof payload?.code === "string" ? payload.code : "",
+    message: typeof payload?.message === "string" ? payload.message : "",
+  };
+}
+
+function isEmailRateLimit(
+  status: number,
+  details: { code: string; message: string },
+) {
+  const normalized = `${details.code} ${details.message}`.toLowerCase();
+  return status === 429 ||
+    details.code === "over_email_send_rate_limit" ||
+    details.code === "over_request_rate_limit" ||
+    normalized.includes("rate limit") ||
+    normalized.includes("too many");
+}
+
+function emailRateLimitResponse(request: Request) {
+  return response(request, 429, {
+    error: "email_rate_limited",
+    message:
+      "Too many verification emails were requested. Please wait for the countdown before trying again.",
+    cooldown_seconds: 60,
+  });
+}
+
 function inviteRejection(
   request: Request,
   reason: "invalid" | "expired" | "revoked" | "exhausted",
@@ -73,16 +102,22 @@ Deno.serve(async (request) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
   const confirmRedirect = Deno.env.get("INVITE_CONFIRM_REDIRECT") ??
     "https://beau-ai-trader.vercel.app/login?verified=1";
-  if (!supabaseUrl || !serviceRoleKey) {
+  if (!supabaseUrl || !serviceRoleKey || !anonKey) {
     return response(request, 503, {
       error: "service_unavailable",
       message: "Private beta registration is temporarily unavailable.",
     });
   }
 
-  let payload: { token?: unknown; email?: unknown; password?: unknown };
+  let payload: {
+    action?: unknown;
+    token?: unknown;
+    email?: unknown;
+    password?: unknown;
+  };
   try {
     payload = await request.json();
   } catch {
@@ -92,11 +127,22 @@ Deno.serve(async (request) => {
     });
   }
 
+  const action = payload.action === undefined || payload.action === "register"
+    ? "register"
+    : payload.action === "resend"
+    ? "resend"
+    : "";
   const token = typeof payload.token === "string" ? payload.token.trim() : "";
   const email = typeof payload.email === "string"
     ? payload.email.trim().toLowerCase()
     : "";
   const password = typeof payload.password === "string" ? payload.password : "";
+  if (!action) {
+    return response(request, 400, {
+      error: "invalid_request",
+      message: "This verification request is invalid.",
+    });
+  }
   if (token.length < 32 || token.length > 256) {
     return inviteRejection(request, "invalid");
   }
@@ -107,10 +153,13 @@ Deno.serve(async (request) => {
     });
   }
   if (
-    password.length < 12 ||
-    !/[a-z]/.test(password) ||
-    !/[A-Z]/.test(password) ||
-    !/[0-9]/.test(password)
+    action === "register" &&
+    (
+      password.length < 12 ||
+      !/[a-z]/.test(password) ||
+      !/[A-Z]/.test(password) ||
+      !/[0-9]/.test(password)
+    )
   ) {
     return response(request, 422, {
       error: "weak_password",
@@ -155,10 +204,87 @@ Deno.serve(async (request) => {
     return inviteRejection(request, "expired");
   }
   if (
-    invite.status === "used" ||
-    invite.use_count >= invite.max_uses
+    action === "register" &&
+    (
+      invite.status === "used" ||
+      invite.use_count >= invite.max_uses
+    )
   ) {
     return inviteRejection(request, "exhausted");
+  }
+
+  if (action === "resend") {
+    const useQuery = new URL(
+      `${supabaseUrl}/rest/v1/beta_invite_uses`,
+    );
+    useQuery.searchParams.set("select", "user_id");
+    useQuery.searchParams.set("invite_id", `eq.${invite.id}`);
+    useQuery.searchParams.set("limit", "1");
+    const useResponse = await fetch(useQuery, { headers: serviceHeaders });
+    const uses = useResponse.ok ? await useResponse.json() : [];
+    const userId = uses[0]?.user_id;
+    if (!useResponse.ok || !userId) {
+      return response(request, 409, {
+        error: "verification_not_available",
+        message:
+          "A verification email cannot be resent for this invite. Sign in if your email is already confirmed.",
+      });
+    }
+
+    const userResponse = await fetch(
+      `${supabaseUrl}/auth/v1/admin/users/${userId}`,
+      { headers: serviceHeaders },
+    );
+    const invitedUser = userResponse.ok ? await userResponse.json() : null;
+    if (
+      !invitedUser ||
+      typeof invitedUser.email !== "string" ||
+      invitedUser.email.toLowerCase() !== email
+    ) {
+      return response(request, 403, {
+        error: "verification_not_available",
+        message:
+          "A verification email cannot be resent for these account details.",
+      });
+    }
+    if (invitedUser.email_confirmed_at) {
+      return response(request, 200, {
+        already_verified: true,
+        message: "Your email is already verified. You can sign in now.",
+      });
+    }
+
+    const resendUrl = new URL(`${supabaseUrl}/auth/v1/otp`);
+    resendUrl.searchParams.set("redirect_to", confirmRedirect);
+    const resendResponse = await fetch(resendUrl, {
+      method: "POST",
+      headers: {
+        "apikey": anonKey,
+        "Authorization": `Bearer ${anonKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        create_user: false,
+      }),
+    });
+    if (!resendResponse.ok) {
+      const details = await authFailureDetails(resendResponse);
+      if (isEmailRateLimit(resendResponse.status, details)) {
+        return emailRateLimitResponse(request);
+      }
+      return response(request, 503, {
+        error: "verification_unavailable",
+        message:
+          "Another verification email could not be sent. Please try again later.",
+      });
+    }
+
+    return response(request, 200, {
+      verification_sent: true,
+      cooldown_seconds: 60,
+      message: "Verification email sent. Check your inbox and spam folder.",
+    });
   }
 
   const inviteUrl = new URL(`${supabaseUrl}/auth/v1/invite`);
@@ -172,19 +298,25 @@ Deno.serve(async (request) => {
     }),
   });
   if (!createResponse.ok) {
-    const rateLimited = createResponse.status === 429;
-    const accountExists = [400, 409, 422].includes(createResponse.status);
-    const failureStatus = rateLimited ? 429 : accountExists ? 409 : 503;
+    const details = await authFailureDetails(createResponse);
+    const rateLimited = isEmailRateLimit(createResponse.status, details);
+    const accountExists = createResponse.status === 409 ||
+      details.code === "user_already_exists" ||
+      details.code === "email_exists";
+    const invalidEmail = details.code === "email_address_invalid" ||
+      details.code === "validation_failed";
+    if (rateLimited) return emailRateLimitResponse(request);
+    const failureStatus = accountExists ? 409 : invalidEmail ? 422 : 503;
     return response(request, failureStatus, {
-      error: rateLimited
-        ? "email_rate_limited"
-        : accountExists
+      error: accountExists
         ? "account_exists"
+        : invalidEmail
+        ? "invalid_email"
         : "verification_unavailable",
-      message: rateLimited
-        ? "Too many verification emails were requested. Please wait a few minutes and try again."
-        : accountExists
+      message: accountExists
         ? "This email already has an account. Sign in instead."
+        : invalidEmail
+        ? "Enter a valid email address that can receive verification messages."
         : "The verification email could not be sent. Please try again.",
     });
   }
@@ -251,6 +383,8 @@ Deno.serve(async (request) => {
   return response(request, 201, {
     registered: true,
     email_verification_required: true,
-    message: "Check your email to verify your account before signing in.",
+    cooldown_seconds: 60,
+    message:
+      "Account created. Check your inbox and spam folder to verify your email.",
   });
 });
