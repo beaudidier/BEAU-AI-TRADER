@@ -1,4 +1,4 @@
-import type { BacktestRequest, BacktestResult, BacktestTrade, CoachAnalysis, DailyBriefing, InstitutionalAnalysis, ScanJob, Stock, StockChartData, Timeframe, TradePlan, TradingStrategy, ValidationDashboard } from "../types/stock";
+import type { BacktestRequest, BacktestResult, BacktestTrade, CoachAnalysis, DailyBriefing, InstitutionalAnalysis, MarketDataTransparency, ScanJob, Stock, StockChartData, Timeframe, TradePlan, TradingStrategy, ValidationDashboard } from "../types/stock";
 import { API_BASE_URL } from "../config";
 
 export async function getStrategies(): Promise<TradingStrategy[]> {
@@ -50,6 +50,14 @@ export async function getStockChart(ticker: string, timeframe: Timeframe): Promi
   }
 
   return response.json() as Promise<StockChartData>;
+}
+
+export async function getMarketDataTransparency(ticker: string): Promise<MarketDataTransparency> {
+  const response = await fetch(`${API_BASE_URL}/market-data/${ticker}/transparency`);
+  if (!response.ok) {
+    throw new Error("Market-data timing details are temporarily unavailable.");
+  }
+  return response.json() as Promise<MarketDataTransparency>;
 }
 
 export async function getTradePlan(ticker: string, accountSize = 10000, riskPercent = 1): Promise<TradePlan> {

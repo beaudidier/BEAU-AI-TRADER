@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import Header from "../components/Header";
+import MarketDataTransparencyPanel from "../components/MarketDataTransparencyPanel";
 import Sidebar, { type AppPage } from "../components/Sidebar";
 import TimeframeSelector from "../components/TimeframeSelector";
 import TradingChart from "../components/TradingChart";
@@ -47,6 +48,9 @@ function ChartPage({ stock, onBack, onNavigate }: ChartPageProps) {
         <Header eyebrow="Technical analysis" title={`${stock.ticker} chart`} />
         <main className="mx-auto max-w-7xl p-5 sm:p-8">
           <button type="button" onClick={onBack} className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-white"><span aria-hidden="true">←</span> Back to scanner</button>
+          <div className="mb-5">
+            <MarketDataTransparencyPanel ticker={stock.ticker} />
+          </div>
           <section className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 shadow-xl shadow-slate-950/30">
             <div className="flex flex-col gap-5 border-b border-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>

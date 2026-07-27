@@ -33,6 +33,7 @@ from universe.universe_registry import (
 )
 from validation.validation_engine import validation_store
 from providers import get_market_data_provider
+from providers.market_transparency import build_market_data_transparency
 from strategies import StrategyNotFoundError, StrategyUnavailableError, strategy_registry
 
 _previous_debug_scores: dict[str, dict] = {}
@@ -267,6 +268,28 @@ def get_stock_history(ticker: str, timeframe: str = "6M"):
         "resistance": levels["resistance"],
         "latest_timestamp": df.index[-1].isoformat(),
     }
+
+
+@app.get("/market-data/{ticker}/transparency")
+def get_market_data_transparency(ticker: str):
+    """Return quote and completed-candle provenance without changing signals."""
+
+    normalized_ticker = ticker.upper()
+    provider = get_market_data_provider()
+    quote = provider.get_quote_transparency(normalized_ticker)
+    daily_history = provider.get_history(
+        normalized_ticker,
+        period="1mo",
+        interval="1d",
+    )
+    if quote is None and (daily_history is None or daily_history.empty):
+        raise HTTPException(status_code=404, detail="No market data found")
+    return build_market_data_transparency(
+        ticker=normalized_ticker,
+        provider=provider,
+        quote=quote,
+        daily_history=daily_history,
+    )
 
 
 @app.get("/analysis/{ticker}")

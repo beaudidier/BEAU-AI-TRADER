@@ -7,8 +7,16 @@ import pandas as pd
 class MarketDataProvider(ABC):
     """Provider-neutral contract for market data consumed by the application."""
 
+    provider_name = "Unknown market-data provider"
+    quote_data_label = "unknown"
+
     @abstractmethod
     def get_quote(self, ticker: str) -> dict[str, Any] | None: ...
+
+    def get_quote_transparency(self, ticker: str) -> dict[str, Any] | None:
+        """Return quote provenance when supported without changing quote users."""
+
+        return self.get_quote(ticker)
 
     @abstractmethod
     def get_history(self, ticker: str, period: str = "6mo", interval: str = "1d", start: str | None = None, end: str | None = None) -> pd.DataFrame | None: ...

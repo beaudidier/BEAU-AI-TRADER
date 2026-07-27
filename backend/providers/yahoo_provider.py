@@ -1,4 +1,5 @@
 from threading import Lock
+from datetime import timezone
 from typing import Any
 
 import pandas as pd
@@ -11,6 +12,9 @@ _DOWNLOAD_LOCK = Lock()
 
 class YahooFinanceProvider(MarketDataProvider):
     """Yahoo Finance implementation of the provider-neutral market-data contract."""
+
+    provider_name = "Yahoo Finance"
+    quote_data_label = "delayed"
 
     @staticmethod
     def _normalize_history(data: pd.DataFrame) -> pd.DataFrame | None:
@@ -99,10 +103,47 @@ class YahooFinanceProvider(MarketDataProvider):
     def get_quote(self, ticker: str) -> dict[str, Any] | None:
         try:
             info = yf.Ticker(ticker).fast_info
-            return {"ticker": ticker.upper(), "price": info.get("last_price"), "previous_close": info.get("previous_close"), "currency": info.get("currency")}
+            return {
+                "ticker": ticker.upper(),
+                "price": info.get("last_price"),
+                "previous_close": info.get("previous_close"),
+                "currency": info.get("currency"),
+            }
         except Exception as error:
             print(f"Fout bij quote ophalen van {ticker}: {error}")
             return None
+
+    def get_quote_transparency(self, ticker: str) -> dict[str, Any] | None:
+        quote = self.get_quote(ticker)
+        if quote is None:
+            return None
+        timestamp = None
+        try:
+            instrument = yf.Ticker(ticker)
+            try:
+                with _DOWNLOAD_LOCK:
+                    intraday = instrument.history(
+                        period="1d",
+                        interval="1m",
+                        prepost=True,
+                        auto_adjust=True,
+                        raise_errors=False,
+                    )
+                if intraday is not None and not intraday.empty:
+                    latest = intraday.dropna(subset=["Close"]).iloc[-1]
+                    latest_index = pd.Timestamp(intraday.dropna(subset=["Close"]).index[-1])
+                    if latest_index.tzinfo is None:
+                        latest_index = latest_index.tz_localize("UTC")
+                    quote["price"] = float(latest["Close"])
+                    timestamp = latest_index.tz_convert(timezone.utc).isoformat()
+            except Exception:
+                # A quote without an exchange timestamp remains usable but is
+                # explicitly labelled unknown/stale by the transparency layer.
+                timestamp = None
+            return {**quote, "timestamp": timestamp}
+        except Exception as error:
+            print(f"Fout bij quote-tijd ophalen van {ticker}: {error}")
+            return {**quote, "timestamp": None}
 
     def get_company(self, ticker: str) -> dict[str, Any] | None:
         try:
