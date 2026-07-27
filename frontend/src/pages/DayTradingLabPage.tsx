@@ -12,6 +12,9 @@ import type {
   DayTradingTimeframe,
   PaperAccount,
   PaperPositions,
+  RecordingSession,
+  RecordingStatus,
+  ReplayStatus,
 } from "../types/dayTrading";
 
 type DayTradingLabPageProps = { onNavigate: (page: AppPage) => void };
@@ -32,6 +35,14 @@ function DayTradingLabPage({ onNavigate }: DayTradingLabPageProps) {
   const [bars, setBars] = useState<DayTradingBars | null>(null);
   const [account, setAccount] = useState<PaperAccount | null>(null);
   const [positions, setPositions] = useState<PaperPositions | null>(null);
+  const [recording, setRecording] = useState<RecordingStatus | null>(null);
+  const [recordings, setRecordings] = useState<RecordingSession[]>([]);
+  const [replay, setReplay] = useState<ReplayStatus | null>(null);
+  const [replayBars, setReplayBars] = useState<DayTradingBars | null>(null);
+  const [replayTimeframe, setReplayTimeframe] = useState<DayTradingTimeframe>("1m");
+  const [selectedRecording, setSelectedRecording] = useState("");
+  const [replaySpeed, setReplaySpeed] = useState<ReplayStatus["speed"]>("maximum");
+  const [seekTimestamp, setSeekTimestamp] = useState("");
   const [tickerInput, setTickerInput] = useState("AAPL");
   const [ticker, setTicker] = useState("AAPL");
   const [timeframe, setTimeframe] = useState<DayTradingTimeframe>("1m");
@@ -56,16 +67,29 @@ function DayTradingLabPage({ onNavigate }: DayTradingLabPageProps) {
       dayTradingApi.bars(ticker, timeframe),
       dayTradingApi.paperAccount(),
       dayTradingApi.paperPositions(),
+      dayTradingApi.recordingStatus(),
+      dayTradingApi.recordingSessions(),
+      dayTradingApi.replayStatus(),
+      dayTradingApi.replayBars(ticker, replayTimeframe),
     ]);
     if (settled[0].status === "fulfilled") setStatus(settled[0].value);
     if (settled[1].status === "fulfilled") setQuote(settled[1].value);
     if (settled[2].status === "fulfilled") setBars(settled[2].value);
     if (settled[3].status === "fulfilled") setAccount(settled[3].value);
     if (settled[4].status === "fulfilled") setPositions(settled[4].value);
+    if (settled[5].status === "fulfilled") setRecording(settled[5].value);
+    const sessionsResult = settled[6];
+    if (sessionsResult.status === "fulfilled") {
+      const availableSessions = sessionsResult.value.sessions;
+      setRecordings(availableSessions);
+      setSelectedRecording((current) => current || availableSessions[0]?.session_id || "");
+    }
+    if (settled[7].status === "fulfilled") setReplay(settled[7].value);
+    if (settled[8].status === "fulfilled") setReplayBars(settled[8].value);
     const failed = settled.filter((result) => result.status === "rejected");
     setError(failed.length ? "Some local Alpaca data is unavailable. Previous valid values remain visible." : null);
     if (!quiet) setLoading(false);
-  }, [ticker, timeframe]);
+  }, [ticker, timeframe, replayTimeframe]);
 
   useEffect(() => {
     void load();
@@ -130,6 +154,63 @@ function DayTradingLabPage({ onNavigate }: DayTradingLabPageProps) {
       await load(true);
     } catch {
       setError("The emergency paper-order control could not be changed.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function toggleRecording() {
+    setSubmitting(true);
+    setError(null);
+    try {
+      if (recording?.active) {
+        await dayTradingApi.stopRecording();
+        setNotice("Recording stopped and checksum metadata was finalized.");
+      } else {
+        await dayTradingApi.startRecording();
+        setNotice("Append-only IEX recording started for the configured symbols.");
+      }
+      await load(true);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The recorder could not be changed.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function startReplay() {
+    if (!selectedRecording) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      setReplay(await dayTradingApi.startReplay(selectedRecording, replaySpeed));
+      setNotice("Deterministic local replay started. No Alpaca order can be routed.");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The replay could not start.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function controlReplay(action: "pause" | "resume" | "reset") {
+    setSubmitting(true);
+    try {
+      const result = action === "pause" ? await dayTradingApi.pauseReplay() : action === "resume" ? await dayTradingApi.resumeReplay() : await dayTradingApi.resetReplay();
+      setReplay(result);
+    } catch {
+      setError("The replay control could not be changed.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function seekReplay() {
+    if (!seekTimestamp) return;
+    setSubmitting(true);
+    try {
+      setReplay(await dayTradingApi.seekReplay(new Date(seekTimestamp).toISOString()));
+    } catch {
+      setError("The replay timestamp could not be selected.");
     } finally {
       setSubmitting(false);
     }
@@ -208,6 +289,58 @@ function DayTradingLabPage({ onNavigate }: DayTradingLabPageProps) {
 
             <div className="rounded-xl border border-rose-400/30 bg-rose-400/5 p-5"><div className="flex items-center justify-between gap-4"><div><p className="font-semibold text-rose-100">Emergency paper-order control</p><p className="mt-1 text-xs leading-5 text-rose-100/65">Disabling blocks new simulated orders. It does not create or route any brokerage order.</p></div><button type="button" role="switch" aria-checked={!account?.paper_orders_enabled} onClick={() => void toggleOrders()} disabled={!account || submitting} className={`relative h-7 w-12 shrink-0 rounded-full transition ${account?.paper_orders_enabled ? "bg-slate-700" : "bg-rose-500"}`}><span className={`absolute top-1 size-5 rounded-full bg-white transition ${account?.paper_orders_enabled ? "left-1" : "left-6"}`} /></button></div></div>
           </aside>
+        </section>
+
+        <section className="rounded-xl border border-violet-400/20 bg-slate-900/60 p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">Local research only</p>
+              <h2 className="mt-2 text-xl font-semibold text-white">Intraday recorder and deterministic replay</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Raw Alpaca IEX events are stored append-only in compressed, checksummed local files. Replay never touches production data or routes any paper or live brokerage order.</p>
+            </div>
+            <button type="button" onClick={() => void toggleRecording()} disabled={submitting} className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${recording?.active ? "bg-rose-400 text-slate-950" : "bg-violet-400 text-slate-950"} disabled:opacity-40`}>{recording?.active ? "Stop recording" : "Start recording"}</button>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            {[
+              ["Recorder", recording?.active ? "Recording" : recording?.status ?? "Idle"],
+              ["Raw events", (recording?.event_count ?? 0).toLocaleString()],
+              ["Symbols", recording?.symbols?.length?.toString() ?? "—"],
+              ["Coverage", recording?.coverage ?? "partial-market"],
+              ["Data gaps", recording?.gaps?.length?.toString() ?? "0"],
+            ].map(([label, value]) => <div key={label} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3"><p className="text-xs uppercase tracking-wide text-slate-500">{label}</p><p className="mt-2 font-semibold capitalize text-white">{value}</p></div>)}
+          </div>
+
+          <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_auto_auto]">
+            <label className="text-sm text-slate-400">Recorded session<select value={selectedRecording} onChange={(event) => setSelectedRecording(event.target.value)} className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-white"><option value="">Select a completed session</option>{recordings.filter((session) => session.status === "completed").map((session) => <option key={session.session_id} value={session.session_id}>{session.session_id} · {session.event_count.toLocaleString()} events</option>)}</select></label>
+            <label className="text-sm text-slate-400">Replay speed<select value={replaySpeed} onChange={(event) => setReplaySpeed(event.target.value as ReplayStatus["speed"])} className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-white"><option value="original">Original</option><option value="10x">10×</option><option value="maximum">Maximum deterministic</option></select></label>
+            <button type="button" onClick={() => void startReplay()} disabled={!selectedRecording || submitting} className="self-end rounded-lg bg-cyan-400 px-4 py-2 font-semibold text-slate-950 disabled:opacity-40">Start replay</button>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <button type="button" onClick={() => void controlReplay("pause")} disabled={replay?.status !== "running" || submitting} className="rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-300 disabled:opacity-40">Pause</button>
+            <button type="button" onClick={() => void controlReplay("resume")} disabled={replay?.status !== "paused" || submitting} className="rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-300 disabled:opacity-40">Resume</button>
+            <button type="button" onClick={() => void controlReplay("reset")} disabled={!replay?.session_id || submitting} className="rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-slate-300 disabled:opacity-40">Reset</button>
+            <input type="datetime-local" value={seekTimestamp} onChange={(event) => setSeekTimestamp(event.target.value)} aria-label="Replay seek timestamp" className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200" />
+            <button type="button" onClick={() => void seekReplay()} disabled={!replay?.session_id || !seekTimestamp || submitting} className="rounded-lg border border-violet-400/40 px-3 py-2 text-sm font-semibold text-violet-200 disabled:opacity-40">Seek</button>
+            <span className="ml-auto text-sm text-slate-400">{replay?.status ?? "idle"} · {replay?.progress_percent ?? 0}% · {dateTime(replay?.current_replay_timestamp)}</span>
+          </div>
+
+          <div className="mt-5 grid gap-4 lg:grid-cols-3">
+            <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-4"><p className="text-xs uppercase tracking-wide text-slate-500">Replay quote</p><p className="mt-2 text-sm text-slate-200">{ticker} bid {money(replay?.quotes[ticker]?.bid)} · ask {money(replay?.quotes[ticker]?.ask)} · spread {replay?.quotes[ticker] ? `${replay.quotes[ticker].spread_percent.toFixed(3)}%` : "—"}</p></div>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-4"><p className="text-xs uppercase tracking-wide text-slate-500">Simulated orders</p><p className="mt-2 text-sm text-slate-200">{replay?.simulated_orders.length ?? 0} orders · {replay?.simulated_fills.length ?? 0} fill legs</p></div>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-4"><p className="text-xs uppercase tracking-wide text-slate-500">Data quality and safety</p><p className="mt-2 text-sm text-emerald-300">{recording?.gaps?.length ?? 0} gaps · paper-only replay · live routing disabled</p>{replay?.error && <p className="mt-2 text-xs text-rose-300">{replay.error}</p>}</div>
+          </div>
+
+          <div className="mt-5 rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="font-semibold text-white">Replayed {ticker} bars</p>
+              <div className="flex gap-2">{(["1m", "5m", "15m"] as DayTradingTimeframe[]).map((value) => <button key={value} type="button" onClick={() => setReplayTimeframe(value)} className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${replayTimeframe === value ? "bg-violet-400 text-slate-950" : "bg-slate-800 text-slate-300"}`}>{value}</button>)}</div>
+            </div>
+            <div className="mt-4 overflow-hidden rounded-lg border border-slate-800">{replayBars?.bars.length ? <DayTradingChart data={replayBars} /> : <div className="grid h-64 place-items-center text-sm text-slate-500">Start or seek a completed replay to display deterministic bars.</div>}</div>
+          </div>
+
+          {(replay?.simulated_orders.length || replay?.simulated_fills.length) ? <div className="mt-5 overflow-x-auto"><table className="w-full min-w-[42rem] text-left text-sm"><thead className="text-xs uppercase text-slate-500"><tr><th className="pb-3">Type</th><th className="pb-3">Symbol</th><th className="pb-3">Status/time</th><th className="pb-3">Quantity</th><th className="pb-3">Price</th></tr></thead><tbody>{replay.simulated_orders.map((order) => <tr key={order.id} className="border-t border-slate-800"><td className="py-3 text-violet-300">Order</td><td>{order.symbol}</td><td>{order.status}</td><td>{order.filled_quantity} / {order.filled_quantity + order.remaining}</td><td>—</td></tr>)}{replay.simulated_fills.map((fill) => <tr key={`${fill.order_id}-${fill.timestamp}`} className="border-t border-slate-800"><td className="py-3 text-cyan-300">Fill</td><td>{fill.symbol}</td><td>{dateTime(fill.timestamp)}</td><td>{fill.quantity}</td><td>{money(fill.price)}</td></tr>)}</tbody></table></div> : null}
         </section>
       </main>
     </div>

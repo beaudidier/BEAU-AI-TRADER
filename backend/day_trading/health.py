@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import os
 from datetime import datetime, timezone
+from pathlib import Path
 from threading import RLock
 from typing import Any
 
@@ -17,6 +18,8 @@ from .market_clock import MarketClock
 from .models import Bar, Quote, TradeTick
 from .paper_broker import PaperBroker
 from .quote_cache import QuoteCache, QuoteValidationError
+from .recorder import IntradayRecorder
+from .replay import DeterministicReplayEngine
 from .stream_manager import AlpacaStreamManager
 
 
@@ -67,11 +70,30 @@ class DayTradingRuntime:
             on_trade=self._on_trade,
             on_quote=self._on_quote,
             on_bar=self._on_bar,
+            on_raw_event=self._on_raw_event,
+            on_system_event=self._on_stream_system,
         )
         self.stream_enabled = (
             os.getenv("DAY_TRADING_STREAM_ENABLED", "false").lower() == "true"
         )
         self.last_trade: dict[str, TradeTick] = {}
+        recording_path = Path(
+            os.getenv(
+                "DAY_TRADING_RECORDING_PATH",
+                "data/day_trading_recordings",
+            )
+        )
+        if not recording_path.is_absolute():
+            recording_path = Path(__file__).resolve().parents[1] / recording_path
+        self.recorder = IntradayRecorder(recording_path)
+        self.replay = DeterministicReplayEngine(self.recorder)
+        self.research_enabled = (
+            os.getenv(
+                "DAY_TRADING_RESEARCH_ENABLED",
+                "false",
+            ).lower()
+            == "true"
+        )
         self._bar_history_loaded: set[str] = set()
         self._bar_history_lock = RLock()
         self._session_guard_task: asyncio.Task | None = None
@@ -82,17 +104,35 @@ class DayTradingRuntime:
             self.last_trade[trade.ticker] = trade
 
     def _on_quote(self, quote: Quote) -> None:
-        try:
-            if self.quotes.put(quote):
-                self.paper_broker.process_quote(quote.ticker)
-        except QuoteValidationError:
-            self.stream.diagnostics.invalid_events += 1
+        if self.quotes.put(quote):
+            self.paper_broker.process_quote(quote.ticker)
 
     def _on_bar(self, bar: Bar) -> None:
-        try:
-            self.bars.add_minute_bar(bar)
-        except ValueError:
-            self.stream.diagnostics.invalid_events += 1
+        self.bars.add_minute_bar(bar)
+
+    def _on_raw_event(
+        self,
+        event: dict[str, Any],
+        received_at: datetime,
+        disposition: str,
+    ) -> None:
+        self.recorder.record_raw(
+            event,
+            received_at=received_at,
+            disposition=disposition,
+        )
+
+    def _on_stream_system(
+        self,
+        event_type: str,
+        payload: dict[str, Any],
+        occurred_at: datetime,
+    ) -> None:
+        self.recorder.record_system(
+            event_type,
+            payload,
+            occurred_at=occurred_at,
+        )
 
     async def start(self) -> None:
         if self.stream_enabled:
@@ -116,6 +156,15 @@ class DayTradingRuntime:
     async def _session_guard(self) -> None:
         while True:
             self.paper_broker.enforce_no_overnight()
+            if self.recorder.active:
+                self.recorder.record_system(
+                    "heartbeat",
+                    self.stream.health(),
+                )
+                self.recorder.record_system(
+                    "market_clock",
+                    self.clock.snapshot(),
+                )
             await asyncio.sleep(5)
 
     def ensure_quote(self, ticker: str) -> dict | None:
@@ -163,6 +212,7 @@ class DayTradingRuntime:
             "paper_only": True,
             "live_money_enabled": False,
             "recommendations_enabled": False,
+            "research_enabled": self.research_enabled,
             "provider": self.market_provider.status(),
             "alpaca_paper": self.alpaca_paper.status(),
             "stream": stream,

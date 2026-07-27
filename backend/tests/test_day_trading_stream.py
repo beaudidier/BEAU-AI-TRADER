@@ -32,6 +32,7 @@ class DayTradingStreamTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_reconnect_uses_exponential_backoff(self):
         delays: list[float] = []
+        lifecycle = []
 
         async def fake_sleep(delay):
             delays.append(delay)
@@ -41,20 +42,39 @@ class DayTradingStreamTests(unittest.IsolatedAsyncioTestCase):
             secret_key="test",
             websocket_factory=lambda _url: FailingSocket(),
             sleep=fake_sleep,
+            on_system_event=lambda kind, payload, occurred_at: (
+                lifecycle.append((kind, payload, occurred_at))
+            ),
         )
         await manager.run(maximum_attempts=3)
         self.assertEqual(delays, [1, 2])
         self.assertEqual(manager.diagnostics.reconnect_attempts, 3)
         self.assertEqual(manager.diagnostics.state, StreamState.ERROR)
+        self.assertEqual(
+            [event[0] for event in lifecycle],
+            [
+                "stream_disconnected",
+                "stream_reconnect_scheduled",
+                "stream_disconnected",
+                "stream_reconnect_scheduled",
+                "stream_disconnected",
+            ],
+        )
 
     async def test_duplicate_out_of_order_and_incomplete_bar_handling(self):
         trades = []
         bars = []
+        raw_events = []
         manager = AlpacaStreamManager(
             api_key="test",
             secret_key="test",
             on_trade=trades.append,
             on_bar=bars.append,
+            on_raw_event=lambda event, received_at, disposition: (
+                raw_events.append(
+                    (event["T"], received_at, disposition)
+                )
+            ),
         )
         trade = {
             "T": "t",
@@ -88,6 +108,10 @@ class DayTradingStreamTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(manager.diagnostics.duplicate_events, 1)
         self.assertEqual(manager.diagnostics.out_of_order_events, 1)
         self.assertEqual(bars[0].completeness, Completeness.INCOMPLETE)
+        self.assertEqual(
+            [event[2] for event in raw_events],
+            ["accepted", "duplicate", "out_of_order", "accepted"],
+        )
 
     async def test_stale_stream_health(self):
         manager = AlpacaStreamManager(
@@ -101,6 +125,37 @@ class DayTradingStreamTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(health["stale"])
         self.assertEqual(health["state"], "stale")
         self.assertEqual(health["coverage"], "partial-market")
+
+    async def test_handler_validation_failure_is_recorded_as_invalid(self):
+        raw_events = []
+
+        def reject_quote(_quote):
+            raise ValueError("invalid quote")
+
+        manager = AlpacaStreamManager(
+            api_key="test",
+            secret_key="test",
+            on_quote=reject_quote,
+            on_raw_event=lambda event, received_at, disposition: (
+                raw_events.append(disposition)
+            ),
+        )
+        manager.process_message(
+            [
+                {
+                    "T": "q",
+                    "S": "AAPL",
+                    "bp": 101,
+                    "ap": 100,
+                    "bs": 1,
+                    "as": 1,
+                    "t": "2026-07-27T14:30:00Z",
+                }
+            ],
+            received_at=NOW,
+        )
+        self.assertEqual(raw_events, ["invalid"])
+        self.assertEqual(manager.diagnostics.invalid_events, 1)
 
     async def test_sip_metadata_is_swappable_without_consumers_changing(self):
         quotes = []

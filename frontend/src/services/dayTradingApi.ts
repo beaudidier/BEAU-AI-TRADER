@@ -8,6 +8,9 @@ import type {
   PaperAccount,
   PaperOrderInput,
   PaperPositions,
+  RecordingSession,
+  RecordingStatus,
+  ReplayStatus,
   StreamHealth,
 } from "../types/dayTrading";
 
@@ -44,4 +47,27 @@ export const dayTradingApi = {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ enabled }),
   }),
+  recordingStatus: () => request<RecordingStatus>("/day-trading/record/status"),
+  recordingSessions: () => request<{ sessions: RecordingSession[] }>("/day-trading/record/sessions"),
+  startRecording: () => request<RecordingStatus>("/day-trading/record/start", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  }),
+  stopRecording: () => request<RecordingStatus>("/day-trading/record/stop", { method: "POST" }),
+  replayStatus: () => request<ReplayStatus>("/day-trading/replay/status"),
+  replayBars: (ticker: string, timeframe: DayTradingTimeframe) => request<DayTradingBars>(`/day-trading/replay/bars/${encodeURIComponent(ticker)}?timeframe=${timeframe}`),
+  startReplay: (sessionId: string, speed: ReplayStatus["speed"]) => request<ReplayStatus>("/day-trading/replay/start", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_id: sessionId, speed }),
+  }),
+  pauseReplay: () => request<ReplayStatus>("/day-trading/replay/pause", { method: "POST" }),
+  resumeReplay: () => request<ReplayStatus>("/day-trading/replay/resume", { method: "POST" }),
+  seekReplay: (timestamp: string) => request<ReplayStatus>("/day-trading/replay/seek", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ timestamp }),
+  }),
+  resetReplay: () => request<ReplayStatus>("/day-trading/replay/reset", { method: "POST" }),
 };

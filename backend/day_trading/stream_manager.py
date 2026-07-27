@@ -24,6 +24,8 @@ from .models import (
 from .session import as_utc
 
 EventHandler = Callable[[Any], None]
+RawEventHandler = Callable[[dict[str, Any], datetime, str], None]
+SystemEventHandler = Callable[[str, dict[str, Any], datetime], None]
 WebSocketFactory = Callable[[str], AsyncContextManager[Any]]
 Sleep = Callable[[float], Awaitable[None]]
 
@@ -55,6 +57,8 @@ class AlpacaStreamManager:
         on_trade: EventHandler | None = None,
         on_quote: EventHandler | None = None,
         on_bar: EventHandler | None = None,
+        on_raw_event: RawEventHandler | None = None,
+        on_system_event: SystemEventHandler | None = None,
     ):
         if feed not in {"iex", "sip"}:
             raise ValueError("Alpaca feed must be iex or sip.")
@@ -76,6 +80,8 @@ class AlpacaStreamManager:
         self.on_trade = on_trade
         self.on_quote = on_quote
         self.on_bar = on_bar
+        self.on_raw_event = on_raw_event
+        self.on_system_event = on_system_event
         self.diagnostics = StreamDiagnostics(
             state=(
                 StreamState.STOPPED
@@ -143,10 +149,28 @@ class AlpacaStreamManager:
                 )
                 self.diagnostics.reconnect_attempts += 1
                 self.diagnostics.state = StreamState.RECONNECTING
+                if self.on_system_event:
+                    self.on_system_event(
+                        "stream_disconnected",
+                        {
+                            "attempt": attempt,
+                            "error_type": type(error).__name__,
+                        },
+                        datetime.now(timezone.utc),
+                    )
                 if maximum_attempts is not None and attempt >= maximum_attempts:
                     self.diagnostics.state = StreamState.ERROR
                     return
                 backoff = min(2 ** (attempt - 1), self.maximum_backoff)
+                if self.on_system_event:
+                    self.on_system_event(
+                        "stream_reconnect_scheduled",
+                        {
+                            "attempt": attempt + 1,
+                            "backoff_seconds": backoff,
+                        },
+                        datetime.now(timezone.utc),
+                    )
                 await self.sleep(backoff)
 
     async def _connect_once(self) -> None:
@@ -174,6 +198,15 @@ class AlpacaStreamManager:
             self.diagnostics.state = StreamState.CONNECTED
             self.diagnostics.connected_at = now
             self.diagnostics.last_heartbeat_at = now
+            if self.on_system_event:
+                self.on_system_event(
+                    "stream_connected",
+                    {
+                        "feed": self.feed,
+                        "symbols": self.symbols,
+                    },
+                    now,
+                )
             while not self._stop.is_set():
                 try:
                     message = await asyncio.wait_for(
@@ -182,6 +215,16 @@ class AlpacaStreamManager:
                     )
                 except TimeoutError as error:
                     self.diagnostics.state = StreamState.STALE
+                    if self.on_system_event:
+                        self.on_system_event(
+                            "stream_stale",
+                            {
+                                "heartbeat_timeout_seconds": int(
+                                    self.heartbeat_timeout.total_seconds()
+                                )
+                            },
+                            datetime.now(timezone.utc),
+                        )
                     raise TimeoutError("Alpaca stream heartbeat timed out.") from error
                 self.process_message(message)
 
@@ -208,8 +251,10 @@ class AlpacaStreamManager:
                 continue
             kind = str(event.get("T", ""))
             if kind in {"success", "subscription"}:
+                self._observe_raw(event, now, "control")
                 continue
             if kind == "error":
+                self._observe_raw(event, now, "provider_error")
                 self.diagnostics.last_error = str(
                     event.get("msg", "Alpaca stream error.")
                 )
@@ -219,18 +264,22 @@ class AlpacaStreamManager:
                 timestamp = _timestamp(event["t"])
                 ticker = str(event["S"]).upper()
             except (KeyError, TypeError, ValueError):
+                self._observe_raw(event, now, "invalid")
                 self.diagnostics.invalid_events += 1
                 continue
             identity = _event_id(event)
             if identity in self._seen:
+                self._observe_raw(event, now, "duplicate")
                 self.diagnostics.duplicate_events += 1
                 continue
             order_key = (kind, ticker)
             previous = self._last_timestamp.get(order_key)
             if previous and timestamp < previous:
+                self._observe_raw(event, now, "out_of_order")
                 self.diagnostics.out_of_order_events += 1
                 continue
             if timestamp > now + timedelta(seconds=2):
+                self._observe_raw(event, now, "future")
                 self.diagnostics.invalid_events += 1
                 continue
             self._seen.add(identity)
@@ -296,9 +345,23 @@ class AlpacaStreamManager:
                         )
                     )
                 else:
+                    self._observe_raw(event, now, "unsupported")
                     self.diagnostics.invalid_events += 1
+                    continue
             except (KeyError, TypeError, ValueError):
+                self._observe_raw(event, now, "invalid")
                 self.diagnostics.invalid_events += 1
+                continue
+            self._observe_raw(event, now, "accepted")
+
+    def _observe_raw(
+        self,
+        event: dict[str, Any],
+        received_at: datetime,
+        disposition: str,
+    ) -> None:
+        if self.on_raw_event:
+            self.on_raw_event(event, received_at, disposition)
 
     def health(self, *, now: datetime | None = None) -> dict[str, Any]:
         current = as_utc(now or datetime.now(timezone.utc))

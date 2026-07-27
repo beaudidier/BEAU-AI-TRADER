@@ -5,6 +5,7 @@ export type DayTradingStatus = {
   paper_only: true;
   live_money_enabled: false;
   recommendations_enabled: false;
+  research_enabled: boolean;
   provider: {
     provider: string;
     configured: boolean;
@@ -142,4 +143,59 @@ export type PaperOrderInput = {
   limit_price?: number;
   stop_price?: number;
   protective_stop?: number;
+};
+
+export type RecordingSession = {
+  session_id: string;
+  status: string;
+  symbols: string[];
+  source: string;
+  coverage: string;
+  started_at: string;
+  market_date: string;
+  completed_at: string | null;
+  event_count: number;
+  event_counts: Record<string, number>;
+  symbol_counts: Record<string, number>;
+  gaps: Array<Record<string, unknown>>;
+  checksum_sha256: string | null;
+  secrets_present: boolean;
+  blocked_sensitive_events: number;
+};
+
+export type RecordingStatus = Partial<RecordingSession> & {
+  status: string;
+  active: boolean;
+  session_id: string | null;
+  event_count: number;
+};
+
+export type ReplayStatus = {
+  status: string;
+  session_id: string | null;
+  speed: "original" | "10x" | "maximum";
+  cursor: number;
+  total_events: number;
+  progress_percent: number;
+  current_replay_timestamp: string | null;
+  digest_sha256: string;
+  quotes: Record<string, DayTradingQuote>;
+  bars: Record<DayTradingTimeframe, number>;
+  simulated_orders: Array<{
+    id: string;
+    symbol: string;
+    status: string;
+    filled_quantity: number;
+    remaining: number;
+  }>;
+  simulated_fills: Array<{
+    order_id: string;
+    symbol: string;
+    timestamp: string;
+    quantity: number;
+    price: number;
+  }>;
+  error: string | null;
+  paper_only: true;
+  live_order_routing: false;
 };
