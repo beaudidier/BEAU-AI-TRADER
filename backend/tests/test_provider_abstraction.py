@@ -2,7 +2,8 @@ import unittest
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
 from time import sleep
-from unittest.mock import patch
+from unittest.mock import Mock, patch
+from types import SimpleNamespace
 
 import pandas as pd
 
@@ -105,6 +106,49 @@ class ProviderAbstractionTests(unittest.TestCase):
         self.assertEqual(float(result["AAPL"]["Close"].iloc[-1]), 100.5)
         self.assertEqual(float(result["MSFT"]["Close"].iloc[-1]), 200.5)
         self.assertFalse(download.call_args.kwargs["threads"])
+
+    @patch("providers.yahoo_provider.yf.Ticker")
+    def test_yahoo_quote_includes_exchange_price_timestamp(self, ticker):
+        instrument = SimpleNamespace(
+            fast_info={
+                "last_price": 100.0,
+                "previous_close": 99.0,
+                "currency": "USD",
+            },
+            history=lambda **_options: pd.DataFrame(
+                {"Close": [100.5]},
+                index=pd.DatetimeIndex(
+                    ["2026-07-27T10:00:00-04:00"],
+                ),
+            ),
+        )
+        ticker.return_value = instrument
+
+        result = YahooFinanceProvider().get_quote_transparency("aapl")
+
+        self.assertEqual(result["ticker"], "AAPL")
+        self.assertEqual(result["price"], 100.5)
+        self.assertEqual(
+            result["timestamp"],
+            "2026-07-27T14:00:00+00:00",
+        )
+
+    @patch("providers.yahoo_provider.yf.Ticker")
+    def test_existing_quote_path_does_not_request_intraday_history(self, ticker):
+        ticker.return_value = SimpleNamespace(
+            fast_info={
+                "last_price": 100.0,
+                "previous_close": 99.0,
+                "currency": "USD",
+            },
+            history=Mock(side_effect=AssertionError("must not be called")),
+        )
+
+        result = YahooFinanceProvider().get_quote("aapl")
+
+        self.assertEqual(result["price"], 100.0)
+        self.assertNotIn("timestamp", result)
+        ticker.return_value.history.assert_not_called()
 
 
 if __name__ == "__main__":

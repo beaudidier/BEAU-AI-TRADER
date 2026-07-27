@@ -70,6 +70,30 @@ export type StockChartData = {
   latest_timestamp: string;
 };
 
+export type MarketDataLabel = "live" | "delayed" | "unknown";
+
+export type MarketDataTransparency = {
+  ticker: string;
+  provider: string;
+  market_status: "premarket" | "open" | "after-hours" | "closed";
+  market_timezone: string;
+  generated_at: string;
+  current_quote: {
+    label: "indicative current quote";
+    price: number | null;
+    last_price_update_timestamp: string | null;
+    data_label: MarketDataLabel;
+    stale: boolean;
+  };
+  validated_daily_signal: {
+    label: "validated daily signal";
+    latest_completed_candle_timestamp: string | null;
+    data_label: MarketDataLabel;
+    stale: boolean;
+  };
+  stale_data_warning: string | null;
+};
+
 export type TradePlan = {
   ticker: string;
   signal_price: number;
