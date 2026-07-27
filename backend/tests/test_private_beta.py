@@ -11,6 +11,7 @@ from saas.auth import CurrentUser, _require_private_beta_access
 from saas.router import (
     BetaFeedbackCreate,
     ProfessionalSignalReviewCreate,
+    _global_forward_validation_runs,
     build_private_beta_readiness,
     create_beta_feedback,
     list_beta_feedback,
@@ -23,6 +24,12 @@ MIGRATION = (
     / "supabase"
     / "migrations"
     / "202607250014_professional_trader_private_beta.sql"
+)
+RUNNER_STATUS_MIGRATION = (
+    ROOT
+    / "supabase"
+    / "migrations"
+    / "202607270001_private_beta_global_runner_status.sql"
 )
 
 
@@ -281,6 +288,39 @@ class PrivateBetaTests(unittest.TestCase):
             result["message"],
             "The latest price timestamp needs review.",
         )
+
+    def test_private_beta_members_receive_sanitized_global_runner_status(self):
+        class RpcClient:
+            def rpc(self, name):
+                self.name = name
+                return self
+
+            def execute(self):
+                return SimpleNamespace(
+                    data=[
+                        {
+                            "status": "success",
+                            "provider_health": "healthy",
+                            "completion_percentage": 99.4,
+                        }
+                    ]
+                )
+
+        client = RpcClient()
+        user = CurrentUser("tester-1", "tester@example.com", "token")
+        with patch("saas.router._client", return_value=client):
+            rows = _global_forward_validation_runs(user)
+        self.assertEqual(client.name, "private_beta_runner_runs")
+        self.assertEqual(rows[0]["completion_percentage"], 99.4)
+
+    def test_global_runner_status_migration_does_not_expose_user_records(self):
+        migration = RUNNER_STATUS_MIGRATION.read_text()
+        self.assertIn("security definer", migration.lower())
+        self.assertIn("membership.user_id = auth.uid()", migration)
+        self.assertIn("membership.active", migration)
+        self.assertNotIn("runs.user_id,", migration)
+        self.assertNotIn("paper_trades", migration)
+        self.assertNotIn("forward_validation_signals", migration)
 
 
 if __name__ == "__main__":

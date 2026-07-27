@@ -577,6 +577,17 @@ class ForwardValidationRunnerTests(unittest.TestCase):
         self.assertEqual(health["health"], "failed")
         self.assertEqual(health["last_successful_run"]["status"], "success")
 
+    def test_runner_health_uses_bundled_replay_summary_in_deployment(self):
+        missing = Path("/private/tmp/missing-production-path-replay.json")
+        with patch("forward_validation.runner.REPLAY_ARTIFACT", missing):
+            health = runner_health([], self.now)
+        self.assertEqual(health["latest_replay"]["health"], "healthy")
+        self.assertEqual(
+            health["latest_replay"]["completion_percentage"],
+            99.4,
+        )
+        self.assertEqual(health["latest_replay"]["signals_found"], 12)
+
     def test_sp500_is_default_and_demo_is_explicit_smoke_universe(self):
         with patch.dict("os.environ", {}, clear=True):
             self.assertEqual(len(configured_universe()), 503)

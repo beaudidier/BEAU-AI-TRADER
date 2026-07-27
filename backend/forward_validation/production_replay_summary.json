@@ -1,0 +1,29 @@
+{
+  "replay_date": "2026-07-23",
+  "summary": {
+    "requested_count": 503,
+    "completed_count": 500,
+    "eligible_count": 500,
+    "completed_eligible_count": 500,
+    "excluded_symbols": {
+      "FDXF": {
+        "status": "insufficient_history",
+        "reason": "40 completed daily candles are available; the frozen strategy requires at least 200."
+      },
+      "HONA": {
+        "status": "insufficient_history",
+        "reason": "27 completed daily candles are available; the frozen strategy requires at least 200."
+      },
+      "Q": {
+        "status": "insufficient_history",
+        "reason": "185 completed daily candles are available; the frozen strategy requires at least 200."
+      }
+    },
+    "genuine_failures": {},
+    "completion_percentage": 99.4,
+    "workflow_health": "healthy",
+    "signals_found": 12,
+    "runtime_seconds": 7.266,
+    "last_complete_market_date": "2026-07-23"
+  }
+}

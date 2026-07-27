@@ -219,8 +219,9 @@ def private_beta_status(user: CurrentUser = Depends(get_current_user)):
 
 @router.get("/private-beta/readiness")
 def private_beta_readiness(user: CurrentUser = Depends(get_current_user)):
-    store = _forward_validation_store(user)
-    return build_private_beta_readiness(runner_health(store.list_runs(user.id)))
+    return build_private_beta_readiness(
+        runner_health(_global_forward_validation_runs(user))
+    )
 
 
 @router.get("/feedback")
@@ -473,13 +474,27 @@ def _forward_validation_store(user: CurrentUser) -> SupabaseForwardValidationSto
     return SupabaseForwardValidationStore(_client(user))
 
 
-def _forward_validation_dashboard(store: SupabaseForwardValidationStore, user_id: str) -> dict[str, Any]:
+def _global_forward_validation_runs(user: CurrentUser) -> list[dict[str, Any]]:
+    return _data(
+        _client(user)
+        .rpc("private_beta_runner_runs")
+        .execute()
+    )
+
+
+def _forward_validation_dashboard(
+    store: SupabaseForwardValidationStore,
+    user_id: str,
+    runner_runs: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     signals = store.list_signals(user_id)
     outcomes = store.list_outcomes(user_id)
     dashboard = enrich_dashboard(
         build_forward_validation_dashboard(signals, outcomes)
     )
-    dashboard["runner"] = runner_health(store.list_runs(user_id))
+    dashboard["runner"] = runner_health(
+        runner_runs if runner_runs is not None else store.list_runs(user_id)
+    )
     completed = dashboard["metrics"]["total_sample_size"]
     dashboard["sample_progress"] = {
         "completed": completed,
@@ -502,7 +517,11 @@ def _forward_validation_dashboard(store: SupabaseForwardValidationStore, user_id
 def get_forward_validation_dashboard(user: CurrentUser = Depends(get_current_user)):
     """Return immutable signals, paper outcomes, and frozen-strategy approval metrics."""
 
-    return _forward_validation_dashboard(_forward_validation_store(user), user.id)
+    return _forward_validation_dashboard(
+        _forward_validation_store(user),
+        user.id,
+        _global_forward_validation_runs(user),
+    )
 
 
 @router.post("/forward-validation/run")
@@ -517,7 +536,14 @@ def run_forward_validation(user: CurrentUser = Depends(get_current_user)):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Forward validation could not finish. Stored signals and trades remain unchanged.",
         ) from error
-    return {"run": run, "dashboard": _forward_validation_dashboard(store, user.id)}
+    return {
+        "run": run,
+        "dashboard": _forward_validation_dashboard(
+            store,
+            user.id,
+            _global_forward_validation_runs(user),
+        ),
+    }
 
 
 @router.post("/forward-validation/scan")

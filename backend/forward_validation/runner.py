@@ -59,6 +59,10 @@ REPLAY_ARTIFACT = (
     / "artifacts"
     / "production_path_replay.json"
 )
+BUNDLED_REPLAY_SUMMARY = (
+    Path(__file__).resolve().parent
+    / "production_replay_summary.json"
+)
 
 
 class ForwardValidationStore(Protocol):
@@ -1157,7 +1161,12 @@ def runner_health(runs: list[dict[str, Any]], now: datetime | None = None) -> di
     snapshot = universe_snapshot_diagnostics()
     latest_replay = None
     try:
-        replay = json.loads(REPLAY_ARTIFACT.read_text(encoding="utf-8"))
+        replay_path = (
+            REPLAY_ARTIFACT
+            if REPLAY_ARTIFACT.exists()
+            else BUNDLED_REPLAY_SUMMARY
+        )
+        replay = json.loads(replay_path.read_text(encoding="utf-8"))
         replay_summary = replay["summary"]
         latest_replay = {
             "replay_date": replay["replay_date"],
