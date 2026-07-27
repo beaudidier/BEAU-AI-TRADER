@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import os
 from datetime import datetime, timezone
+from threading import RLock
 from typing import Any
 
 from providers.alpaca_market_provider import (
@@ -39,6 +40,13 @@ class DayTradingRuntime:
             max_spread_percent=float(
                 os.getenv("DAY_TRADING_MAX_SPREAD_PERCENT", "0.25")
             ),
+            orders_enabled=(
+                os.getenv(
+                    "DAY_TRADING_PAPER_ORDERS_ENABLED",
+                    "false",
+                ).lower()
+                == "true"
+            ),
         )
         symbols = [
             value.strip()
@@ -64,6 +72,8 @@ class DayTradingRuntime:
             os.getenv("DAY_TRADING_STREAM_ENABLED", "false").lower() == "true"
         )
         self.last_trade: dict[str, TradeTick] = {}
+        self._bar_history_loaded: set[str] = set()
+        self._bar_history_lock = RLock()
         self._session_guard_task: asyncio.Task | None = None
 
     def _on_trade(self, trade: TradeTick) -> None:
@@ -122,18 +132,22 @@ class DayTradingRuntime:
         return self.quotes.snapshot(ticker)
 
     def ensure_bars(self, ticker: str, timeframe: str) -> dict[str, Any]:
-        current = self.bars.serialized(ticker, timeframe)
-        if current["bars"] or not self.market_provider.configured:
-            return current
-        try:
-            for bar in self.market_provider.minute_bars(ticker):
-                self.bars.add_minute_bar(
-                    bar,
-                    received_at=datetime.now(timezone.utc),
-                )
-        except (AlpacaMarketDataError, ValueError):
-            pass
-        return self.bars.serialized(ticker, timeframe)
+        symbol = ticker.upper()
+        if self.market_provider.configured and symbol not in self._bar_history_loaded:
+            with self._bar_history_lock:
+                if symbol not in self._bar_history_loaded:
+                    try:
+                        for bar in self.market_provider.minute_bars(symbol):
+                            self.bars.add_minute_bar(
+                                bar,
+                                received_at=datetime.now(timezone.utc),
+                                historical_backfill=True,
+                            )
+                    except (AlpacaMarketDataError, ValueError):
+                        pass
+                    else:
+                        self._bar_history_loaded.add(symbol)
+        return self.bars.serialized(symbol, timeframe)
 
     def status(self) -> dict[str, Any]:
         stream = self.stream.health()

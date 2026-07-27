@@ -38,6 +38,7 @@ class PaperBroker:
         *,
         starting_balance: float = 100_000,
         max_spread_percent: float = 0.25,
+        orders_enabled: bool = False,
     ):
         if starting_balance <= 0:
             raise ValueError("Starting paper balance must be positive.")
@@ -51,7 +52,7 @@ class PaperBroker:
         self.closed_positions: list[ClosedPaperPosition] = []
         self._idempotency: dict[str, str] = {}
         self._lock = RLock()
-        self._orders_enabled = True
+        self._orders_enabled = bool(orders_enabled)
         self._trading_day: date | None = None
         self._day_start_equity = self.starting_balance
 

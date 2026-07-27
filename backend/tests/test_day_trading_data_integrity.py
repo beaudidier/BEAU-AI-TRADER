@@ -101,6 +101,27 @@ class DayTradingDataIntegrityTests(unittest.TestCase):
             Completeness.GAP,
         )
 
+    def test_historical_backfill_preserves_live_bar_without_out_of_order_noise(self):
+        aggregator = BarAggregator()
+        base = NOW.replace(minute=0)
+        received = base + timedelta(minutes=10)
+        aggregator.add_minute_bar(
+            minute_bar(10),
+            received_at=received,
+        )
+        for minute in range(10):
+            aggregator.add_minute_bar(
+                minute_bar(minute),
+                received_at=received,
+                historical_backfill=True,
+            )
+
+        values = aggregator.bars("AAPL", "1m")
+        self.assertEqual(len(values), 11)
+        self.assertEqual(values[0].timestamp, base)
+        self.assertEqual(values[-1].timestamp, base + timedelta(minutes=10))
+        self.assertEqual(aggregator.out_of_order, 0)
+
     def test_future_bar_is_rejected(self):
         aggregator = BarAggregator(future_tolerance_seconds=0)
         with self.assertRaises(ValueError):

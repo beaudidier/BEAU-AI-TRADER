@@ -3,12 +3,14 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import ssl
 from collections import deque
 from collections.abc import Awaitable, Callable
 from datetime import datetime, timedelta, timezone
 from typing import Any, AsyncContextManager
 
 import pandas as pd
+import certifi
 import websockets
 
 from .models import (
@@ -30,7 +32,7 @@ def _timestamp(value: Any) -> datetime:
     timestamp = pd.Timestamp(value)
     if timestamp.tzinfo is None:
         timestamp = timestamp.tz_localize("UTC")
-    return timestamp.tz_convert("UTC").to_pydatetime()
+    return timestamp.tz_convert("UTC").to_pydatetime(warn=False)
 
 
 def _event_id(event: dict[str, Any]) -> str:
@@ -62,7 +64,10 @@ class AlpacaStreamManager:
         self.symbols = sorted(
             {symbol.strip().upper() for symbol in symbols or [] if symbol.strip()}
         )
-        self.websocket_factory = websocket_factory or websockets.connect
+        self.ssl_context = ssl.create_default_context(cafile=certifi.where())
+        self.websocket_factory = websocket_factory or (
+            lambda url: websockets.connect(url, ssl=self.ssl_context)
+        )
         self.sleep = sleep
         self.heartbeat_timeout = timedelta(
             seconds=heartbeat_timeout_seconds

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import ssl
 import unittest
 from datetime import datetime, timedelta, timezone
 
@@ -21,6 +22,14 @@ class FailingSocket:
 
 
 class DayTradingStreamTests(unittest.IsolatedAsyncioTestCase):
+    async def test_default_stream_context_verifies_tls(self):
+        manager = AlpacaStreamManager(
+            api_key="test",
+            secret_key="test",
+        )
+        self.assertEqual(manager.ssl_context.verify_mode, ssl.CERT_REQUIRED)
+        self.assertTrue(manager.ssl_context.check_hostname)
+
     async def test_reconnect_uses_exponential_backoff(self):
         delays: list[float] = []
 

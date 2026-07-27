@@ -32,6 +32,7 @@ class BarAggregator:
         bar: Bar,
         *,
         received_at: datetime | None = None,
+        historical_backfill: bool = False,
     ) -> bool:
         now = as_utc(received_at or datetime.now(timezone.utc))
         timestamp = as_utc(bar.timestamp).replace(second=0, microsecond=0)
@@ -54,10 +55,13 @@ class BarAggregator:
             existing = self._minutes[ticker]
             if existing:
                 latest = max(existing)
-                if timestamp < latest:
+                if timestamp < latest and not historical_backfill:
                     self.out_of_order += 1
                     return False
-                if timestamp > latest + timedelta(minutes=1):
+                if (
+                    not historical_backfill
+                    and timestamp > latest + timedelta(minutes=1)
+                ):
                     self.gaps[ticker].append(
                         {
                             "from": (latest + timedelta(minutes=1)).isoformat(),

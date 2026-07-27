@@ -85,7 +85,7 @@ class AlpacaMarketProvider:
             ask=float(value["ap"]),
             bid_size=float(value.get("bs", 0)),
             ask_size=float(value.get("as", 0)),
-            timestamp=timestamp.tz_convert("UTC").to_pydatetime(),
+            timestamp=timestamp.tz_convert("UTC").to_pydatetime(warn=False),
             event_id=f"rest-q-{symbol}-{value['t']}",
             source=f"alpaca_{self.feed}",
             coverage=self.coverage,
@@ -108,7 +108,7 @@ class AlpacaMarketProvider:
             timestamp = pd.Timestamp(value["t"])
             if timestamp.tzinfo is None:
                 timestamp = timestamp.tz_localize("UTC")
-            value_time = timestamp.tz_convert("UTC").to_pydatetime()
+            value_time = timestamp.tz_convert("UTC").to_pydatetime(warn=False)
             result.append(
                 Bar(
                     ticker=symbol,

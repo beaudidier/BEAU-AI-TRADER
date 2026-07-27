@@ -29,6 +29,7 @@ class DayTradingPaperBrokerTests(unittest.TestCase):
             self.clock,
             starting_balance=100_000,
             max_spread_percent=0.25,
+            orders_enabled=True,
         )
 
     def add_quote(
@@ -88,6 +89,16 @@ class DayTradingPaperBrokerTests(unittest.TestCase):
                     key=request.idempotency_key,
                 )
             )
+
+    def test_orders_are_disabled_by_default(self):
+        broker = PaperBroker(
+            self.cache,
+            self.clock,
+            starting_balance=100_000,
+        )
+        self.add_quote()
+        with self.assertRaisesRegex(PaperOrderRejected, "emergency switch"):
+            broker.submit(self.request())
 
     def test_stale_quote_and_excessive_spread_are_blocked(self):
         self.add_quote(timestamp=self.now - timedelta(seconds=16))
