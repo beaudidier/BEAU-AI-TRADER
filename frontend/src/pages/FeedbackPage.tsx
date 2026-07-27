@@ -69,8 +69,11 @@ export default function FeedbackPage({ onNavigate }: FeedbackPageProps) {
   const [reviewStatus, setReviewStatus] = useState<string | null>(null);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [loadingReview, setLoadingReview] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadAttempt, setLoadAttempt] = useState(0);
 
   useEffect(() => {
+    setLoadError(null);
     void Promise.allSettled([
       userApi.feedback(),
       userApi.signalReviews(),
@@ -86,8 +89,16 @@ export default function FeedbackPage({ onNavigate }: FeedbackPageProps) {
           setTicker((current) => current || preferred.ticker);
         }
       }
+      if (
+        feedbackResult.status === "rejected"
+        || reviewResult.status === "rejected"
+      ) {
+        setLoadError(
+          "Previous feedback could not be refreshed. You can still submit new feedback, or retry the history.",
+        );
+      }
     });
-  }, [queryTicker]);
+  }, [loadAttempt, queryTicker]);
 
   const selectedSignal = useMemo(() => signals.find((item) => item.id === selectedSignalId), [selectedSignalId, signals]);
 
@@ -163,6 +174,18 @@ export default function FeedbackPage({ onNavigate }: FeedbackPageProps) {
       <div className="min-w-0 flex-1">
         <Header eyebrow="Professional trader private beta" title="Feedback & Signal Review" />
         <main className="mx-auto max-w-[96rem] space-y-6 p-5 sm:p-8">
+          {loadError && (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100">
+              <span>{loadError}</span>
+              <button
+                type="button"
+                onClick={() => setLoadAttempt((value) => value + 1)}
+                className="rounded-lg border border-amber-300/30 px-3 py-2 font-semibold text-amber-100 hover:bg-amber-300/10"
+              >
+                Retry history
+              </button>
+            </div>
+          )}
           <section className="grid gap-6 2xl:grid-cols-2">
             <form onSubmit={submitFeedback} className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 sm:p-6">
               <h2 className="text-lg font-semibold text-white">Structured product feedback</h2>

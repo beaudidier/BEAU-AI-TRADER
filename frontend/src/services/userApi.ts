@@ -1,26 +1,69 @@
 import { supabase } from "../lib/supabase";
 import { API_BASE_URL } from "../config";
 
+const technicalMessage = /(traceback|exception|stack trace|keyerror|typeerror|supabase|postgrest|fetch failed|internal server error)/i;
+
+function safeApiMessage(
+  status: number,
+  detail: string | { message?: string; capacity_resets_at?: string } | undefined,
+) {
+  if (status === 401) {
+    return "Your session has expired. Please sign in again.";
+  }
+  if (status === 429) {
+    return "Too many requests were made. Please wait a moment and try again.";
+  }
+  if (status >= 500) {
+    return "The service is temporarily unavailable. Your saved data has not been changed.";
+  }
+
+  let message = typeof detail === "string"
+    ? detail
+    : detail?.message ?? "Unable to complete this request.";
+  if (technicalMessage.test(message)) {
+    message = "Unable to complete this request right now. Please try again.";
+  }
+  if (detail && typeof detail === "object" && detail.capacity_resets_at) {
+    const reset = new Date(detail.capacity_resets_at);
+    if (!Number.isNaN(reset.getTime())) {
+      message += ` Capacity resets ${reset.toLocaleString()}.`;
+    }
+  }
+  return message;
+}
+
+function handleExpiredSession() {
+  void supabase?.auth.signOut({ scope: "local" });
+  if (
+    typeof window !== "undefined"
+    && !window.location.pathname.startsWith("/login")
+  ) {
+    window.location.assign("/login?reason=session-expired");
+  }
+}
+
 async function authenticatedFetch(path: string, options: RequestInit = {}) {
   const { data } = await supabase?.auth.getSession() ?? { data: { session: null } };
-  if (!data.session) throw new Error("Your session has expired. Please sign in again.");
+  if (!data.session) {
+    handleExpiredSession();
+    throw new Error("Your session has expired. Please sign in again.");
+  }
   const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session.access_token}`, ...options.headers } });
   if (!response.ok) {
-    let message = "Unable to complete this request.";
+    let detail: string | { message?: string; capacity_resets_at?: string } | undefined;
     try {
-      const payload = await response.json() as { detail?: string | { message?: string; capacity_resets_at?: string } };
-      if (typeof payload.detail === "string") message = payload.detail;
-      if (payload.detail && typeof payload.detail === "object" && payload.detail.message) {
-        message = payload.detail.message;
-        if (payload.detail.capacity_resets_at) {
-          const reset = new Date(payload.detail.capacity_resets_at);
-          if (!Number.isNaN(reset.getTime())) message += ` Capacity resets ${reset.toLocaleString()}.`;
-        }
-      }
+      const payload = await response.json() as {
+        detail?: string | {
+          message?: string;
+          capacity_resets_at?: string;
+        };
+      };
+      detail = payload.detail;
     } catch {
       // Keep the non-technical fallback when the server has no JSON response.
     }
-    throw new Error(message);
+    if (response.status === 401) handleExpiredSession();
+    throw new Error(safeApiMessage(response.status, detail));
   }
   return response.status === 204 ? null : response.json();
 }
@@ -47,6 +90,7 @@ export const userApi = {
   scanForwardValidation: () => authenticatedFetch("/me/forward-validation/scan", { method: "POST" }),
   refreshForwardValidation: () => authenticatedFetch("/me/forward-validation/refresh", { method: "POST" }),
   privateBeta: () => authenticatedFetch("/me/private-beta"),
+  betaReadiness: () => authenticatedFetch("/me/private-beta/readiness"),
   feedback: () => authenticatedFetch("/me/feedback"),
   submitFeedback: (payload: unknown) => authenticatedFetch("/me/feedback", { method: "POST", body: JSON.stringify(payload) }),
   signalReviews: () => authenticatedFetch("/me/signal-reviews"),

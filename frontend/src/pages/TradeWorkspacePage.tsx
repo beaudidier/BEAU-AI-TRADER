@@ -45,6 +45,8 @@ function TradeWorkspacePage({ ticker, onBack, onNavigate }: TradeWorkspacePagePr
   const [opening, setOpening] = useState(false);
   const [paperError, setPaperError] = useState<string | null>(null);
   const [openedTradeId, setOpenedTradeId] = useState<string | null>(null);
+  const [workspaceAttempt, setWorkspaceAttempt] = useState(0);
+  const [chartAttempt, setChartAttempt] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -53,9 +55,33 @@ function TradeWorkspacePage({ ticker, onBack, onNavigate }: TradeWorkspacePagePr
     void getTradePlan(ticker).then((result) => { if (active) setPlan(result); }).catch((error: unknown) => { if (active) setPlanError(error instanceof Error ? error.message : "Unable to load trade plan."); });
     void Promise.all([userApi.paperPortfolio(), userApi.learningDashboard(ticker), userApi.backtests()]).then(([paperData, learningData, backtests]) => { if (!active) return; setPortfolio(paperData as PaperPortfolio); setLearning(learningData as LearningDashboard); setBacktest((backtests as SavedBacktest[]).find((item) => item.ticker === ticker) ?? null); }).catch((error: unknown) => { if (active) setAccountError(error instanceof Error ? error.message : "Unable to load workspace account data."); });
     return () => { active = false; };
+  }, [ticker, workspaceAttempt]);
+
+  useEffect(() => {
+    setChart(null);
   }, [ticker]);
 
-  useEffect(() => { let active = true; setChart(null); setChartError(null); void getStockChart(ticker, timeframe).then((result) => { if (active) setChart(result); }).catch((error: unknown) => { if (active) setChartError(error instanceof Error ? error.message : "Unable to load chart data."); }); return () => { active = false; }; }, [ticker, timeframe]);
+  useEffect(() => { let active = true; setChartError(null); void getStockChart(ticker, timeframe).then((result) => { if (active) setChart(result); }).catch((error: unknown) => { if (active) setChartError(error instanceof Error ? error.message : "Unable to load chart data."); }); return () => { active = false; }; }, [chartAttempt, ticker, timeframe]);
+
+  useEffect(() => {
+    if (
+      workspaceAttempt > 0
+      || (!chartError && !analysisError && !planError && !accountError)
+    ) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => {
+      setWorkspaceAttempt(1);
+      setChartAttempt(1);
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [
+    accountError,
+    analysisError,
+    chartError,
+    planError,
+    workspaceAttempt,
+  ]);
 
   const tickerTrades = useMemo(() => portfolio ? [...portfolio.open_positions, ...portfolio.closed_positions].filter((trade) => trade.ticker === ticker) : [], [portfolio, ticker]);
   const openPosition = tickerTrades.find((trade) => trade.status === "OPEN");

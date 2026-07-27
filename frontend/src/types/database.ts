@@ -32,3 +32,25 @@ export type ProfessionalSignalReview = { id: string; user_id: string; signal_id:
 export type BetaInviteStatus = "active" | "used" | "revoked" | "expired";
 export type BetaInvite = { id: string; status: BetaInviteStatus; created_at: string; expires_at: string; max_uses: number; use_count: number; remaining_uses: number; label: string | null };
 export type CreatedBetaInvite = BetaInvite & { invite_url: string };
+export type PrivateBetaReadiness = {
+  system_status: "operational" | "monitoring" | "degraded" | "waiting";
+  latest_complete_market_date: string | null;
+  latest_scan_time: string | null;
+  market_data_health:
+    | "healthy"
+    | "running"
+    | "degraded"
+    | "failed"
+    | "waiting";
+  scheduler_health:
+    | "on_schedule"
+    | "running"
+    | "attention_required"
+    | "delayed"
+    | "awaiting_first_run";
+  next_scheduled_run: string | null;
+  scan_completion_percentage: number;
+  failed_symbol_count: number;
+  partial_scan: boolean;
+  paper_trading_only_warning: string;
+};

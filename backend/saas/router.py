@@ -122,6 +122,82 @@ def _one(response):
 def _client(user: CurrentUser): return get_user_client(user)
 
 
+def _private_beta_membership(user: CurrentUser) -> dict[str, Any]:
+    return _one(
+        _client(user)
+        .table("private_beta_memberships")
+        .select("role, active, invited_at")
+        .eq("user_id", user.id)
+        .maybe_single()
+        .execute()
+    )
+
+
+def build_private_beta_readiness(runner: dict[str, Any]) -> dict[str, Any]:
+    """Convert runner diagnostics into a small, trader-facing status payload."""
+
+    last_run = runner.get("last_run") or {}
+    latest_replay = runner.get("latest_replay") or {}
+    runner_state = str(runner.get("health") or "waiting").lower()
+    market_data_health = str(
+        latest_replay.get("health")
+        or last_run.get("provider_health")
+        or "waiting"
+    ).lower()
+    completion = float(
+        latest_replay.get("completion_percentage")
+        or last_run.get("completion_percentage")
+        or 0
+    )
+    genuine_failures = (
+        latest_replay.get("genuine_failures")
+        or last_run.get("genuine_failures")
+        or {}
+    )
+    if runner_state == "failed":
+        scheduler_health = "delayed"
+    elif runner_state == "degraded":
+        scheduler_health = "attention_required"
+    elif runner_state == "running":
+        scheduler_health = "running"
+    elif runner_state == "healthy":
+        scheduler_health = "on_schedule"
+    else:
+        scheduler_health = "awaiting_first_run"
+
+    if runner_state == "failed" or market_data_health == "failed":
+        system_status = "degraded"
+    elif runner_state == "degraded" or market_data_health == "degraded":
+        system_status = "monitoring"
+    elif market_data_health == "healthy":
+        system_status = "operational"
+    else:
+        system_status = "waiting"
+
+    return {
+        "system_status": system_status,
+        "latest_complete_market_date": (
+            latest_replay.get("last_complete_market_date")
+            or last_run.get("last_complete_market_date")
+        ),
+        "latest_scan_time": (
+            last_run.get("completed_at")
+            or last_run.get("started_at")
+            or latest_replay.get("replay_date")
+        ),
+        "market_data_health": market_data_health,
+        "scheduler_health": scheduler_health,
+        "next_scheduled_run": runner.get("next_scheduled_run"),
+        "scan_completion_percentage": round(completion, 2),
+        "failed_symbol_count": len(genuine_failures),
+        "partial_scan": 0 < completion < 95,
+        "paper_trading_only_warning": (
+            "Private beta. Paper trading and forward validation only. "
+            "No live-money execution."
+        ),
+    }
+
+
 @router.get("")
 def me(user: CurrentUser = Depends(get_current_user)):
     client = _client(user)
@@ -132,16 +208,8 @@ def me(user: CurrentUser = Depends(get_current_user)):
 
 @router.get("/private-beta")
 def private_beta_status(user: CurrentUser = Depends(get_current_user)):
-    membership = _one(
-        _client(user)
-        .table("private_beta_memberships")
-        .select("role, active, invited_at")
-        .eq("user_id", user.id)
-        .maybe_single()
-        .execute()
-    )
     return {
-        "access": membership,
+        "access": _private_beta_membership(user),
         "notice": (
             "Private beta. Paper trading and forward validation only. "
             "No live-money execution."
@@ -149,17 +217,25 @@ def private_beta_status(user: CurrentUser = Depends(get_current_user)):
     }
 
 
+@router.get("/private-beta/readiness")
+def private_beta_readiness(user: CurrentUser = Depends(get_current_user)):
+    store = _forward_validation_store(user)
+    return build_private_beta_readiness(runner_health(store.list_runs(user.id)))
+
+
 @router.get("/feedback")
 def list_beta_feedback(user: CurrentUser = Depends(get_current_user)):
-    return _data(
+    query = (
         _client(user)
         .table("beta_feedback")
         .select("*")
-        .eq("user_id", user.id)
         .order("created_at", desc=True)
         .limit(50)
-        .execute()
     )
+    membership = _private_beta_membership(user)
+    if membership.get("role") not in {"OWNER", "ADMIN"}:
+        query = query.eq("user_id", user.id)
+    return _data(query.execute())
 
 
 @router.post("/feedback", status_code=status.HTTP_201_CREATED)
@@ -184,15 +260,17 @@ def create_beta_feedback(
 
 @router.get("/signal-reviews")
 def list_signal_reviews(user: CurrentUser = Depends(get_current_user)):
-    return _data(
+    query = (
         _client(user)
         .table("professional_signal_reviews")
         .select("*")
-        .eq("user_id", user.id)
         .order("created_at", desc=True)
         .limit(50)
-        .execute()
     )
+    membership = _private_beta_membership(user)
+    if membership.get("role") not in {"OWNER", "ADMIN"}:
+        query = query.eq("user_id", user.id)
+    return _data(query.execute())
 
 
 @router.post("/signal-reviews", status_code=status.HTTP_201_CREATED)

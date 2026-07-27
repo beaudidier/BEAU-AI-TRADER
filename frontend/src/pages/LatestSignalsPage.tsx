@@ -53,6 +53,7 @@ export default function LatestSignalsPage({ onNavigate }: LatestSignalsPageProps
 
           {loading && !summary && <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-8 text-center text-sm text-slate-400">Auditing latest replay signals…</div>}
           {error && !summary && <div className="rounded-xl border border-rose-400/20 bg-rose-400/10 p-6 text-center"><p className="text-sm text-rose-100">{error}</p><button type="button" onClick={() => setAttempt((value) => value + 1)} className="mt-4 rounded-lg border border-rose-300/40 px-4 py-2 text-sm font-semibold text-rose-100 transition hover:bg-rose-300/10">Try again</button></div>}
+          {error && summary && <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100"><span>The refresh failed. The previous verified signal set remains visible.</span><button type="button" onClick={() => setAttempt((value) => value + 1)} className="font-semibold text-amber-100 hover:text-white">Retry refresh</button></div>}
 
           {summary && <>
             <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -60,6 +61,7 @@ export default function LatestSignalsPage({ onNavigate }: LatestSignalsPageProps
             </section>
             <SectorConcentrationBanner concentration={summary.concentration} />
             <LatestSignalMethodology summary={summary} />
+            {summary.signals.length === 0 && <section className="rounded-xl border border-slate-800 bg-slate-900/50 p-8 text-center"><h2 className="font-semibold text-white">No valid signals today</h2><p className="mt-2 text-sm text-slate-400">The frozen strategy found no setup that passed every rule. No action is required.</p></section>}
             <section className="space-y-6">
               {summary.signals.map((signal) => <LatestSignalCard key={signal.id} signal={signal} />)}
             </section>

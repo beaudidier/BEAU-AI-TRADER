@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import AdviceBadge from "../components/AdviceBadge";
 import { BriefingSection } from "../components/BriefingSection";
 import Header from "../components/Header";
+import PrivateBetaStatusPanel from "../components/PrivateBetaStatusPanel";
 import ScanButton from "../components/ScanButton";
 import ScoreBadge from "../components/ScoreBadge";
 import Sidebar, { type AppPage } from "../components/Sidebar";
@@ -11,6 +12,8 @@ import StockTable from "../components/StockTable";
 import StrategySelector from "../components/StrategySelector";
 import { WatchlistManager } from "../components/WatchlistManager";
 import { createScanJob, getDailyBriefing, getScanJob, getScanJobResults, getStrategies, scanMarket } from "../services/api";
+import { userApi } from "../services/userApi";
+import type { PrivateBetaReadiness } from "../types/database";
 import type { DailyBriefing, ScanJob, Stock, TradingStrategy } from "../types/stock";
 
 type DashboardProps = {
@@ -151,6 +154,9 @@ function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: Dash
   const [activeScan, setActiveScan] = useState<ScanJob | null>(null);
   const [strategies, setStrategies] = useState<TradingStrategy[]>([]);
   const [selectedStrategyId, setSelectedStrategyId] = useState<TradingStrategy["id"]>("swing_trading");
+  const [betaStatus, setBetaStatus] = useState<PrivateBetaReadiness | null>(null);
+  const [betaStatusLoading, setBetaStatusLoading] = useState(true);
+  const [betaStatusError, setBetaStatusError] = useState<string | null>(null);
 
   const refreshScanner = useCallback(async () => {
     setScannerLoading(true);
@@ -177,6 +183,24 @@ function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: Dash
     }
   }, []);
 
+  const refreshBetaStatus = useCallback(async () => {
+    setBetaStatusLoading(true);
+    setBetaStatusError(null);
+    try {
+      setBetaStatus(
+        await retryRequest(
+          () => userApi.betaReadiness() as Promise<PrivateBetaReadiness>,
+        ),
+      );
+    } catch {
+      setBetaStatusError(
+        "System status could not be refreshed. Previous valid information remains available.",
+      );
+    } finally {
+      setBetaStatusLoading(false);
+    }
+  }, []);
+
   const startSelectedScan = useCallback(async () => {
     const [market, selectedUniverse] = universe.split(":") as ["stocks" | "crypto", string];
     if (market === "stocks" && selectedUniverse === "demo") {
@@ -186,7 +210,6 @@ function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: Dash
     }
     setScannerLoading(true);
     setScannerError(null);
-    setStocks([]);
     try {
       const job = await createScanJob(market, selectedUniverse);
       setActiveScan(job);
@@ -222,8 +245,12 @@ function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: Dash
   }, [activeScan]);
 
   const refreshDashboard = useCallback(async () => {
-    await Promise.all([refreshScanner(), refreshBriefing()]);
-  }, [refreshBriefing, refreshScanner]);
+    await Promise.all([
+      refreshScanner(),
+      refreshBriefing(),
+      refreshBetaStatus(),
+    ]);
+  }, [refreshBetaStatus, refreshBriefing, refreshScanner]);
 
   useEffect(() => {
     void refreshDashboard();
@@ -262,6 +289,14 @@ function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: Dash
         <Header eyebrow="Trading desk" title="What should I buy today?" />
         <main id="scanner" className="mx-auto max-w-7xl p-5 sm:p-8">
           <StrategySelector strategies={strategies} selectedId={selectedStrategyId} onSelect={setSelectedStrategyId} />
+          <div className="mt-4">
+            <PrivateBetaStatusPanel
+              status={betaStatus}
+              loading={betaStatusLoading}
+              error={betaStatusError}
+              onRetry={() => void refreshBetaStatus()}
+            />
+          </div>
           <div className="mt-4 flex justify-end">
             <ScanButton loading={scannerLoading || briefingLoading} onClick={() => void refreshDashboard()} />
           </div>

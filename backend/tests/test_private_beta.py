@@ -8,7 +8,13 @@ from pydantic import ValidationError
 
 import monitoring
 from saas.auth import CurrentUser, _require_private_beta_access
-from saas.router import BetaFeedbackCreate, ProfessionalSignalReviewCreate
+from saas.router import (
+    BetaFeedbackCreate,
+    ProfessionalSignalReviewCreate,
+    build_private_beta_readiness,
+    create_beta_feedback,
+    list_beta_feedback,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -172,6 +178,109 @@ class PrivateBetaTests(unittest.TestCase):
         ).read_text()
         self.assertIn("if: failure()", workflow)
         self.assertIn("python -m monitoring scheduler-failure", workflow)
+
+    def test_private_beta_readiness_reports_partial_scan_and_scheduler_delay(self):
+        result = build_private_beta_readiness(
+            {
+                "health": "failed",
+                "next_scheduled_run": "2026-07-27T22:30:00+00:00",
+                "last_run": {
+                    "completed_at": "2026-07-25T22:45:00+00:00",
+                    "last_complete_market_date": "2026-07-24",
+                    "completion_percentage": 89.5,
+                    "provider_health": "failed",
+                    "genuine_failures": {
+                        "ABC": {"status": "timeout"},
+                        "XYZ": {"status": "provider_failure"},
+                    },
+                },
+                "latest_replay": None,
+            }
+        )
+        self.assertEqual(result["system_status"], "degraded")
+        self.assertEqual(result["scheduler_health"], "delayed")
+        self.assertTrue(result["partial_scan"])
+        self.assertEqual(result["failed_symbol_count"], 2)
+        self.assertEqual(result["latest_complete_market_date"], "2026-07-24")
+
+    def test_owner_can_list_all_feedback_while_tester_is_scoped(self):
+        class FeedbackQuery:
+            def __init__(self):
+                self.eq_calls = []
+
+            def table(self, _name):
+                return self
+
+            def select(self, _columns):
+                return self
+
+            def order(self, _column, desc=False):
+                return self
+
+            def limit(self, _value):
+                return self
+
+            def eq(self, field, value):
+                self.eq_calls.append((field, value))
+                return self
+
+            def execute(self):
+                return SimpleNamespace(data=[{"id": "feedback-1"}])
+
+        user = CurrentUser("user-1", "tester@example.com", "token")
+        owner_query = FeedbackQuery()
+        with (
+            patch("saas.router._client", return_value=owner_query),
+            patch(
+                "saas.router._private_beta_membership",
+                return_value={"role": "OWNER", "active": True},
+            ),
+        ):
+            self.assertEqual(list_beta_feedback(user), [{"id": "feedback-1"}])
+        self.assertEqual(owner_query.eq_calls, [])
+
+        tester_query = FeedbackQuery()
+        with (
+            patch("saas.router._client", return_value=tester_query),
+            patch(
+                "saas.router._private_beta_membership",
+                return_value={"role": "TESTER", "active": True},
+            ),
+        ):
+            self.assertEqual(list_beta_feedback(user), [{"id": "feedback-1"}])
+        self.assertEqual(tester_query.eq_calls, [("user_id", "user-1")])
+
+    def test_feedback_is_stored_for_the_authenticated_tester(self):
+        inserted = []
+
+        class InsertQuery:
+            def table(self, _name):
+                return self
+
+            def insert(self, values):
+                inserted.append(values)
+                return self
+
+            def execute(self):
+                return SimpleNamespace(data=[{"id": "feedback-1", **inserted[0]}])
+
+        user = CurrentUser("tester-1", "tester@example.com", "token")
+        payload = BetaFeedbackCreate(
+            page="  Trade Workspace  ",
+            ticker="nvda",
+            category="data quality",
+            severity="high",
+            message="  The latest price timestamp needs review.  ",
+        )
+        with patch("saas.router._client", return_value=InsertQuery()):
+            result = create_beta_feedback(payload, user)
+        self.assertEqual(result["user_id"], "tester-1")
+        self.assertEqual(result["page"], "Trade Workspace")
+        self.assertEqual(result["ticker"], "NVDA")
+        self.assertEqual(
+            result["message"],
+            "The latest price timestamp needs review.",
+        )
 
 
 if __name__ == "__main__":

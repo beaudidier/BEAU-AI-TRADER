@@ -96,6 +96,14 @@ export default function EvidencePage({ onNavigate }: EvidencePageProps) {
               </button>
             </div>
           )}
+          {error && summary && (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100">
+              <span>The refresh failed. The previous audited evidence remains visible.</span>
+              <button type="button" onClick={() => setAttempt((value) => value + 1)} className="font-semibold text-amber-100 hover:text-white">
+                Retry refresh
+              </button>
+            </div>
+          )}
 
           {summary && (
             <>

@@ -1,0 +1,39 @@
+name: Private Beta Production Smoke
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "scripts/production_smoke.py"
+      - ".github/workflows/production-smoke.yml"
+  schedule:
+    - cron: "0 20 * * 0"
+    - cron: "0 6 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: private-beta-production-smoke
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Verify private-beta production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out frozen production source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Run secret-free production smoke checks
+        run: python scripts/production_smoke.py
