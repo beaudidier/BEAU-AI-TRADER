@@ -1,9 +1,12 @@
-export type AppPage = "dashboard" | "backtesting" | "paper-trading" | "forward-validation" | "latest-signals" | "learning" | "validation" | "evidence" | "beta-guide" | "feedback" | "beta-invites";
+import { DAY_TRADING_LAB_ENABLED } from "../config";
+
+export type AppPage = "dashboard" | "backtesting" | "paper-trading" | "day-trading-lab" | "forward-validation" | "latest-signals" | "learning" | "validation" | "evidence" | "beta-guide" | "feedback" | "beta-invites";
 
 const navigationItems: Array<[string, string, AppPage]> = [
   ["▦", "Dashboard", "dashboard"],
   ["◫", "Backtesting", "backtesting"],
   ["◉", "Paper trading", "paper-trading"],
+  ...(DAY_TRADING_LAB_ENABLED ? [["⌁", "Day trading lab", "day-trading-lab"] as [string, string, AppPage]] : []),
   ["↗", "Forward validation", "forward-validation"],
   ["◆", "Latest signals", "latest-signals"],
   ["◌", "Learning", "learning"],
