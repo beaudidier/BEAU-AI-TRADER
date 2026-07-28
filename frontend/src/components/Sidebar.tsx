@@ -28,7 +28,7 @@ function Sidebar({ activePage = "dashboard", onNavigate }: SidebarProps) {
       </div>
       <nav className="space-y-1" aria-label="Primary navigation">
         {navigationItems.map(([icon, label, page]) => (
-          <button key={label} type="button" onClick={() => onNavigate?.(page)} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition ${activePage === page ? "bg-cyan-400/10 text-cyan-300" : "text-slate-400 hover:bg-slate-900 hover:text-white"}`}>
+          <button key={label} type="button" data-tour={`nav-${page}`} onClick={() => onNavigate?.(page)} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition ${activePage === page ? "bg-cyan-400/10 text-cyan-300" : "text-slate-400 hover:bg-slate-900 hover:text-white"}`}>
             <span aria-hidden="true">{icon}</span>{label}
           </button>
         ))}

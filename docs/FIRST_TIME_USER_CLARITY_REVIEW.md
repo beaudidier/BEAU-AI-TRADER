@@ -83,3 +83,37 @@ At 390px, these answers remain in a single vertical reading order with no horizo
 - Added the three-step beginner flow.
 - Added current, entry, stop, TP1, TP2, and signal markers to the live workspace chart, with hover/tap explanations.
 - Preserved all existing advanced scanner, evidence, validation, and portfolio functionality.
+
+## Guided first-login product tour
+
+Tour version 1 adds an 18-step, plain-language walkthrough that starts on the first authenticated dashboard visit. It covers the dashboard, best setup, status, current price, planned entry, stop, both targets, planned maximum loss, next action, Trade Workspace, Paper Trading, portfolio risk, Historical Evidence, Forward Validation, portfolio/journal learning, Feedback, and the Beginner/Advanced switch.
+
+The tour highlights only visible DOM targets, dims the remaining screen, scrolls targets into view, and skips missing or hidden elements. The best-setup step falls back to the no-setup/data-unavailable state. On viewports below 640px the dialog is fixed above the bottom edge with 44px minimum controls; desktop placement follows the highlighted element.
+
+### Persistence
+
+Progress is namespaced by authenticated user ID and stores:
+
+- `tour_started_at`
+- `current_step`
+- `completed_at`
+- `skipped_at`
+- `tour_version`
+
+Closing with Escape or the close button keeps the current step for the next browser session. Skip prevents automatic restart, while “Restart product tour” in Profile resets progress deliberately. A changed `tour_version` is treated as a fresh major-product tour. Completed and skipped tours do not reopen automatically for the same version.
+
+### Accessibility and safety
+
+- Dialog semantics use `role="dialog"`, `aria-modal`, labelled title, and described content.
+- Keyboard navigation supports Arrow Right/Enter, Arrow Left, Escape, and a trapped Tab sequence.
+- Focus returns to the previously focused control after closing.
+- Mobile controls meet a 44px minimum height.
+- Highlighting uses border, position, text, and screen-reader labels rather than colour alone.
+- Safety copy states that waiting is not buying, confidence is not probability, paper trading uses no real money, plan levels are not guarantees, and setups can expire or invalidate.
+
+### Tour verification
+
+- Frontend state tests cover first start, completed second login, skip, resume, next/back, version reset, restart, and user isolation.
+- Guided-flow tests cover unavailable targets, the 390px breakpoint, keyboard mapping, all 18 required concepts, and required safety phrases.
+- Production build and lint pass.
+- The 390px production shell has no horizontal overflow. Full authenticated tour rendering still requires a signed-in preview session; the automated mobile behavior test verifies bottom placement selection at 390px.

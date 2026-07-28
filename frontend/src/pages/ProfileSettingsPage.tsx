@@ -1,7 +1,67 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
+import { useAuth } from "../hooks/useAuth";
 import { userApi } from "../services/userApi";
+import { restartTour, tourStorageKey } from "../tour/productTour";
 
-export default function ProfileSettingsPage() { const [profile, setProfile] = useState<Record<string, string>>({}); const [settings, setSettings] = useState<Record<string, string | number>>({}); const [message, setMessage] = useState<string | null>(null); useEffect(() => { void userApi.me().then((data) => setProfile(data.profile ?? {})); void userApi.settings().then((data) => setSettings(data ?? {})); }, []); async function save(event: React.FormEvent) { event.preventDefault(); await userApi.profile(profile); await userApi.updateSettings(settings); setMessage("Settings saved."); } return <div className="min-h-screen bg-slate-950 text-slate-100 lg:flex"><Sidebar /><div className="min-w-0 flex-1"><Header eyebrow="Account" title="Profile settings" /><main className="mx-auto max-w-3xl p-5 sm:p-8"><form onSubmit={save} className="space-y-6"><section className="rounded-xl border border-slate-800 bg-slate-900/40 p-5"><h2 className="font-semibold">Profile</h2><div className="mt-4 grid gap-4 sm:grid-cols-2"><label className="text-sm text-slate-400">Display name<input value={String(profile.display_name ?? "")} onChange={(event) => setProfile({ ...profile, display_name: event.target.value })} className="mt-2 h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-white" /></label><label className="text-sm text-slate-400">Timezone<input value={String(profile.timezone ?? "UTC")} onChange={(event) => setProfile({ ...profile, timezone: event.target.value })} className="mt-2 h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-white" /></label></div></section><section className="rounded-xl border border-slate-800 bg-slate-900/40 p-5"><h2 className="font-semibold">Trading preferences</h2><div className="mt-4 grid gap-4 sm:grid-cols-2"><label className="text-sm text-slate-400">Default account size<input type="number" value={Number(settings.default_account_size ?? 10000)} onChange={(event) => setSettings({ ...settings, default_account_size: Number(event.target.value) })} className="mt-2 h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-white" /></label><label className="text-sm text-slate-400">Default risk %<input type="number" value={Number(settings.default_risk_percent ?? 1)} onChange={(event) => setSettings({ ...settings, default_risk_percent: Number(event.target.value) })} className="mt-2 h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-white" /></label></div></section>{message && <p className="text-sm text-emerald-200">{message}</p>}<button className="rounded-lg bg-cyan-400 px-4 py-2 font-semibold text-slate-950">Save settings</button><Link to="/dashboard" className="ml-4 text-sm text-cyan-300">Back to dashboard</Link></form></main></div></div>; }
+export default function ProfileSettingsPage() {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<Record<string, string>>({});
+  const [settings, setSettings] = useState<Record<string, string | number>>({});
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    void userApi.me().then((data) => setProfile(data.profile ?? {}));
+    void userApi.settings().then((data) => setSettings(data ?? {}));
+  }, []);
+
+  async function save(event: React.FormEvent) {
+    event.preventDefault();
+    await userApi.profile(profile);
+    await userApi.updateSettings(settings);
+    setMessage("Settings saved.");
+  }
+
+  function restartProductTour() {
+    if (user) window.localStorage.setItem(tourStorageKey(user.id), JSON.stringify(restartTour()));
+    window.location.assign("/dashboard");
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 lg:flex">
+      <Sidebar />
+      <div className="min-w-0 flex-1">
+        <Header eyebrow="Account" title="Profile settings" />
+        <main className="mx-auto max-w-3xl p-5 sm:p-8">
+          <form onSubmit={save} className="space-y-6">
+            <section className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+              <h2 className="font-semibold">Profile</h2>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <label className="text-sm text-slate-400">Display name<input value={String(profile.display_name ?? "")} onChange={(event) => setProfile({ ...profile, display_name: event.target.value })} className="mt-2 h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-white" /></label>
+                <label className="text-sm text-slate-400">Timezone<input value={String(profile.timezone ?? "UTC")} onChange={(event) => setProfile({ ...profile, timezone: event.target.value })} className="mt-2 h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-white" /></label>
+              </div>
+            </section>
+            <section className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+              <h2 className="font-semibold">Trading preferences</h2>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <label className="text-sm text-slate-400">Default account size<input type="number" value={Number(settings.default_account_size ?? 10000)} onChange={(event) => setSettings({ ...settings, default_account_size: Number(event.target.value) })} className="mt-2 h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-white" /></label>
+                <label className="text-sm text-slate-400">Default risk %<input type="number" value={Number(settings.default_risk_percent ?? 1)} onChange={(event) => setSettings({ ...settings, default_risk_percent: Number(event.target.value) })} className="mt-2 h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-white" /></label>
+              </div>
+            </section>
+            <section className="rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-5">
+              <h2 className="font-semibold text-white">Product help</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-300">Replay the beginner walkthrough at any time. Restarting does not change your trades or settings.</p>
+              <button type="button" onClick={restartProductTour} className="mt-4 min-h-11 rounded-lg border border-cyan-300/40 px-4 text-sm font-semibold text-cyan-200 hover:bg-cyan-300/10">Restart product tour</button>
+            </section>
+            {message && <p className="text-sm text-emerald-200">{message}</p>}
+            <button className="min-h-11 rounded-lg bg-cyan-400 px-4 py-2 font-semibold text-slate-950">Save settings</button>
+            <Link to="/dashboard" className="ml-4 text-sm text-cyan-300">Back to dashboard</Link>
+          </form>
+        </main>
+      </div>
+    </div>
+  );
+}

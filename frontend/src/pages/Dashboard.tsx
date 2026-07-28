@@ -289,10 +289,10 @@ function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: Dash
       <Sidebar onNavigate={onNavigate} />
       <div className="min-w-0 flex-1">
         <Header eyebrow="Swing trading · paper-first" title={beginnerMode ? "Your next clear step" : "Trading dashboard"} />
-        <main id="scanner" className="mx-auto max-w-7xl p-5 sm:p-8">
+        <main id="scanner" data-tour="dashboard-overview" className="mx-auto max-w-7xl p-5 sm:p-8">
           <div className="mb-5 flex items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-900/60 p-3">
             <div><p className="text-sm font-semibold text-white">{beginnerMode ? "Beginner Mode" : "Advanced Mode"}</p><p className="text-xs text-slate-400">{beginnerMode ? "One setup, plain language, risk first." : "Scanner, scores, and technical detail."}</p></div>
-            <button type="button" onClick={() => setBeginnerMode((current) => { const next = !current; window.localStorage.setItem("beau-display-mode", next ? "beginner" : "advanced"); return next; })} className="rounded-lg border border-cyan-400/30 px-3 py-2 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/10">Switch to {beginnerMode ? "Advanced" : "Beginner"}</button>
+            <button type="button" data-tour="mode-switch" onClick={() => setBeginnerMode((current) => { const next = !current; window.localStorage.setItem("beau-display-mode", next ? "beginner" : "advanced"); return next; })} className="min-h-11 rounded-lg border border-cyan-400/30 px-3 py-2 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/10">Switch to {beginnerMode ? "Advanced" : "Beginner"}</button>
           </div>
           {beginnerMode ? <BeginnerSetup /> : <>
           <StrategySelector strategies={strategies} selectedId={selectedStrategyId} onSelect={setSelectedStrategyId} />

@@ -24,6 +24,7 @@ import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import type { AppPage } from "./components/Sidebar";
 import FrontendMonitoring from "./components/FrontendMonitoring";
 import PrivateBetaBanner from "./components/PrivateBetaBanner";
+import ProductTour from "./components/ProductTour";
 
 function ProtectedApplication() {
   const routerNavigate = useNavigate();
@@ -70,7 +71,7 @@ function ProtectedApplication() {
 
   if (page === "validation") return <ValidationPage onNavigate={navigatePage} />;
 
-  return <Dashboard searchTerm={dashboardSearch} onSearchChange={setDashboardSearch} onOpenChart={(stock) => routerNavigate(`/workspace/${stock.ticker}`)} onNavigate={navigatePage} />;
+  return <><ProductTour /><Dashboard searchTerm={dashboardSearch} onSearchChange={setDashboardSearch} onOpenChart={(stock) => routerNavigate(`/workspace/${stock.ticker}`)} onNavigate={navigatePage} /></>;
 }
 
 function App() {
