@@ -29,3 +29,11 @@ test("filters, three exports and responsive layouts are present", () => {
   assert.match(page, /sm:grid-cols-2/);
   assert.match(page, /overflow-x-auto/);
 });
+
+test("CSV values are escaped and spreadsheet formulas are neutralized", () => {
+  assert.match(page, /\^\[\\t\\r \]\*\[=\+\\-@\]/);
+  assert.match(page, /replaceAll\('"', '""'\)/);
+  assert.match(page, /map\(safeCsvValue\)/);
+  assert.match(page, /const rows = useMemo\(\(\) => filterJournalTrades/);
+  assert.match(page, /exportTradesCsv\("full-journal\.csv", rows\)/);
+});
