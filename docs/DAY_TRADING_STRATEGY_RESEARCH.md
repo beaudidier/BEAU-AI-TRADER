@@ -257,11 +257,10 @@ A symbol-session is eligible only when all of the following hold:
   coverage, disposition, and payload are retained.
 - The recording includes the frozen symbol universe and feed/coverage label.
 
-For a performance study rather than a plumbing check, require at minimum 30
-eligible regular sessions per feed stratum and at least 30 completed trades per
-strategy side (long and short reported separately). These are reporting
-thresholds, not claims of statistical sufficiency. If they are not met, report
-descriptive counts only and make no comparative conclusion.
+For a performance study rather than a plumbing check, use the stricter sample
+thresholds in the Data Acceptance Specification below. If they are not met,
+report operational and descriptive counts only and make no performance claim
+or comparative conclusion.
 
 The current two recordings fail the full-session and gap-free-from-open
 requirements, so the proposed backtest must initially report zero eligible
@@ -303,3 +302,356 @@ sessions and no performance statistics.
 9. **Preserve null results.** Zero-signal and zero-eligible-session runs are
    valid outputs. Do not relax rules, impute missing opening data, or merge
    strategies to manufacture a comparison.
+
+## Data Acceptance Specification
+
+This section defines the recordings that must exist before either strategy may
+be coded or tested. It is a data contract, not authorization to change the
+recorder or acquire external data. A future acquisition milestone must satisfy
+the contract using completed local recordings and must keep every feed stratum
+separate.
+
+### Shared recording windows
+
+Each candidate trading date must be one continuous recording in New York local
+market time:
+
+| Segment | Required coverage | Purpose |
+| --- | --- | --- |
+| Premarket | 04:00:00–09:29:59 | Premarket high/low, gap context, liquidity, and transition into the open |
+| Regular open | 09:30:00–10:00:00 | Complete 5-, 15-, and 30-minute opening ranges |
+| Midday | 10:00:01–15:29:59 | VWAP history and pullback candidates |
+| Close | 15:30:00–16:00:00 | End-of-day exits and closing-liquidity behavior |
+| After-hours | 16:00:01–20:00:00 | Boundary validation only; never a strategy entry window |
+
+The recorder must be running and healthy by 04:00:00. For both strategies,
+the first mandatory calculation input is the 09:30 bar. A start after 09:30:00
+makes that symbol-session ineligible even if later data is complete.
+
+Every event needed for validation must retain:
+
+- receipt timestamp with subsecond precision;
+- provider timestamp with subsecond precision;
+- stable recorded index and provider sequence where available;
+- symbol, event type, disposition, source, and coverage mode;
+- quote bid, ask, bid size, ask size, exchange, and conditions;
+- trade price, size, exchange, tape, and conditions;
+- one-minute bar open, high, low, close, volume, provider VWAP, timestamp, and
+  completeness;
+- disconnect, reconnect, heartbeat, market-clock, gap, and recovery events.
+
+### Shared liquidity and spread eligibility
+
+Calculate these filters from causally available accepted IEX events. They
+describe IEX-observed liquidity only:
+
+- The time-weighted quoted spread from 09:30 through the entry decision must
+  have a median no greater than 20 basis points.
+- At least 95% of regular-session seconds from 09:30 through the decision must
+  have a valid quote no older than 15 seconds. Any continuous stale interval
+  longer than 30 seconds is an exclusion.
+- Median accepted one-minute dollar volume from 09:30 through the decision,
+  calculated as `bar.vwap * bar.volume`, must be at least USD 100,000.
+- At least one accepted trade must occur in 90% of the closed one-minute bars
+  from 09:30 through the decision. A bar supplied by the provider without an
+  accepted local trade is retained for bar validation but does not satisfy
+  this trade-activity filter.
+- At entry time the current spread must be no greater than both 20 basis points
+  and `0.10R`. If either test fails, the signal is logged but not tradable.
+
+Do not tune these thresholds after inspecting returns. A different threshold
+is a separately versioned experiment.
+
+### Opening Range Breakout data contract
+
+#### Required time coverage and range windows
+
+- Premarket recording must start no later than 04:00:00 New York.
+- Regular-session recording must include every closed minute from 09:30 onward.
+- Persist exact, independently auditable range values for:
+  - OR5: bars stamped 09:30–09:34;
+  - OR15: bars stamped 09:30–09:44;
+  - OR30: bars stamped 09:30–09:59.
+- `high`, `low`, `width`, constituent timestamps, completeness, and the receipt
+  time at which each range became available must be recorded in the research
+  ledger.
+- OR15 remains the preregistered primary rule in this document. OR5 and OR30
+  are data-sufficiency checks and may be tested only as separately named,
+  frozen variants; they cannot be selected after comparing their returns.
+
+#### Gap handling
+
+Define:
+
+`gap_percent = (regular_open_09:30 - prior_regular_close_16:00) /
+prior_regular_close_16:00 * 100`.
+
+- The prior close must come from an eligible local recording of the immediately
+  preceding trading session and the same feed. Do not fetch or impute it.
+- Classify `gap_up` when `gap_percent >= +0.50%`, `gap_down` when
+  `gap_percent <= -0.50%`, and `flat_gap` otherwise.
+- Gap class is a reporting stratum, not an entry filter for `orb_v1`.
+- If the prior close or 09:30 open is missing, label the gap `unknown`; the
+  session may test OR mechanics but is excluded from gap-stratified results.
+
+#### Halts and corporate actions
+
+- Reject a symbol-session if a regulatory halt, limit-up/limit-down state, or
+  unexplained interval with no valid quotes and trades overlaps 09:30–11:30.
+- A halt is validly identified only by a recorded status event or by provider
+  metadata explicitly marking it. Silence alone is an unexplained gap.
+- Reject the entire symbol-date when a split, reverse split, symbol change,
+  cash/stock distribution, or other price-basis-changing action is effective
+  and its adjustment metadata is not contained in the local recorded dataset.
+- Never infer an adjustment from future prices or repair it with current
+  external reference data. Corporate-action exclusions and reasons must be
+  reported.
+
+#### ORB-specific fields and minimum data
+
+In addition to shared fields, ORB requires:
+
+- complete OHLCV and provider VWAP for every opening-range and decision bar;
+- accepted quotes and trades spanning every boundary crossing;
+- the last valid premarket quote and trade before 09:30;
+- the exact quote, spread, trade, and receipt time used for each simulated
+  entry, stop, and target;
+- bar and trade condition codes needed to explain provider-bar differences.
+
+Before any ORB performance claim, require all of:
+
+- at least 60 eligible complete regular sessions spanning at least 12 calendar
+  weeks;
+- at least 20 symbols present throughout the study;
+- at least 5 sectors, with no sector contributing more than 35% of eligible
+  symbol-sessions or completed trades;
+- at least 15 sessions in each realized SPY regime defined below;
+- at least 100 completed ORB trades in total and at least 40 completed trades
+  on each reported side;
+- at least 30 completed trades in each gap class for any gap-stratified claim.
+
+### VWAP Pullback data contract
+
+#### Exact session VWAP and reset
+
+VWAP resets exactly at 09:30:00 New York on every regular trading date. No
+premarket or prior-session price or volume enters the strategy VWAP.
+
+For closed one-minute bar `i`:
+
+`bar_notional_i = recorded_provider_vwap_i * recorded_volume_i`
+
+`session_VWAP_t = sum(bar_notional_i, 09:30..t) /
+sum(recorded_volume_i, 09:30..t)`.
+
+- Use only accepted, closed, gap-free one-minute bars known by receipt time.
+- Provider bar VWAP and volume are required; close, midpoint, typical price,
+  quote size, or locally observed trade notional may not silently replace them.
+- Premarket volume is retained for diagnostics but excluded from both numerator
+  and denominator.
+- The cumulative numerator, denominator, VWAP, last included bar timestamp,
+  and calculation availability time must be written to the decision ledger.
+- Reset cumulative values at every regular open, including after holidays,
+  weekends, early closes, and daylight-saving changes.
+
+#### Missing and sparse trade handling
+
+- Any missing, incomplete, duplicate-only, or unexplained regular-session bar
+  from 09:30 through the decision invalidates the VWAP for the remainder of
+  that symbol-session.
+- A provider bar with volume but no accepted local IEX trade is a
+  provider/local discrepancy. Do not reconstruct its hidden prints. The bar
+  may remain in an integrity report, but the symbol-session fails the
+  trade-activity filter unless the absence is explicitly explained by recorded
+  provider conditions.
+- For each minute compare provider bar close and VWAP with accepted trade
+  prices, and compare provider volume with summed accepted trade size. Record
+  differences; do not require equality because the IEX bar construction and
+  trade-condition eligibility may differ.
+- A bar fails quote-versus-trade validation if every accepted trade price lies
+  outside the contemporaneous valid bid/ask envelope and no recorded condition
+  explains it. Any unexplained failure before entry rejects the symbol-session.
+- Sparse IEX activity is never filled from SIP, another provider, interpolation,
+  or future data.
+
+#### VWAP Pullback minimum data
+
+The complete regular session from 09:30 through 16:00 is required, plus the
+shared 04:00–20:00 boundary recording. A candidate pullback additionally
+requires:
+
+- gap-free VWAP inputs from 09:30 through its decision bar;
+- at least 30 closed minutes before evaluation begins at 10:00;
+- valid EMA9 and ATR14 inputs under the formulas above;
+- compliance with every shared liquidity and spread filter;
+- accepted quote/trade evidence for the VWAP touch or penetration, reclaim,
+  entry, stop, and targets.
+
+Before any VWAP Pullback performance claim, require all of:
+
+- at least 60 eligible complete regular sessions spanning at least 12 calendar
+  weeks;
+- at least 20 symbols and 5 sectors under the same 35% concentration cap;
+- at least 15 sessions in each realized SPY regime;
+- at least 150 valid pullback signals before execution filtering;
+- at least 100 completed trades in total and at least 40 completed trades on
+  each reported side.
+
+Signals rejected for spread, staleness, liquidity, or missing data count toward
+the audit trail but not toward the 100 completed-trade threshold.
+
+### Required market regimes and sectors
+
+Regimes are labeled only after a complete SPY regular session is available and
+are used for stratified reporting, never for same-day entry decisions:
+
+- `trend_up`: SPY 16:00 close is at least 0.75% above its 09:30 open;
+- `trend_down`: SPY 16:00 close is at least 0.75% below its 09:30 open;
+- `range`: absolute open-to-close return is below 0.75%;
+- append `_high_vol` when `(session_high - session_low) / session_open >=
+  1.50%`, otherwise append `_normal_vol`.
+
+The collection must include at least 15 sessions in each of the three
+directional regimes (`trend_up`, `trend_down`, and `range`). Volatility suffixes
+are descriptive until each suffix has at least 15 sessions.
+
+The frozen universe must contain at least 20 symbols across at least 5
+recognized sectors. Sector labels must be frozen from locally stored metadata
+before outcome analysis. SPY and QQQ are classified as `broad_market_etf`, not
+as a corporate sector, and cannot by themselves satisfy sector diversity.
+Unknown sector labels are reported and excluded from sector-specific claims.
+
+### Session rejection rules
+
+Reject a symbol-session from strategy testing when any of these applies:
+
+1. Recording starts after 04:00 for extended-session validation or after 09:30
+   for strategy eligibility.
+2. Any required 09:30 opening minute or later causal input is absent,
+   incomplete, duplicated without one accepted canonical event, or received
+   too early to be closed.
+3. An unexplained event-sequence gap, recorder gap, corrupt checksum, truncated
+   recording, failed recovery, or discontinuity overlaps a required window.
+4. A reconnect occurs without explicit continuity proof or backfill covering
+   the disconnected interval.
+5. A valid quote is stale for more than 30 continuous seconds before a decision
+   or is unavailable/stale at an order event.
+6. Session boundaries, holiday status, early-close status, timezone, or DST
+   conversion cannot be verified from the recorded market-clock/session state.
+7. Required OHLCV or provider VWAP input is missing, nonfinite, nonpositive
+   where positivity is required, or internally inconsistent.
+8. A halt or price-basis-changing corporate action is unresolved.
+9. Source or coverage mode changes within the symbol-session.
+10. The recording ends before an open order or position has a causally
+    supported exit; that trade is censored and excluded from performance
+    metrics even if earlier signals remain auditable.
+
+Every rejection must have a stable reason code. Never repair a rejected session
+with external or later-acquired data.
+
+### Exact backtest eligibility criteria
+
+A backtest run is eligible for mechanics validation only if:
+
+- recording checksum and completion status pass;
+- replay produces identical state across three runs;
+- the symbol universe and feed stratum were frozen before outcomes;
+- all session and symbol-session rejection checks have run;
+- causal indicator and decision ledgers are complete;
+- no order uses an event before its receipt or latency eligibility time;
+- all ambiguous intrabar outcomes are excluded from the primary result.
+
+A backtest run is eligible for a performance claim only if it also meets the
+strategy-specific session, symbol, sector, regime, signal, and completed-trade
+thresholds; uses a chronological 60/20/20 date split; freezes code and
+parameters before holdout access; and reports every rejection, censoring, and
+execution sensitivity. Failure of any condition restricts the output to data
+quality and mechanics observations.
+
+### Exact replay validation checks
+
+For every accepted recording:
+
+1. Verify the compressed-file checksum before loading events.
+2. Replay three times and require identical event-order, state, bar, quote,
+   signal, order, fill, position, and result digests.
+3. Require monotonic `(receipt_timestamp, index)` processing and prove no
+   decision uses an event with a later receipt timestamp.
+4. Verify that each one-minute bar becomes available only after its close and
+   recorded receipt; verify the same for every derived 5-, 15-, and 30-minute
+   range.
+5. Recalculate session VWAP, EMA9, ATR14, OR5, OR15, and OR30 independently
+   from the recorded inputs and require exact deterministic agreement within a
+   declared floating-point tolerance of `1e-9`.
+6. Compare provider one-minute OHLCV/VWAP with the replay state and list every
+   mismatch, duplicate, incomplete minute, and condition-based explanation.
+7. Verify reconnect intervals, sequence gaps, stale periods, and recovery
+   markers against the eligibility decision.
+8. Verify each simulated order's submission time, latency eligibility,
+   non-stale quote, bid/ask reference, trade-through evidence, partial fills,
+   slippage, stop/target ordering, cancellation, and 15:55 flatten attempt.
+9. Assert that no live or Alpaca paper order route is invoked and no replay
+   state reaches production storage.
+10. Produce a machine-readable manifest containing input checksum, document
+    version/commit, parameters, exclusions, digests, and verdict.
+
+### Staged experiment plan
+
+#### Stage A — Data sufficiency
+
+Inventory completed local recordings and apply all rejection rules without
+calculating returns. Report eligible dates, symbol-sessions, sectors, regimes,
+signals possible, gaps, stale periods, reconnect continuity, and missing
+fields. Exit criterion: all minimum session/symbol/sector/regime coverage and
+required field checks pass. The current corpus fails here.
+
+#### Stage B — Mechanics validation
+
+Implement research-only calculations against replay after a separate explicit
+authorization. Use hand-constructed deterministic fixtures plus eligible
+recordings to verify causal indicator updates, exact signals, order timing,
+partial exits, stops, targets, ambiguity policy, censoring, and three-run
+digests. Exit criterion: all exact replay checks pass with no unexplained
+differences. Do not report strategy performance.
+
+#### Stage C — Baseline backtest
+
+Freeze `orb_v1` and `vwap_pullback_v1`, then run the earliest 60% development
+and next 20% validation dates. Report the full metric and exclusion set already
+specified, separated by strategy, side, feed, regime, sector, and gap class
+where sample thresholds permit. Do not choose a winner or alter parameters.
+
+#### Stage D — Out-of-sample test
+
+Lock code, document hash, data manifest, and execution assumptions before
+revealing the final 20% of dates. Run once, preserve null results, and label
+every post-lock rerun or correction. No edge claim is permitted unless the
+overall and side-specific completed-trade thresholds remain satisfied in the
+holdout reporting scope.
+
+#### Stage E — Forward paper validation
+
+Only after Stages A–D pass and a separate safety review authorizes it, observe
+signals prospectively in a paper-only environment for at least 20 additional
+complete regular sessions and 30 completed paper trades per strategy. Freeze
+parameters, prohibit live-money routing, reconcile every signal/order/fill
+against replay, and report deviations. This stage validates operational
+behavior, not profitability.
+
+### Data acceptance verdict
+
+- **Current recordings usable for ORB or VWAP Pullback testing:** **No.**
+- **Specific new recordings required:** continuous, completed, checksum-valid
+  local recordings from 04:00 through 20:00 New York, with gap-free regular
+  one-minute OHLCV/provider-VWAP data, causally ordered quotes and trades,
+  explicit continuity/recovery evidence, at least 60 eligible sessions, at
+  least 20 frozen symbols, at least 5 sectors, and the regime/sample coverage
+  defined above.
+- **Before either strategy can be coded or tested:** Stage A must pass; the
+  source/coverage stratum and universe must be frozen; session rejection and
+  replay checks must be executable; all indicator inputs must be present from
+  09:30; and any research implementation must receive separate authorization.
+- **Before any performance claim:** the applicable signal/trade thresholds,
+  chronological split, locked holdout, deterministic replay, execution audit,
+  and Stage D requirements must all pass. No current result supports an edge,
+  a performance estimate, or a preferred strategy.
