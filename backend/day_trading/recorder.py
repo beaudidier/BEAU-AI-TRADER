@@ -6,7 +6,7 @@ import json
 import os
 import re
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from threading import RLock
 from typing import Any
@@ -18,6 +18,8 @@ EVENT_TYPES = {
     "t": "trade",
     "q": "quote",
     "b": "bar_1m",
+    "b5": "bar_5m_provider",
+    "b15": "bar_15m_provider",
     "success": "stream_control",
     "subscription": "stream_control",
     "error": "stream_error",
@@ -116,8 +118,18 @@ class RecordingMetadata:
 class IntradayRecorder:
     """Append-only gzip recorder for local/staging market-data research."""
 
-    def __init__(self, root: str | Path):
+    def __init__(
+        self,
+        root: str | Path,
+        *,
+        flush_every: int = 1,
+        checkpoint_every: int = 1_000,
+        compresslevel: int = 6,
+    ):
         self.root = Path(root).expanduser().resolve()
+        self.flush_every = max(1, int(flush_every))
+        self.checkpoint_every = max(1, int(checkpoint_every))
+        self.compresslevel = max(1, min(9, int(compresslevel)))
         self._lock = RLock()
         self._writer: Any | None = None
         self._metadata: RecordingMetadata | None = None
@@ -138,11 +150,13 @@ class IntradayRecorder:
         source: str,
         coverage: str,
         session_id: str | None = None,
+        partition_date: date | None = None,
+        started_at: datetime | None = None,
     ) -> dict[str, Any]:
         with self._lock:
             if self.active:
                 raise RuntimeError("An intraday recording is already active.")
-            now = datetime.now(timezone.utc)
+            now = as_utc(started_at or datetime.now(timezone.utc))
             clean_symbols = sorted(
                 {value.strip().upper() for value in symbols if value.strip()}
             )
@@ -169,10 +183,8 @@ class IntradayRecorder:
                 partition = self._meta_path.parent
                 self._data_path = partition / recoverable[1]["compressed_file"]
             else:
-                partition = (
-                    self.root
-                    / now.astimezone(EASTERN).date().isoformat()
-                )
+                market_date = partition_date or now.astimezone(EASTERN).date()
+                partition = self.root / market_date.isoformat()
                 partition.mkdir(parents=True, exist_ok=True)
                 self._data_path = partition / f"{identifier}.jsonl.gz"
                 self._meta_path = partition / f"{identifier}.meta.json"
@@ -244,7 +256,7 @@ class IntradayRecorder:
                 self._data_path,
                 "at",
                 encoding="utf-8",
-                compresslevel=6,
+                compresslevel=self.compresslevel,
             )
             self._write_metadata()
             self.record_system(
@@ -296,7 +308,6 @@ class IntradayRecorder:
         event["index"] = self._metadata.event_count
         encoded = _canonical(event)
         self._writer.write(encoded.decode())
-        self._writer.flush()
         self._hasher.update(encoded)
         self._metadata.event_count += 1
         kind = str(event["event_type"])
@@ -308,7 +319,10 @@ class IntradayRecorder:
             self._metadata.symbol_counts[symbol] = (
                 self._metadata.symbol_counts.get(symbol, 0) + 1
             )
-        if self._metadata.event_count % 1_000 == 0:
+        if self._metadata.event_count % self.flush_every == 0:
+            self._writer.flush()
+        if self._metadata.event_count % self.checkpoint_every == 0:
+            self._writer.flush()
             file_object = getattr(
                 getattr(self._writer, "buffer", None),
                 "fileobj",
@@ -523,13 +537,16 @@ class IntradayRecorder:
         hasher = hashlib.sha256()
         count = 0
         secrets_present = False
-        with gzip.open(data_path, "rt", encoding="utf-8") as source:
+        secret_markers = tuple(
+            f'"{marker}'.encode() for marker in SECRET_KEY_MARKERS
+        )
+        with gzip.open(data_path, "rb") as source:
             for line in source:
-                event = json.loads(line)
-                secrets_present = (
-                    secrets_present or _contains_secret_key(event)
+                lowered = line.lower()
+                secrets_present = secrets_present or any(
+                    marker in lowered for marker in secret_markers
                 )
-                hasher.update(line.encode())
+                hasher.update(line)
                 count += 1
         expected = metadata.get("checksum_sha256")
         return {

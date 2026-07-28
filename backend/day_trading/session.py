@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta, timezone
+from functools import lru_cache
 from zoneinfo import ZoneInfo
 
 from .models import MarketSession
@@ -57,6 +58,7 @@ def _easter(year: int) -> date:
     return date(year, month, day)
 
 
+@lru_cache(maxsize=16)
 def market_holidays(year: int) -> set[date]:
     values = {
         _observed(date(year, 1, 1)),
@@ -83,6 +85,7 @@ def is_trading_day(value: date) -> bool:
     return value.weekday() < 5 and value not in holidays
 
 
+@lru_cache(maxsize=16)
 def early_close_days(year: int) -> set[date]:
     thanksgiving = _nth_weekday(year, 11, 3, 4)
     candidates = {
@@ -93,6 +96,7 @@ def early_close_days(year: int) -> set[date]:
     return {value for value in candidates if is_trading_day(value)}
 
 
+@lru_cache(maxsize=64)
 def regular_close_for(value: date) -> time:
     return EARLY_CLOSE if value in early_close_days(value.year) else REGULAR_CLOSE
 
