@@ -20,6 +20,15 @@ REQUIRED_RULE_FIELDS = {
     "unresolved_dependencies", "source",
 }
 REQUIRED_MODES = {"BEGINNER", "ADVANCED", "PAPER", "FUTURE_LIVE"}
+POLICY_ROOT_FIELDS = {
+    "contract_id", "contract_version", "status", "live_execution",
+    "legal_or_regulatory_compliance_claim", "numeric_representation",
+    "evaluation", "modes", "rules", "stateful_requirements",
+}
+VECTOR_ROOT_FIELDS = {"contract_id", "vectors"}
+MANIFEST_FIELDS = {"contract_sha256", "testvectors_sha256", "generator"}
+INTEGER_MAX = (1 << 63) - 1
+ALLOWED_UNITS = {"ppm", "count", "ms", "cents"}
 
 
 def load_json(path: Path) -> dict:
@@ -37,6 +46,26 @@ def validate() -> tuple[dict, dict, list[dict]]:
     vectors_doc = load_json(OUT / "testvectors.json")
     manifest = load_json(OUT / "manifest.json")
 
+    if not isinstance(policy, dict):
+        raise ValueError("policy root must be an object")
+    if not isinstance(vectors_doc, dict):
+        raise ValueError("testvectors root must be an object")
+    if not isinstance(manifest, dict):
+        raise ValueError("manifest root must be an object")
+    if set(policy) != POLICY_ROOT_FIELDS:
+        errors.append(
+            f"policy root fields mismatch: {sorted(set(policy) ^ POLICY_ROOT_FIELDS)}"
+        )
+    if set(vectors_doc) != VECTOR_ROOT_FIELDS:
+        errors.append(
+            f"testvector root fields mismatch: "
+            f"{sorted(set(vectors_doc) ^ VECTOR_ROOT_FIELDS)}"
+        )
+    if set(manifest) != MANIFEST_FIELDS:
+        errors.append(
+            f"manifest fields mismatch: {sorted(set(manifest) ^ MANIFEST_FIELDS)}"
+        )
+
     expected_policy = build_contract()
     expected_vectors = build_vectors(expected_policy)
     if canonical_json(policy) != canonical_json(expected_policy):
@@ -50,10 +79,15 @@ def validate() -> tuple[dict, dict, list[dict]]:
         errors.append("live execution must be HARD_DISABLED")
     if policy.get("legal_or_regulatory_compliance_claim") is not False:
         errors.append("compliance claim must be false")
+    evaluation = policy.get("evaluation")
+    if not isinstance(evaluation, dict) or evaluation.get("fail_closed") is not True:
+        errors.append("evaluation.fail_closed must be true")
     if set(policy.get("modes", {})) != REQUIRED_MODES:
         errors.append("exactly four required modes must be defined")
 
     rules = policy.get("rules", [])
+    if not isinstance(rules, list) or not rules:
+        raise ValueError("rules must be a non-empty array")
     rule_ids = [rule.get("rule_id") for rule in rules]
     codes = [rule.get("reason_code") for rule in rules]
     priorities = [rule.get("priority") for rule in rules]
@@ -65,9 +99,17 @@ def validate() -> tuple[dict, dict, list[dict]]:
         errors.append("priorities must be unique and contiguous")
 
     for rule in rules:
+        if not isinstance(rule, dict):
+            errors.append("each rule must be an object")
+            continue
         missing = REQUIRED_RULE_FIELDS - set(rule)
+        unexpected = set(rule) - REQUIRED_RULE_FIELDS
         if missing:
             errors.append(f"{rule.get('rule_id')}: missing fields {sorted(missing)}")
+        if unexpected:
+            errors.append(
+                f"{rule.get('rule_id')}: unexpected fields {sorted(unexpected)}"
+            )
         if rule.get("override_allowed") is not False:
             errors.append(f"{rule.get('rule_id')}: override must be false")
         if rule.get("override_authority") != "NONE":
@@ -79,8 +121,15 @@ def validate() -> tuple[dict, dict, list[dict]]:
             key = condition.get("mode_limit_key")
             for mode, limits in policy["modes"].items():
                 value = limits.get(key)
-                if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+                if (
+                    not isinstance(value, int)
+                    or isinstance(value, bool)
+                    or value < 0
+                    or value > INTEGER_MAX
+                ):
                     errors.append(f"{rule['rule_id']}: invalid {mode}.{key}")
+            if condition.get("unit") not in ALLOWED_UNITS:
+                errors.append(f"{rule['rule_id']}: invalid threshold unit")
             flags = [
                 condition.get("max_allows_equality"),
                 condition.get("min_allows_equality"),
@@ -88,12 +137,24 @@ def validate() -> tuple[dict, dict, list[dict]]:
             ]
             if sum(flag is True for flag in flags) != 1:
                 errors.append(f"{rule['rule_id']}: conflicting boundary flags")
+        if rule.get("future_live_status") == "UNRESOLVED_FAIL_CLOSED":
+            dependencies = rule.get("unresolved_dependencies")
+            if not isinstance(dependencies, list) or not dependencies:
+                errors.append(
+                    f"{rule.get('rule_id')}: unresolved dependencies required"
+                )
 
     vector_results = []
     covered: dict[str, set[str]] = {code: set() for code in codes}
     priority_map = {rule["reason_code"]: rule["priority"] for rule in rules}
     vector_ids: set[str] = set()
-    for vector in vectors_doc.get("vectors", []):
+    vectors = vectors_doc.get("vectors")
+    if not isinstance(vectors, list) or not vectors:
+        raise ValueError("vectors must be a non-empty array")
+    for vector in vectors:
+        if not isinstance(vector, dict):
+            errors.append("each vector must be an object")
+            continue
         vector_id = vector.get("testvector_id")
         if not vector_id or vector_id in vector_ids:
             errors.append(f"missing or duplicate testvector_id: {vector_id}")
@@ -219,7 +280,10 @@ def main() -> int:
     args = parser.parse_args()
     try:
         policy, _, results = validate()
-    except (OSError, ValueError, json.JSONDecodeError) as exc:
+    except (
+        OSError, ValueError, TypeError, KeyError, AttributeError, IndexError,
+        StopIteration, json.JSONDecodeError,
+    ) as exc:
         print(f"INVALID: {exc}", file=sys.stderr)
         return 1
     if args.write_coverage:
