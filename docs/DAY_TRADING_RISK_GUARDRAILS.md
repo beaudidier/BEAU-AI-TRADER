@@ -12,6 +12,9 @@ This document defines product and engineering controls. It does not claim legal,
 regulatory, exchange, broker, or data-provider compliance. Where those obligations
 are unresolved, they are listed separately at the end.
 
+Risk controls must not be weakened, bypassed, or selectively disabled to increase
+trade frequency, fill rate, engagement, revenue, or reported strategy performance.
+
 ## 1. Operating modes
 
 The engine has four explicit policy profiles. An account has exactly one profile.
@@ -76,18 +79,26 @@ an exchange calendar says otherwise.
 |---|---:|---:|---:|---:|
 | Maximum planned risk per trade | 0.25% SOD_RE; max $100 | 0.50% SOD_RE; max $500 | 0.25% SOD_RE; max $250 | 0.25% SOD_RE; max $250 |
 | Maximum daily loss | 1.00% SOD_RE | 2.00% SOD_RE | 1.50% SOD_RE | 1.00% SOD_RE |
+| Maximum rolling 5-session loss | 2.50% week-start risk equity | 4.00% | 3.00% | 2.50% |
+| Maximum account drawdown from high-water mark | 5.00% | 8.00% | 6.00% | 5.00% |
 | Consecutive-loss limit | 2 | 3 | 3 | 2 |
 | Cooldown after limit | Rest of session | 60 minutes; then one half-risk trade; next loss locks session | 30 minutes; then one half-risk trade; next loss locks session | Rest of session |
 | Maximum concurrent positions | 2 | 5 | 3 | 3 |
+| Maximum total open risk | 0.50% SOD_RE | 1.50% SOD_RE | 0.75% SOD_RE | 0.50% SOD_RE |
+| Maximum daily new risk | 1.00% SOD_RE | 2.50% SOD_RE | 1.50% SOD_RE | 1.00% SOD_RE |
+| Maximum single-position notional | 20% SOD_RE | 30% SOD_RE | 25% SOD_RE | 20% SOD_RE |
 | Maximum gross exposure | 50% SOD_RE | 100% SOD_RE | 75% SOD_RE | 50% SOD_RE |
 | Maximum one-sector gross exposure | 20% SOD_RE | 35% SOD_RE | 25% SOD_RE | 20% SOD_RE |
+| Maximum correlated-cluster gross exposure | 25% SOD_RE | 50% SOD_RE | 35% SOD_RE | 25% SOD_RE |
 | Maximum unknown-sector exposure | 0% | 10% SOD_RE | 0% | 0% |
 | Quote age at decision | ≤1,000 ms | ≤750 ms | ≤1,000 ms | ≤500 ms |
 | Quote age at broker submission | ≤1,500 ms | ≤1,000 ms | ≤1,500 ms | ≤750 ms |
 | Maximum spread | lesser of $0.05 or 0.50% of mid | lesser of $0.10 or 0.75% | lesser of $0.05 or 0.50% | lesser of $0.05 or 0.35% |
+| Minimum displayed bid and ask size | 500 shares and $5,000 each side | 200 shares and $2,000 each side | 500 shares and $5,000 each side | 1,000 shares and $10,000 each side |
 | Minimum 20-day median dollar volume | $20 million | $10 million | $15 million | $25 million |
 | Minimum price | $5.00 | $3.00 | $5.00 | $5.00 |
 | Maximum 5-minute realized volatility | 1.50% | 2.50% | 2.00% | 1.50% |
+| Maximum absolute opening gap | 5.00% | 8.00% | 6.00% | 5.00% |
 | Opening restriction | No new risk 09:30–09:45 | No new risk 09:30–09:35 | No new risk 09:30–09:40 | No new risk 09:30–09:45 |
 | Last new-risk time | 15:30 | 15:40 | 15:35 | 15:30 |
 | Forced flatten deadline | 15:50 | 15:55 | 15:50 | 15:45 |
@@ -136,7 +147,52 @@ position becomes flat. A scratch (`P&L = 0`) neither increments nor resets the
 counter. A profitable close resets the counter to zero. Manual and automated trades
 both count. The cooldown behavior is profile-specific in the table above.
 
-### 4.4 Concurrent positions and exposure
+### 4.4 Weekly loss, drawdown, and recovery
+
+Weekly loss is the negative change in risk equity from the first valid session-open
+snapshot in a rolling five-trading-session window, including realized P&L, current
+unrealized P&L at conservative marks, fees, and open-order slippage reserves. A
+breach cancels opening orders and locks new risk through the later of: the next
+Monday at 09:30 ET, five completed trading sessions after the window began, and
+successful broker reconciliation. A holiday does not shorten the five-session
+requirement.
+
+The high-water mark is the greatest reconciled end-of-day risk equity recorded for
+the account. Drawdown is `(high_water_mark - current_risk_equity) / high_water_mark`.
+It never resets because of deposits, withdrawals, account relinking, service
+restart, or profile change; external cash flows adjust both comparison values by the
+same amount. Reaching the profile drawdown limit creates an indefinite lockout.
+
+Recovery from a drawdown lockout requires all of the following:
+
+1. flat positions and no open or uncertain orders;
+2. broker, cash, position, P&L, and audit-ledger reconciliation;
+3. documented root-cause and trade review;
+4. five subsequent paper sessions with no hard-limit breach;
+5. an approved risk-limit and strategy review;
+6. one authorized operator for paper profiles or two authorized operators for
+   future live, neither being the strategy process or end user.
+
+Recovery starts a 10-session probation at half the normal per-trade, total-open-risk,
+daily-new-risk, position-count, and exposure limits. Any loss-limit breach during
+probation restores the indefinite lockout. A lock may be cleared only after its
+recovery conditions are met; no person or system may bypass an active threshold.
+
+### 4.5 Total open risk and daily new risk
+
+Total open risk is the sum of each position's remaining stop risk, pessimistic fees
+and exit slippage, plus the planned risk reserved by every opening order. Positive
+and negative exposures never offset risk. An order is blocked if projected total
+open risk exceeds the profile maximum.
+
+Daily new risk is the cumulative planned risk accepted for all opening and adding
+orders during the trading date. Canceled or profitable trades do not restore the
+budget; rejected orders and unfilled canceled quantities do not consume it. Partial
+fills consume the accepted pro-rata risk and release only the unfilled reservation.
+An order is blocked if accepting it would exceed the profile maximum. The counter
+resets only at a reconciled trading-day boundary.
+
+### 4.6 Concurrent positions, position size, and exposure
 
 A symbol counts as a position when it has non-zero quantity or an opening order
 reservation. Multiple orders for one symbol count once, but their full reserved
@@ -148,6 +204,34 @@ do not offset. Reference sector is the point-in-time classification stored with 
 decision. ETFs use the provider's look-through sector weights; absent look-through
 data is “Unknown.” An order is blocked when its projected state exceeds
 a profile maximum.
+
+Single-position notional is the absolute conservative-mark notional plus all
+same-symbol opening reservations. It may not exceed the profile limit, even when
+gross or sector exposure remains available.
+
+Correlated clusters are calculated before the session from trailing 60 completed
+daily returns. Two instruments share a cluster when absolute Pearson correlation is
+at least 0.70 with at least 50 valid paired observations. The graph's transitive
+connected components define clusters for the session. Same-industry instruments
+and an ETF with a constituent weight of at least 20% are always clustered,
+regardless of measured correlation. Missing history or classification places the
+instrument in the Unknown cluster, which has the same limit as one-sector exposure.
+Long and short notionals do not offset.
+
+### 4.7 Prohibited sizing behavior
+
+No averaging down is permitted: while a long position's conservative mark is below
+its volume-weighted entry price, additional buys are blocked; while a short's mark
+is above entry, additional shorts are blocked. Adding after a favorable move is
+allowed only from a distinct signal, with the original stop tightened so total
+position risk does not increase above the pre-add risk, and with every limit
+rechecked.
+
+Martingale sizing is prohibited. Order quantity or planned risk may not increase
+because of a prior loss, consecutive-loss count, drawdown, recovery state, or desire
+to recover P&L. During any recovery or cooldown probation, sizing is capped at half
+the normal limit. Strategy metadata must include the sizing inputs and prove that
+recent loss variables were not positive sizing factors; missing proof blocks.
 
 ## 5. Market-data and instrument eligibility
 
@@ -170,6 +254,12 @@ Both the absolute and percentage profile thresholds apply; exceeding either bloc
 The check is repeated immediately before submission. Exit orders are not blocked
 solely by spread, but must use the emergency exit policy and price collars.
 
+Displayed liquidity must also meet both the share and notional minimum on each side
+in the profile table, calculated as `bid_size × bid` and `ask_size × ask`. Odd-lot,
+non-firm, manual, or otherwise non-executable quotations do not count. An opening
+order quantity may not exceed 10% of displayed same-side size in Beginner, Paper,
+or future live, or 20% in Advanced.
+
 ### 5.3 Dollar volume and price
 
 Dollar volume is the split-adjusted median of `close × consolidated volume` for the
@@ -178,6 +268,37 @@ Today's volume is never substituted. Price is the current mid; for an opening bu
 the ask must also meet the minimum; for a short, the bid must meet it. OTC
 securities, preferred shares, rights, warrants, units, and instruments without a
 verified US-listed common-stock or approved ETF classification are ineligible.
+
+### 5.4 Missing data, IEX coverage, and SIP requirements
+
+Every field used by a decision must have a value, source, exchange timestamp,
+receipt timestamp, sequence where available, and passing freshness/quality status.
+No zero, previous close, cached value, model estimate, or alternate field may
+silently replace missing real-time input. Missing NBBO, depth, volume, reference,
+corporate-action, halt, LULD, SSR, calendar, news, broker, position, or risk-ledger
+state blocks new risk.
+
+IEX-only data is explicitly partial-market coverage. In paper profiles it may be
+used only when the UI and audit record display: “Research warning: IEX data covers
+only part of US market activity and may differ from the consolidated market.”
+IEX-only operation additionally applies half the normal position, gross-exposure,
+total-open-risk, and daily-new-risk limits. It may never be described as NBBO or
+full-market volume.
+
+Consolidated SIP/full-market data is mandatory for any future live execution and
+for paper decisions involving any of the following:
+
+- bid/ask, spread, displayed-size, or executable-price enforcement intended to
+  model live fills;
+- LULD bands, regulatory halt state, or short-sale price-test status;
+- consolidated volume, dollar-volume eligibility, opening gaps, or auction state;
+- symbols whose primary listing is not IEX;
+- execution-quality, slippage, or best-price analysis;
+- simultaneous quotes from multiple venues or any claim of NBBO.
+
+If the required entitlement, user display right, automated-use right, or feed health
+is unverified, new risk is blocked. A warning never substitutes for SIP data where
+this section requires it.
 
 ## 6. Volatility, halts, LULD, and short sales
 
@@ -220,6 +341,16 @@ paper shorts require:
 
 An SSR status transition invalidates queued short orders and forces re-evaluation.
 
+### 6.5 Abnormal opening gaps
+
+Opening gap is `(official_open - prior_official_close) / prior_official_close`,
+adjusted for confirmed splits and distributions. Reaching the profile threshold in
+either direction blocks new risk until 10:00 ET and until 15 consecutive minutes
+below 80% of the volatility threshold. A missing official open, prior close, or
+corporate-action adjustment blocks for the entire session. A gap of 10% or more
+blocks the symbol for the entire session in all profiles. Risk-reducing exits remain
+allowed.
+
 ## 7. Session timing and overnight prohibition
 
 Only regular-session orders between 09:30 and 16:00 are supported. Pre-market,
@@ -227,6 +358,12 @@ after-hours, market-on-open, market-on-close, and extended-hours flags are block
 The opening and last-new-risk times are in the profile table. On scheduled early
 closes, subtract the same offsets from the official close; for example, the live
 forced-flatten deadline is 15 minutes before the early close.
+
+No orders may participate in an opening or closing auction. Auction imbalance,
+auction-only, MOO, LOO, MOC, LOC, and exchange-cross instructions are prohibited.
+The first minute after the official open and final minute before the official close
+are hard-blocked for all non-exit orders in every profile, independent of the wider
+profile windows. Unknown or delayed auction/session state blocks new risk.
 
 At the forced-flatten deadline:
 
@@ -344,6 +481,21 @@ Retries reuse the original identifiers and first reconcile with the broker. A ne
 signal must have a new signal ID and must still pass a 2-second per-account/symbol/
 side debounce. Unknown submission outcome blocks the account until reconciliation.
 
+Risk decisions use an atomic account-state version containing broker sequence,
+position version, open-order version, cash/buying-power version, P&L version, policy
+version, and market/event snapshot IDs. The submission compare-and-set must match
+every version used by the decision. Any changed or older version produces
+`STALE_STATE`; the order must be rebuilt and fully re-evaluated, never merely
+retried.
+
+Cancel/replace is a two-phase state transition. The original order keeps its risk
+reservation until broker cancellation is final. The replacement independently
+reserves its worst-case incremental risk before cancel is requested, preventing
+both orders from exceeding limits if both fill. A replace timeout, cancel-pending
+fill, or broker without atomic replace support creates unknown order state and
+blocks new risk until reconciliation. Price or quantity changes always receive a
+new decision record while retaining the strategy intent and replacement-chain IDs.
+
 ### 9.4 Partial fills
 
 Each fill immediately updates position, cash, exposure, P&L, and protective-stop
@@ -378,6 +530,35 @@ kill switch, after broker reconciliation, root-cause documentation, and a succes
 read-only health check. Paper switches require one authorized operator. A service
 restart, deployment, date change, or user action cannot clear a switch.
 
+Broker heartbeat loss, streaming disconnect, authentication failure, rate-limit
+lockout, or inability to query authoritative order/position state blocks new risk
+immediately. A disconnect lasting over 2 seconds activates the kill switch. Recovery
+requires five consecutive successful heartbeats spanning at least 10 seconds, a
+full broker reconciliation, and confirmation that no unknown orders or positions
+exist. Reconnection alone does not release the block.
+
+### 9.6 Multi-worker consistency and restart persistence
+
+The risk ledger is the single writer for an account. Distributed workers must
+acquire an account-scoped fencing token and perform serializable transactions for
+risk reservations, idempotency records, order transitions, fills, lockouts, and
+kill-switch state. A stale fencing token, concurrent version conflict, unavailable
+consensus store, or inability to prove single-writer ownership blocks new risk.
+In-memory locks, process-local counters, and best-effort queues are insufficient.
+
+Before acknowledging an allowed order, the durable transaction must contain the
+risk reservation and submission intent. Before acknowledging a block, it must
+contain the block audit. All daily/weekly counters, high-water mark, cooldown,
+probation, idempotency keys, replacement chains, partial-fill state, lockouts, and
+kill switches survive restart.
+
+On startup or leadership change, the worker starts in `RECOVERY_ONLY`, sends no new
+risk, loads durable state, queries the broker, replays unapplied events
+idempotently, and compares orders, fills, positions, cash, and reservations. It may
+become `READY` only when reconciliation is exact and the persisted policy version
+is available. Any discrepancy remains fail-closed and requires the recovery action
+for `RISK_STATE_UNAVAILABLE`.
+
 ## 10. Account lockout
 
 A hard account lockout occurs after daily-loss breach, live consecutive-loss breach,
@@ -401,25 +582,40 @@ provider credentials, internal stack traces, or unsupported promises.
 |---|---|
 | `RISK_PER_TRADE_MAX` | “Order blocked: projected trade risk is {projected_risk}, above your {limit} maximum. Reduce quantity or tighten a valid protective stop.” |
 | `DAILY_LOSS_MAX` | “Trading locked for today: your daily loss is {daily_loss}, at or beyond the {limit} limit. You may only reduce or close positions.” |
+| `WEEKLY_LOSS_MAX` | “Trading locked: rolling five-session loss is {weekly_loss}, at or beyond the {limit} limit. You may only reduce or close positions.” |
+| `ACCOUNT_DRAWDOWN_MAX` | “Trading locked: account drawdown is {drawdown}, at or beyond the {limit} limit. Risk review and paper recovery are required.” |
 | `CONSECUTIVE_LOSSES_MAX` | “New trades paused after {count} consecutive losses. The pause ends {resume_condition}.” |
+| `TOTAL_OPEN_RISK_MAX` | “Order blocked: projected total open risk is {projected_risk}, above the {limit} maximum.” |
+| `DAILY_NEW_RISK_MAX` | “Order blocked: today’s accepted new-risk budget would become {projected_risk}, above the {limit} maximum.” |
 | `POSITION_COUNT_MAX` | “Order blocked: it would create {projected_count} concurrent positions; this mode allows at most {limit}.” |
+| `POSITION_NOTIONAL_MAX` | “Order blocked: projected {symbol} notional is {projected_notional}, above the {limit} maximum.” |
 | `GROSS_EXPOSURE_MAX` | “Order blocked: projected gross exposure is {projected_exposure}, above the {limit} maximum.” |
 | `SECTOR_EXPOSURE_MAX` | “Order blocked: projected {sector} exposure is {projected_exposure}, above the {limit} maximum.” |
+| `CORRELATED_EXPOSURE_MAX` | “Order blocked: projected exposure to correlated cluster {cluster_id} is {projected_exposure}, above the {limit} maximum.” |
 | `SECTOR_UNKNOWN` | “Order blocked: sector classification is unavailable or exceeds the Unknown-sector allowance.” |
+| `AVERAGING_DOWN_BLOCKED` | “Order blocked: adding while the position is losing is not allowed.” |
+| `MARTINGALE_BLOCKED` | “Order blocked: position size may not increase in response to losses or drawdown.” |
 | `QUOTE_STALE` | “Order blocked: the latest quote is {quote_age_ms} ms old; this mode requires {limit_ms} ms or less.” |
 | `QUOTE_INVALID` | “Order blocked: the current bid/ask quote is invalid, locked, crossed, or incomplete.” |
 | `DATA_FEED_UNHEALTHY` | “Order blocked: required market data is disconnected, incomplete, or out of sequence.” |
 | `SPREAD_MAX` | “Order blocked: the bid/ask spread is {spread_abs} ({spread_pct}), above the allowed {limit_abs} or {limit_pct}.” |
+| `DISPLAYED_SIZE_MIN` | “Order blocked: displayed executable liquidity is below {share_limit} shares and {notional_limit} on one or both sides.” |
 | `DOLLAR_VOLUME_MIN` | “Order blocked: 20-day median dollar volume is {value}; this mode requires at least {limit}.” |
 | `DOLLAR_VOLUME_HISTORY` | “Order blocked: 20 complete trading sessions of dollar-volume history are not available.” |
 | `PRICE_MIN` | “Order blocked: the executable price is {price}; this mode requires at least {limit}.” |
 | `INSTRUMENT_INELIGIBLE` | “Order blocked: this instrument type is not eligible for day trading.” |
+| `PARTIAL_IEX_LIVE_BLOCK` | “Order blocked: consolidated full-market data is required for this decision; IEX-only coverage is insufficient.” |
+| `DATA_ENTITLEMENT_UNVERIFIED` | “Order blocked: the required market-data entitlement or automated-use right is not verified.” |
 | `VOLATILITY_MAX` | “Order blocked: measured volatility is {value}, at or above the {limit} limit. Recheck after {eligible_time}.” |
+| `ABNORMAL_GAP` | “Order blocked: {symbol} opened {gap_pct} from its prior adjusted close, at or above the {limit} gap threshold.” |
 | `TRADING_HALT` | “Order blocked: {symbol} is halted or its halt status is unknown. New trades remain paused until the post-halt waiting period ends.” |
 | `LULD_PAUSE` | “Order blocked: {symbol} is paused, in a LULD straddle, or too close to a price band.” |
 | `SSR_SHORT_BLOCK` | “Short order blocked: short-sale restriction or borrow status does not permit this order.” |
 | `SHORTS_DISABLED` | “Order blocked: short selling is disabled in this mode.” |
 | `SESSION_NOT_REGULAR` | “Order blocked: day-trading orders are allowed only during the regular market session.” |
+| `AUCTION_RESTRICTED` | “Order blocked: opening and closing auction orders are not supported.” |
+| `FIRST_MINUTE_BLOCK` | “Order blocked: new risk is prohibited during the first minute after the official open.” |
+| `FINAL_MINUTE_BLOCK` | “Order blocked: new risk is prohibited during the final minute before the official close.” |
 | `OPENING_WINDOW` | “Order blocked: new positions are paused after the open until {eligible_time} ET.” |
 | `NEW_RISK_CUTOFF` | “Order blocked: this mode does not open or add to positions after {cutoff_time} ET.” |
 | `FLATTEN_REQUIRED` | “New trades are blocked: the account is in end-of-day flattening and may only close positions.” |
@@ -434,15 +630,82 @@ provider credentials, internal stack traces, or unsupported promises.
 | `LATENCY_MAX` | “Order blocked: decision-to-broker latency is {latency_ms} ms; this mode requires {limit_ms} ms or less.” |
 | `CLOCK_UNSYNCHRONIZED` | “Trading paused: system clocks are not synchronized within the required tolerance.” |
 | `DUPLICATE_ORDER` | “Order blocked: an equivalent order is already pending or was just submitted.” |
+| `STALE_STATE` | “Order blocked: account, broker, policy, market, or event state changed after the risk decision. The order must be re-evaluated.” |
+| `CONCURRENT_STATE_CONFLICT` | “Trading paused: exclusive account risk ownership or atomic state consistency could not be confirmed.” |
 | `ORDER_STATE_UNKNOWN` | “Trading paused: the broker outcome of a prior order is unknown and must be reconciled.” |
 | `PARTIAL_FILL_RISK` | “Order remainder canceled: the partial fill reached a risk limit or lacks confirmed protection.” |
 | `BROKER_REJECTION` | “Order rejected by the broker: {safe_broker_reason}. Trading may remain paused while account state is checked.” |
+| `BROKER_DISCONNECTED` | “Trading paused: the broker connection or authoritative account state is unavailable.” |
 | `PROTECTIVE_STOP_INVALID` | “Order blocked: a valid protective stop is required and must be on the loss side of the entry.” |
 | `RISK_STATE_UNAVAILABLE` | “Trading paused: account risk, position, cash, or order state is unavailable or inconsistent.” |
 | `AUDIT_WRITE_FAILED` | “Trading paused: the required risk decision record could not be stored.” |
 | `KILL_SWITCH_ACTIVE` | “Trading is paused by the emergency safety control. You may only cancel or reduce positions while the account is reconciled.” |
 | `ACCOUNT_LOCKED` | “Trading is locked: {safe_lock_reason}. New positions remain disabled until {unlock_condition}.” |
 | `LIVE_TRADING_DISABLED` | “Live-money execution is not enabled for this account. This order was not sent to a broker.” |
+
+### 11.1 Recovery action and override authority for every block
+
+“Override” means allowing the rejected order while its blocking condition remains
+true. Overrides are **not allowed for any reason code in this specification**.
+Consequently, the override authority for every code is **None**: not the user,
+strategy, support, operator, administrator, broker, or approver. Authorized
+operators may clear a lock or kill switch only after the stated recovery action
+proves the blocking condition false; that is recovery, not override. Threshold
+changes apply only to future risk sessions through approved versioned change
+control and never release an already blocked order.
+
+The required recovery action for every code is:
+
+| Codes | Required recovery action |
+|---|---|
+| `RISK_PER_TRADE_MAX`, `TOTAL_OPEN_RISK_MAX`, `DAILY_NEW_RISK_MAX`, `POSITION_COUNT_MAX`, `POSITION_NOTIONAL_MAX`, `GROSS_EXPOSURE_MAX`, `SECTOR_EXPOSURE_MAX`, `CORRELATED_EXPOSURE_MAX` | Submit a new intent whose pessimistic projected value is within the applicable limit; closing or reducing existing risk may be required first. |
+| `DAILY_LOSS_MAX` | Remain risk-reducing only through the next valid trading session, then reconcile broker and ledger state before a new risk session. |
+| `WEEKLY_LOSS_MAX` | Complete the weekly cooldown defined in section 4.4 and reconcile; a restart, deposit, or profile change does not shorten it. |
+| `ACCOUNT_DRAWDOWN_MAX` | Complete every drawdown recovery and probation requirement in section 4.4; paper requires one authorized operator to clear after evidence, future live requires two. |
+| `CONSECUTIVE_LOSSES_MAX` | Complete the profile cooldown in section 3; where a half-risk probation trade is required, pass it without another loss. |
+| `SECTOR_UNKNOWN` | Obtain valid point-in-time sector or ETF look-through classification, or reduce Unknown exposure below the profile limit. |
+| `AVERAGING_DOWN_BLOCKED` | Do not add; wait until the conservative mark is no longer adverse and submit a distinct signal that meets the favorable-add rules, or close/reduce the position. |
+| `MARTINGALE_BLOCKED` | Recompute size with an approved loss-independent model and submit a new intent with audited sizing inputs. |
+| `QUOTE_STALE`, `QUOTE_INVALID`, `DATA_FEED_UNHEALTHY` | Restore the feed and meet the three-valid-update recovery test in section 5.1, then create a new decision from fresh data. |
+| `SPREAD_MAX` | Wait for both spread measures to return within limits and submit a newly evaluated intent. |
+| `DISPLAYED_SIZE_MIN` | Wait for both sides to meet share and notional depth limits, and keep order participation within the profile cap. |
+| `DOLLAR_VOLUME_MIN`, `DOLLAR_VOLUME_HISTORY` | Use an eligible instrument with 20 complete prior sessions and sufficient median dollar volume; intraday activity cannot cure the block. |
+| `PRICE_MIN` | Wait for a fresh executable-side quote at or above the minimum, or select an eligible instrument. |
+| `INSTRUMENT_INELIGIBLE` | Select an approved US-listed common stock or allowlisted ETF. |
+| `PARTIAL_IEX_LIVE_BLOCK` | Supply healthy, entitled SIP/full-market data for the complete decision; a warning or user acknowledgement is insufficient. |
+| `DATA_ENTITLEMENT_UNVERIFIED` | Verify contractual entitlement and technical access for the intended automated use before a new decision. |
+| `VOLATILITY_MAX` | Complete the applicable cooldown and continuous-normalization test in section 6.1. |
+| `ABNORMAL_GAP` | Wait through the gap window and normalization test in section 6.5; a 10% gap remains blocked for the session. |
+| `TRADING_HALT` | Wait for confirmed resumption, complete the post-halt waiting period, and pass quote, LULD, and volatility checks. |
+| `LULD_PAUSE` | Wait for valid bands and continuous trading for five minutes after the pause, outside the 0.25% band buffer. |
+| `SSR_SHORT_BLOCK` | Obtain valid borrow/SSR state and submit an eligible short order after every applicable restriction clears. |
+| `SHORTS_DISABLED` | Use a long-only intent or a separately approved profile where shorting is enabled; no in-session profile change may release the order. |
+| `SESSION_NOT_REGULAR` | Wait for a supported regular session and submit a new day order. |
+| `AUCTION_RESTRICTED` | Remove auction instructions and submit only during an allowed continuous-trading window. |
+| `FIRST_MINUTE_BLOCK`, `OPENING_WINDOW` | Wait until the later applicable opening restriction ends and re-evaluate with fresh state. |
+| `FINAL_MINUTE_BLOCK`, `NEW_RISK_CUTOFF`, `FLATTEN_REQUIRED` | Do not open new risk; cancel openings and reduce/close positions before the profile deadline. |
+| `EARNINGS_BLACKOUT` | Wait until the configured post-earnings window ends and all market-data, news, halt, LULD, and volatility checks pass. |
+| `BREAKING_NEWS` | Complete the applicable quiet period and normalized-trading test after the latest related update. |
+| `NEWS_FEED_UNHEALTHY` | Restore a healthy news feed with age at or below 60 seconds and re-evaluate all active news windows. |
+| `ECONOMIC_EVENT`, `FED_EVENT` | Wait until the complete event window ends and satisfy the specified post-event volatility condition. |
+| `EVENT_DATA_UNHEALTHY` | Restore authoritative, non-conflicting calendar state and rebuild the event decision. |
+| `ORDER_TYPE_UNSUPPORTED` | Submit a new intent using an allowed day limit entry or approved risk-reducing exit type. |
+| `SLIPPAGE_MAX` | Tighten the limit or reduce/cancel the intent so permitted entry slippage is within the profile maximum. |
+| `LATENCY_MAX` | Restore latency within the profile maximum, refresh all inputs, and make a new decision. |
+| `CLOCK_UNSYNCHRONIZED` | Resynchronize clocks within both tolerances and pass the read-only system health check. |
+| `DUPLICATE_ORDER` | Reconcile the original intent; cancel or wait for its terminal state. A legitimate new signal must have a new signal ID and pass the debounce. |
+| `STALE_STATE` | Discard the decision and perform the complete pre-trade evaluation against the newest atomic state version. |
+| `CONCURRENT_STATE_CONFLICT` | Restore single-writer ownership with a valid fencing token and serializable ledger access, then reconcile and retry as a new decision. |
+| `ORDER_STATE_UNKNOWN` | Query the broker and reconcile every related order, fill, position, and reservation to a terminal known state. |
+| `PARTIAL_FILL_RISK` | Cancel the remainder, confirm protection or flatten filled quantity, and reconcile before any new risk. |
+| `BROKER_REJECTION` | Record the safe rejection, refresh broker restrictions and account state, correct the stated cause, and submit a new intent; risk/unknown rejection also requires kill-switch recovery. |
+| `BROKER_DISCONNECTED` | Complete the heartbeat, full-reconciliation, and no-unknown-state recovery in section 9.5. |
+| `PROTECTIVE_STOP_INVALID` | Provide a supported server-held protective stop on the loss side and rerun the complete risk calculation. |
+| `RISK_STATE_UNAVAILABLE` | Restore every authoritative state source, complete startup-style reconciliation, and enter `READY` with no discrepancy. |
+| `AUDIT_WRITE_FAILED` | Restore durable append-only audit storage, prove the failed event is recorded or account for its gap, reconcile, and complete operator review. |
+| `KILL_SWITCH_ACTIVE` | Resolve the cause, reconcile, document root cause, pass health checks, then obtain the section 9.5 clearing approvals. |
+| `ACCOUNT_LOCKED` | Complete the recovery tied to the lock reason and the section 10 operator review/approval requirements. |
+| `LIVE_TRADING_DISABLED` | Keep the order in paper, or complete every criterion in section 13 and a separately recorded live go/no-go; the blocked order is never replayed live. |
 
 ## 12. Audit record for every blocked order
 
@@ -473,25 +736,46 @@ fields exactly; nullable fields require a `null_reason`.
 
 - `sod_risk_equity`, `current_equity`, `available_buying_power`
 - `realized_pnl`, `unrealized_pnl`, `daily_pnl`, `daily_loss_limit`
+- `rolling_five_session_pnl`, `weekly_loss_limit`, `week_window_start_utc`
+- `account_high_water_mark`, `account_drawdown_pct`, `drawdown_limit`
 - `consecutive_losses`, `consecutive_loss_limit`, `cooldown_until_utc`
 - `planned_risk`, `trade_risk_limit`, `slippage_reserve`
+- `current_total_open_risk`, `projected_total_open_risk`,
+  `total_open_risk_limit`
+- `daily_new_risk_consumed`, `daily_new_risk_reserved`,
+  `projected_daily_new_risk`, `daily_new_risk_limit`
 - `current_position_count`, `projected_position_count`, `position_count_limit`
+- `current_symbol_notional`, `projected_symbol_notional`,
+  `position_notional_limit`
 - `current_gross_exposure`, `projected_gross_exposure`, `gross_exposure_limit`
 - `sector`, `sector_source`, `current_sector_exposure`,
   `projected_sector_exposure`, `sector_exposure_limit`
 - `current_symbol_position`, `open_order_reserved_quantity`,
   `open_order_reserved_notional`
-- `account_lock_state`, `kill_switch_state`
+- `correlation_cluster_id`, `correlation_members`, `correlation_as_of_date`,
+  `correlation_observation_count`, `correlation_coefficients`,
+  `projected_correlated_exposure`, `correlated_exposure_limit`
+- `position_vwap`, `position_conservative_mark`, `is_averaging_down`,
+  `sizing_model_id`, `sizing_inputs`, `loss_dependent_sizing_detected`
+- `account_lock_state`, `account_lock_reason`, `probation_state`,
+  `probation_ends_after_session`, `kill_switch_state`
 
 ### Market and reference snapshot
 
 - `bid`, `ask`, `bid_size`, `ask_size`, `mid`, `spread_abs`, `spread_pct`
+- `bid_notional_size`, `ask_notional_size`, `minimum_share_size`,
+  `minimum_notional_size`, `order_depth_participation_pct`
 - `quote_exchange_time_utc`, `quote_received_time_utc`, `quote_age_ms`,
   `quote_sequence`, `quote_conditions`
 - `market_data_provider`, `market_data_feed_status`
+- `market_data_scope` (`IEX_PARTIAL`, `SIP_CONSOLIDATED`, `OTHER`),
+  `sip_required`, `data_entitlement_id`, `data_entitlement_status`,
+  `partial_iex_warning_shown`
 - `clock_offset_ms`, `decision_latency_ms`, `estimated_submit_latency_ms`
 - `price`, `minimum_price`, `median_20d_dollar_volume`,
   `minimum_dollar_volume`, `valid_volume_session_count`
+- `prior_adjusted_official_close`, `official_open_price`, `opening_gap_pct`,
+  `opening_gap_limit`, `corporate_action_adjustment_id`
 - `realized_volatility_1m`, `realized_volatility_5m`,
   `volatility_limit`, `volatility_cooldown_until_utc`
 - `halt_status`, `halt_reason`, `halt_source`, `halt_resume_time_utc`
@@ -518,6 +802,8 @@ fields exactly; nullable fields require a `null_reason`.
 - `primary_block_code`, `all_block_codes`
 - `rule_thresholds` (canonical JSON), `observed_values` (canonical JSON)
 - `user_message_template_version`, `rendered_user_message`
+- `required_recovery_action`, `override_allowed` (must be false),
+  `override_authority` (must be `NONE`)
 - `decision` (always `BLOCK`)
 - `risk_reducing_order` (boolean)
 - `broker_submission_attempted` (must normally be false)
@@ -525,6 +811,9 @@ fields exactly; nullable fields require a `null_reason`.
 - `duplicate_of_block_event_id`, `duplicate_of_order_id`
 - `state_snapshot_uri`, `state_snapshot_sha256`
 - `trace_id`, `span_id`
+- `account_state_version`, `broker_sequence`, `position_version`,
+  `open_order_version`, `cash_version`, `pnl_version`,
+  `market_snapshot_id`, `event_snapshot_id`, `fencing_token`
 - `created_at_utc`, `retention_class`
 - `null_fields` (array of field names), `null_reasons` (field-to-reason map)
 
@@ -594,6 +883,12 @@ guarantee live launch.
 
 - Which jurisdictions and user types may access paper features and any future live
   feature, and what licensing or registration analysis applies?
+- What Pattern Day Trader (PDT) definition, day-trade counting, equity minimum,
+  margin-account restriction, broker house rule, or future replacement rule applies
+  to each account type at the actual launch date, and which system is authoritative?
+- What short-sale, locate, Regulation SHO, price-test, close-out, borrow disclosure,
+  and recordkeeping requirements apply to the intended instruments and account
+  types?
 - Could signals, automation, personalization, order routing, or account control be
   treated as investment advice, brokerage, discretionary management, or another
   regulated activity?
@@ -607,6 +902,13 @@ guarantee live launch.
   outages, slippage, partial fills, halts, event data, and loss of connectivity?
 - What human review and user appeal process is required for account restrictions,
   lockouts, erroneous trades, complaints, and incident remediation?
+- What suitability or appropriateness assessment, experience questionnaire,
+  financial-information collection, revalidation interval, and Beginner/Advanced
+  eligibility criteria are required?
+- Which exact user disclosures, risk acknowledgements, consent records, simulated-
+  versus-live labels, conflict disclosures, and material-change notices are required?
+- Which compliance owners, written supervisory procedures, surveillance controls,
+  exception reports, testing cadence, and independent reviews are required?
 - How long must decision, communication, market-data, and order records be retained,
   in what immutable form, and who may access or export them?
 
