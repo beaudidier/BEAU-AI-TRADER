@@ -1,0 +1,1657 @@
+{
+  "contract_id": "day-trading-risk-guardrails",
+  "contract_version": 1,
+  "evaluation": {
+    "fail_closed": true,
+    "input_order_independent": true,
+    "primary_reason": "lowest integer priority among all active reasons",
+    "rule_order_independent": true,
+    "secondary_reasons": "remaining active reasons sorted by priority then reason_code",
+    "unknown_missing_conflicting": "RISK_STATE_UNAVAILABLE"
+  },
+  "legal_or_regulatory_compliance_claim": false,
+  "live_execution": "HARD_DISABLED",
+  "modes": {
+    "ADVANCED": {
+      "bid_ask_size_cents": 200000,
+      "bid_ask_size_shares": 200,
+      "consecutive_losses": 3,
+      "correlated_exposure_ppm": 500000,
+      "daily_loss_ppm": 20000,
+      "daily_new_risk_ppm": 25000,
+      "dollar_volume_cents": 1000000000,
+      "drawdown_ppm": 80000,
+      "flatten_deadline_et": "15:55:00",
+      "gap_ppm": 80000,
+      "gross_exposure_ppm": 1000000,
+      "latency_ms": 500,
+      "new_risk_cutoff_et": "15:40:00",
+      "open_block_until_et": "09:35:00",
+      "position_count": 5,
+      "position_notional_ppm": 300000,
+      "price_cents": 300,
+      "quote_age_decision_ms": 750,
+      "quote_age_submit_ms": 1000,
+      "risk_per_trade_cap_cents": 50000,
+      "risk_per_trade_ppm": 5000,
+      "sector_exposure_ppm": 350000,
+      "shorts_allowed": true,
+      "slippage_ppm": 2000,
+      "spread_abs_micros": 100000,
+      "spread_ppm": 7500,
+      "total_open_risk_ppm": 15000,
+      "unknown_sector_ppm": 100000,
+      "volatility_5m_ppm": 25000,
+      "weekly_loss_ppm": 40000
+    },
+    "BEGINNER": {
+      "bid_ask_size_cents": 500000,
+      "bid_ask_size_shares": 500,
+      "consecutive_losses": 2,
+      "correlated_exposure_ppm": 250000,
+      "daily_loss_ppm": 10000,
+      "daily_new_risk_ppm": 10000,
+      "dollar_volume_cents": 2000000000,
+      "drawdown_ppm": 50000,
+      "flatten_deadline_et": "15:50:00",
+      "gap_ppm": 50000,
+      "gross_exposure_ppm": 500000,
+      "latency_ms": 750,
+      "new_risk_cutoff_et": "15:30:00",
+      "open_block_until_et": "09:45:00",
+      "position_count": 2,
+      "position_notional_ppm": 200000,
+      "price_cents": 500,
+      "quote_age_decision_ms": 1000,
+      "quote_age_submit_ms": 1500,
+      "risk_per_trade_cap_cents": 10000,
+      "risk_per_trade_ppm": 2500,
+      "sector_exposure_ppm": 200000,
+      "shorts_allowed": false,
+      "slippage_ppm": 1000,
+      "spread_abs_micros": 50000,
+      "spread_ppm": 5000,
+      "total_open_risk_ppm": 5000,
+      "unknown_sector_ppm": 0,
+      "volatility_5m_ppm": 15000,
+      "weekly_loss_ppm": 25000
+    },
+    "FUTURE_LIVE": {
+      "bid_ask_size_cents": 1000000,
+      "bid_ask_size_shares": 1000,
+      "consecutive_losses": 2,
+      "correlated_exposure_ppm": 250000,
+      "daily_loss_ppm": 10000,
+      "daily_new_risk_ppm": 10000,
+      "dollar_volume_cents": 2500000000,
+      "drawdown_ppm": 50000,
+      "flatten_deadline_et": "15:45:00",
+      "gap_ppm": 50000,
+      "gross_exposure_ppm": 500000,
+      "latency_ms": 300,
+      "new_risk_cutoff_et": "15:30:00",
+      "open_block_until_et": "09:45:00",
+      "position_count": 3,
+      "position_notional_ppm": 200000,
+      "price_cents": 500,
+      "quote_age_decision_ms": 500,
+      "quote_age_submit_ms": 750,
+      "risk_per_trade_cap_cents": 25000,
+      "risk_per_trade_ppm": 2500,
+      "sector_exposure_ppm": 200000,
+      "shorts_allowed": false,
+      "slippage_ppm": 1000,
+      "spread_abs_micros": 50000,
+      "spread_ppm": 3500,
+      "total_open_risk_ppm": 5000,
+      "unknown_sector_ppm": 0,
+      "volatility_5m_ppm": 15000,
+      "weekly_loss_ppm": 25000
+    },
+    "PAPER": {
+      "bid_ask_size_cents": 500000,
+      "bid_ask_size_shares": 500,
+      "consecutive_losses": 3,
+      "correlated_exposure_ppm": 350000,
+      "daily_loss_ppm": 15000,
+      "daily_new_risk_ppm": 15000,
+      "dollar_volume_cents": 1500000000,
+      "drawdown_ppm": 60000,
+      "flatten_deadline_et": "15:50:00",
+      "gap_ppm": 60000,
+      "gross_exposure_ppm": 750000,
+      "latency_ms": 750,
+      "new_risk_cutoff_et": "15:35:00",
+      "open_block_until_et": "09:40:00",
+      "position_count": 3,
+      "position_notional_ppm": 250000,
+      "price_cents": 500,
+      "quote_age_decision_ms": 1000,
+      "quote_age_submit_ms": 1500,
+      "risk_per_trade_cap_cents": 25000,
+      "risk_per_trade_ppm": 2500,
+      "sector_exposure_ppm": 250000,
+      "shorts_allowed": false,
+      "slippage_ppm": 1500,
+      "spread_abs_micros": 50000,
+      "spread_ppm": 5000,
+      "total_open_risk_ppm": 7500,
+      "unknown_sector_ppm": 0,
+      "volatility_5m_ppm": 20000,
+      "weekly_loss_ppm": 30000
+    }
+  },
+  "numeric_representation": {
+    "floating_point_prohibited": true,
+    "money": "integer cents unless field suffix is _micros",
+    "rates": "integer parts per million (ppm)",
+    "time": "integer milliseconds or America/New_York HH:MM:SS"
+  },
+  "rules": [
+    {
+      "category": "account_risk",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "risk_per_trade_ppm",
+        "tripwire_blocks_equality": false,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 1,
+      "reason_code": "RISK_PER_TRADE_MAX",
+      "recovery_action": "Submit a new intent whose pessimistic projected value is within the applicable limit; closing or reducing existing risk may be required first.",
+      "rule_id": "DT.RISK_PER_TRADE_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: projected trade risk is {projected_risk}, above your {limit} maximum. Reduce quantity or tighten a valid protective stop."
+    },
+    {
+      "category": "account_risk",
+      "condition": {
+        "boundary": "tripwire",
+        "kind": "threshold",
+        "max_allows_equality": false,
+        "min_allows_equality": false,
+        "mode_limit_key": "daily_loss_ppm",
+        "tripwire_blocks_equality": true,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 2,
+      "reason_code": "DAILY_LOSS_MAX",
+      "recovery_action": "Remain risk-reducing only through the next valid trading session, then reconcile broker and ledger state before a new risk session.",
+      "rule_id": "DT.DAILY_LOSS_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading locked for today: your daily loss is {daily_loss}, at or beyond the {limit} limit. You may only reduce or close positions."
+    },
+    {
+      "category": "account_risk",
+      "condition": {
+        "boundary": "tripwire",
+        "kind": "threshold",
+        "max_allows_equality": false,
+        "min_allows_equality": false,
+        "mode_limit_key": "weekly_loss_ppm",
+        "tripwire_blocks_equality": true,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 3,
+      "reason_code": "WEEKLY_LOSS_MAX",
+      "recovery_action": "Complete the weekly cooldown defined in section 4.4 and reconcile; a restart, deposit, or profile change does not shorten it.",
+      "rule_id": "DT.WEEKLY_LOSS_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading locked: rolling five-session loss is {weekly_loss}, at or beyond the {limit} limit. You may only reduce or close positions."
+    },
+    {
+      "category": "account_risk",
+      "condition": {
+        "boundary": "tripwire",
+        "kind": "threshold",
+        "max_allows_equality": false,
+        "min_allows_equality": false,
+        "mode_limit_key": "drawdown_ppm",
+        "tripwire_blocks_equality": true,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 4,
+      "reason_code": "ACCOUNT_DRAWDOWN_MAX",
+      "recovery_action": "Complete every drawdown recovery and probation requirement in section 4.4; paper requires one authorized operator to clear after evidence, future live requires two.",
+      "rule_id": "DT.ACCOUNT_DRAWDOWN_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading locked: account drawdown is {drawdown}, at or beyond the {limit} limit. Risk review and paper recovery are required."
+    },
+    {
+      "category": "account_risk",
+      "condition": {
+        "boundary": "tripwire",
+        "kind": "threshold",
+        "max_allows_equality": false,
+        "min_allows_equality": false,
+        "mode_limit_key": "consecutive_losses",
+        "tripwire_blocks_equality": true,
+        "unit": "count"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 5,
+      "reason_code": "CONSECUTIVE_LOSSES_MAX",
+      "recovery_action": "Complete the profile cooldown in section 3; where a half-risk probation trade is required, pass it without another loss.",
+      "rule_id": "DT.CONSECUTIVE_LOSSES_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "New trades paused after {count} consecutive losses. The pause ends {resume_condition}."
+    },
+    {
+      "category": "account_risk",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "total_open_risk_ppm",
+        "tripwire_blocks_equality": false,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 6,
+      "reason_code": "TOTAL_OPEN_RISK_MAX",
+      "recovery_action": "Submit a new intent whose pessimistic projected value is within the applicable limit; closing or reducing existing risk may be required first.",
+      "rule_id": "DT.TOTAL_OPEN_RISK_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: projected total open risk is {projected_risk}, above the {limit} maximum."
+    },
+    {
+      "category": "account_risk",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "daily_new_risk_ppm",
+        "tripwire_blocks_equality": false,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 7,
+      "reason_code": "DAILY_NEW_RISK_MAX",
+      "recovery_action": "Submit a new intent whose pessimistic projected value is within the applicable limit; closing or reducing existing risk may be required first.",
+      "rule_id": "DT.DAILY_NEW_RISK_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: today’s accepted new-risk budget would become {projected_risk}, above the {limit} maximum."
+    },
+    {
+      "category": "position_risk",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "position_count",
+        "tripwire_blocks_equality": false,
+        "unit": "count"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 8,
+      "reason_code": "POSITION_COUNT_MAX",
+      "recovery_action": "Submit a new intent whose pessimistic projected value is within the applicable limit; closing or reducing existing risk may be required first.",
+      "rule_id": "DT.POSITION_COUNT_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: it would create {projected_count} concurrent positions; this mode allows at most {limit}."
+    },
+    {
+      "category": "position_risk",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "position_notional_ppm",
+        "tripwire_blocks_equality": false,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 9,
+      "reason_code": "POSITION_NOTIONAL_MAX",
+      "recovery_action": "Submit a new intent whose pessimistic projected value is within the applicable limit; closing or reducing existing risk may be required first.",
+      "rule_id": "DT.POSITION_NOTIONAL_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: projected {symbol} notional is {projected_notional}, above the {limit} maximum."
+    },
+    {
+      "category": "position_risk",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "gross_exposure_ppm",
+        "tripwire_blocks_equality": false,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 10,
+      "reason_code": "GROSS_EXPOSURE_MAX",
+      "recovery_action": "Submit a new intent whose pessimistic projected value is within the applicable limit; closing or reducing existing risk may be required first.",
+      "rule_id": "DT.GROSS_EXPOSURE_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: projected gross exposure is {projected_exposure}, above the {limit} maximum."
+    },
+    {
+      "category": "position_risk",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "sector_exposure_ppm",
+        "tripwire_blocks_equality": false,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 11,
+      "reason_code": "SECTOR_EXPOSURE_MAX",
+      "recovery_action": "Submit a new intent whose pessimistic projected value is within the applicable limit; closing or reducing existing risk may be required first.",
+      "rule_id": "DT.SECTOR_EXPOSURE_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: projected {sector} exposure is {projected_exposure}, above the {limit} maximum."
+    },
+    {
+      "category": "position_risk",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "correlated_exposure_ppm",
+        "tripwire_blocks_equality": false,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 12,
+      "reason_code": "CORRELATED_EXPOSURE_MAX",
+      "recovery_action": "Submit a new intent whose pessimistic projected value is within the applicable limit; closing or reducing existing risk may be required first.",
+      "rule_id": "DT.CORRELATED_EXPOSURE_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: projected exposure to correlated cluster {cluster_id} is {projected_exposure}, above the {limit} maximum."
+    },
+    {
+      "category": "position_risk",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 13,
+      "reason_code": "SECTOR_UNKNOWN",
+      "recovery_action": "Obtain valid point-in-time sector or ETF look-through classification, or reduce Unknown exposure below the profile limit.",
+      "rule_id": "DT.SECTOR_UNKNOWN",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: sector classification is unavailable or exceeds the Unknown-sector allowance."
+    },
+    {
+      "category": "position_risk",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 14,
+      "reason_code": "AVERAGING_DOWN_BLOCKED",
+      "recovery_action": "Do not add; wait until the conservative mark is no longer adverse and submit a distinct signal that meets the favorable-add rules, or close/reduce the position.",
+      "rule_id": "DT.AVERAGING_DOWN_BLOCKED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: adding while the position is losing is not allowed."
+    },
+    {
+      "category": "position_risk",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 15,
+      "reason_code": "MARTINGALE_BLOCKED",
+      "recovery_action": "Recompute size with an approved loss-independent model and submit a new intent with audited sizing inputs.",
+      "rule_id": "DT.MARTINGALE_BLOCKED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: position size may not increase in response to losses or drawdown."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "quote_age_decision_ms",
+        "tripwire_blocks_equality": false,
+        "unit": "ms"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 16,
+      "reason_code": "QUOTE_STALE",
+      "recovery_action": "Restore the feed and meet the three-valid-update recovery test in section 5.1, then create a new decision from fresh data.",
+      "rule_id": "DT.QUOTE_STALE",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: the latest quote is {quote_age_ms} ms old; this mode requires {limit_ms} ms or less."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 17,
+      "reason_code": "QUOTE_INVALID",
+      "recovery_action": "Restore the feed and meet the three-valid-update recovery test in section 5.1, then create a new decision from fresh data.",
+      "rule_id": "DT.QUOTE_INVALID",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: the current bid/ask quote is invalid, locked, crossed, or incomplete."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 18,
+      "reason_code": "DATA_FEED_UNHEALTHY",
+      "recovery_action": "Restore the feed and meet the three-valid-update recovery test in section 5.1, then create a new decision from fresh data.",
+      "rule_id": "DT.DATA_FEED_UNHEALTHY",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: required market data is disconnected, incomplete, or out of sequence."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 19,
+      "reason_code": "SPREAD_MAX",
+      "recovery_action": "Wait for both spread measures to return within limits and submit a newly evaluated intent.",
+      "rule_id": "DT.SPREAD_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: the bid/ask spread is {spread_abs} ({spread_pct}), above the allowed {limit_abs} or {limit_pct}."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 20,
+      "reason_code": "DISPLAYED_SIZE_MIN",
+      "recovery_action": "Wait for both sides to meet share and notional depth limits, and keep order participation within the profile cap.",
+      "rule_id": "DT.DISPLAYED_SIZE_MIN",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: displayed executable liquidity is below {share_limit} shares and {notional_limit} on one or both sides."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "boundary": "min",
+        "kind": "threshold",
+        "max_allows_equality": false,
+        "min_allows_equality": true,
+        "mode_limit_key": "dollar_volume_cents",
+        "tripwire_blocks_equality": false,
+        "unit": "cents"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 21,
+      "reason_code": "DOLLAR_VOLUME_MIN",
+      "recovery_action": "Use an eligible instrument with 20 complete prior sessions and sufficient median dollar volume; intraday activity cannot cure the block.",
+      "rule_id": "DT.DOLLAR_VOLUME_MIN",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: 20-day median dollar volume is {value}; this mode requires at least {limit}."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 22,
+      "reason_code": "DOLLAR_VOLUME_HISTORY",
+      "recovery_action": "Use an eligible instrument with 20 complete prior sessions and sufficient median dollar volume; intraday activity cannot cure the block.",
+      "rule_id": "DT.DOLLAR_VOLUME_HISTORY",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: 20 complete trading sessions of dollar-volume history are not available."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "boundary": "min",
+        "kind": "threshold",
+        "max_allows_equality": false,
+        "min_allows_equality": true,
+        "mode_limit_key": "price_cents",
+        "tripwire_blocks_equality": false,
+        "unit": "cents"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 23,
+      "reason_code": "PRICE_MIN",
+      "recovery_action": "Wait for a fresh executable-side quote at or above the minimum, or select an eligible instrument.",
+      "rule_id": "DT.PRICE_MIN",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: the executable price is {price}; this mode requires at least {limit}."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 24,
+      "reason_code": "INSTRUMENT_INELIGIBLE",
+      "recovery_action": "Select an approved US-listed common stock or allowlisted ETF.",
+      "rule_id": "DT.INSTRUMENT_INELIGIBLE",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: this instrument type is not eligible for day trading."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "UNRESOLVED_FAIL_CLOSED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 25,
+      "reason_code": "PARTIAL_IEX_LIVE_BLOCK",
+      "recovery_action": "Supply healthy, entitled SIP/full-market data for the complete decision; a warning or user acknowledgement is insufficient.",
+      "rule_id": "DT.PARTIAL_IEX_LIVE_BLOCK",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [
+        "data_provider",
+        "licensing",
+        "entitlement"
+      ],
+      "user_message": "Order blocked: consolidated full-market data is required for this decision; IEX-only coverage is insufficient."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "UNRESOLVED_FAIL_CLOSED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 26,
+      "reason_code": "DATA_ENTITLEMENT_UNVERIFIED",
+      "recovery_action": "Verify contractual entitlement and technical access for the intended automated use before a new decision.",
+      "rule_id": "DT.DATA_ENTITLEMENT_UNVERIFIED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [
+        "data_provider",
+        "licensing",
+        "entitlement"
+      ],
+      "user_message": "Order blocked: the required market-data entitlement or automated-use right is not verified."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "boundary": "tripwire",
+        "kind": "threshold",
+        "max_allows_equality": false,
+        "min_allows_equality": false,
+        "mode_limit_key": "volatility_5m_ppm",
+        "tripwire_blocks_equality": true,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 27,
+      "reason_code": "VOLATILITY_MAX",
+      "recovery_action": "Complete the applicable cooldown and continuous-normalization test in section 6.1.",
+      "rule_id": "DT.VOLATILITY_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: measured volatility is {value}, at or above the {limit} limit. Recheck after {eligible_time}."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "boundary": "tripwire",
+        "kind": "threshold",
+        "max_allows_equality": false,
+        "min_allows_equality": false,
+        "mode_limit_key": "gap_ppm",
+        "tripwire_blocks_equality": true,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 28,
+      "reason_code": "ABNORMAL_GAP",
+      "recovery_action": "Wait through the gap window and normalization test in section 6.5; a 10% gap remains blocked for the session.",
+      "rule_id": "DT.ABNORMAL_GAP",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: {symbol} opened {gap_pct} from its prior adjusted close, at or above the {limit} gap threshold."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 29,
+      "reason_code": "TRADING_HALT",
+      "recovery_action": "Wait for confirmed resumption, complete the post-halt waiting period, and pass quote, LULD, and volatility checks.",
+      "rule_id": "DT.TRADING_HALT",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: {symbol} is halted or its halt status is unknown. New trades remain paused until the post-halt waiting period ends."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 30,
+      "reason_code": "LULD_PAUSE",
+      "recovery_action": "Wait for valid bands and continuous trading for five minutes after the pause, outside the 0.25% band buffer.",
+      "rule_id": "DT.LULD_PAUSE",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: {symbol} is paused, in a LULD straddle, or too close to a price band."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "UNRESOLVED_FAIL_CLOSED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 31,
+      "reason_code": "SSR_SHORT_BLOCK",
+      "recovery_action": "Obtain valid borrow/SSR state and submit an eligible short order after every applicable restriction clears.",
+      "rule_id": "DT.SSR_SHORT_BLOCK",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [
+        "broker",
+        "short_sale",
+        "legal"
+      ],
+      "user_message": "Short order blocked: short-sale restriction or borrow status does not permit this order."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "UNRESOLVED_FAIL_CLOSED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 32,
+      "reason_code": "SHORTS_DISABLED",
+      "recovery_action": "Use a long-only intent or a separately approved profile where shorting is enabled; no in-session profile change may release the order.",
+      "rule_id": "DT.SHORTS_DISABLED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [
+        "broker",
+        "short_sale",
+        "legal"
+      ],
+      "user_message": "Order blocked: short selling is disabled in this mode."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 33,
+      "reason_code": "SESSION_NOT_REGULAR",
+      "recovery_action": "Wait for a supported regular session and submit a new day order.",
+      "rule_id": "DT.SESSION_NOT_REGULAR",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: day-trading orders are allowed only during the regular market session."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 34,
+      "reason_code": "AUCTION_RESTRICTED",
+      "recovery_action": "Remove auction instructions and submit only during an allowed continuous-trading window.",
+      "rule_id": "DT.AUCTION_RESTRICTED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: opening and closing auction orders are not supported."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 35,
+      "reason_code": "FIRST_MINUTE_BLOCK",
+      "recovery_action": "Wait until the later applicable opening restriction ends and re-evaluate with fresh state.",
+      "rule_id": "DT.FIRST_MINUTE_BLOCK",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: new risk is prohibited during the first minute after the official open."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 36,
+      "reason_code": "FINAL_MINUTE_BLOCK",
+      "recovery_action": "Do not open new risk; cancel openings and reduce/close positions before the profile deadline.",
+      "rule_id": "DT.FINAL_MINUTE_BLOCK",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: new risk is prohibited during the final minute before the official close."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 37,
+      "reason_code": "OPENING_WINDOW",
+      "recovery_action": "Wait until the later applicable opening restriction ends and re-evaluate with fresh state.",
+      "rule_id": "DT.OPENING_WINDOW",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: new positions are paused after the open until {eligible_time} ET."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 38,
+      "reason_code": "NEW_RISK_CUTOFF",
+      "recovery_action": "Do not open new risk; cancel openings and reduce/close positions before the profile deadline.",
+      "rule_id": "DT.NEW_RISK_CUTOFF",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: this mode does not open or add to positions after {cutoff_time} ET."
+    },
+    {
+      "category": "position_risk",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 39,
+      "reason_code": "FLATTEN_REQUIRED",
+      "recovery_action": "Do not open new risk; cancel openings and reduce/close positions before the profile deadline.",
+      "rule_id": "DT.FLATTEN_REQUIRED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "New trades are blocked: the account is in end-of-day flattening and may only close positions."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 40,
+      "reason_code": "EARNINGS_BLACKOUT",
+      "recovery_action": "Wait until the configured post-earnings window ends and all market-data, news, halt, LULD, and volatility checks pass.",
+      "rule_id": "DT.EARNINGS_BLACKOUT",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: {symbol} is inside its earnings-risk window from {start_time} to {end_time} ET."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 41,
+      "reason_code": "BREAKING_NEWS",
+      "recovery_action": "Complete the applicable quiet period and normalized-trading test after the latest related update.",
+      "rule_id": "DT.BREAKING_NEWS",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: high-impact or unclassified breaking news affects {scope}. Recheck after {eligible_time} ET."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 42,
+      "reason_code": "NEWS_FEED_UNHEALTHY",
+      "recovery_action": "Restore a healthy news feed with age at or below 60 seconds and re-evaluate all active news windows.",
+      "rule_id": "DT.NEWS_FEED_UNHEALTHY",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: required breaking-news data is unavailable or stale."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 43,
+      "reason_code": "ECONOMIC_EVENT",
+      "recovery_action": "Wait until the complete event window ends and satisfy the specified post-event volatility condition.",
+      "rule_id": "DT.ECONOMIC_EVENT",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: {event_name} creates an event-risk window from {start_time} to {end_time} ET."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 44,
+      "reason_code": "FED_EVENT",
+      "recovery_action": "Wait until the complete event window ends and satisfy the specified post-event volatility condition.",
+      "rule_id": "DT.FED_EVENT",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: a Federal Reserve event creates a risk window from {start_time} to {end_time} ET."
+    },
+    {
+      "category": "market_event",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 45,
+      "reason_code": "EVENT_DATA_UNHEALTHY",
+      "recovery_action": "Restore authoritative, non-conflicting calendar state and rebuild the event decision.",
+      "rule_id": "DT.EVENT_DATA_UNHEALTHY",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: required event-calendar data is missing, stale, or conflicting."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 46,
+      "reason_code": "ORDER_TYPE_UNSUPPORTED",
+      "recovery_action": "Submit a new intent using an allowed day limit entry or approved risk-reducing exit type.",
+      "rule_id": "DT.ORDER_TYPE_UNSUPPORTED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: {order_type} is not an allowed entry order type."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "slippage_ppm",
+        "tripwire_blocks_equality": false,
+        "unit": "ppm"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 47,
+      "reason_code": "SLIPPAGE_MAX",
+      "recovery_action": "Tighten the limit or reduce/cancel the intent so permitted entry slippage is within the profile maximum.",
+      "rule_id": "DT.SLIPPAGE_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: permitted entry slippage is {projected_bps} bps; this mode allows at most {limit_bps} bps."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "boundary": "max",
+        "kind": "threshold",
+        "max_allows_equality": true,
+        "min_allows_equality": false,
+        "mode_limit_key": "latency_ms",
+        "tripwire_blocks_equality": false,
+        "unit": "ms"
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 48,
+      "reason_code": "LATENCY_MAX",
+      "recovery_action": "Restore latency within the profile maximum, refresh all inputs, and make a new decision.",
+      "rule_id": "DT.LATENCY_MAX",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: decision-to-broker latency is {latency_ms} ms; this mode requires {limit_ms} ms or less."
+    },
+    {
+      "category": "market_data",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 49,
+      "reason_code": "CLOCK_UNSYNCHRONIZED",
+      "recovery_action": "Resynchronize clocks within both tolerances and pass the read-only system health check.",
+      "rule_id": "DT.CLOCK_UNSYNCHRONIZED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading paused: system clocks are not synchronized within the required tolerance."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 50,
+      "reason_code": "DUPLICATE_ORDER",
+      "recovery_action": "Reconcile the original intent; cancel or wait for its terminal state. A legitimate new signal must have a new signal ID and pass the debounce.",
+      "rule_id": "DT.DUPLICATE_ORDER",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: an equivalent order is already pending or was just submitted."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 51,
+      "reason_code": "STALE_STATE",
+      "recovery_action": "Discard the decision and perform the complete pre-trade evaluation against the newest atomic state version.",
+      "rule_id": "DT.STALE_STATE",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: account, broker, policy, market, or event state changed after the risk decision. The order must be re-evaluated."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 52,
+      "reason_code": "CONCURRENT_STATE_CONFLICT",
+      "recovery_action": "Restore single-writer ownership with a valid fencing token and serializable ledger access, then reconcile and retry as a new decision.",
+      "rule_id": "DT.CONCURRENT_STATE_CONFLICT",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading paused: exclusive account risk ownership or atomic state consistency could not be confirmed."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 53,
+      "reason_code": "ORDER_STATE_UNKNOWN",
+      "recovery_action": "Query the broker and reconcile every related order, fill, position, and reservation to a terminal known state.",
+      "rule_id": "DT.ORDER_STATE_UNKNOWN",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading paused: the broker outcome of a prior order is unknown and must be reconciled."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 54,
+      "reason_code": "PARTIAL_FILL_RISK",
+      "recovery_action": "Cancel the remainder, confirm protection or flatten filled quantity, and reconcile before any new risk.",
+      "rule_id": "DT.PARTIAL_FILL_RISK",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order remainder canceled: the partial fill reached a risk limit or lacks confirmed protection."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 55,
+      "reason_code": "BROKER_REJECTION",
+      "recovery_action": "Record the safe rejection, refresh broker restrictions and account state, correct the stated cause, and submit a new intent; risk/unknown rejection also requires kill-switch recovery.",
+      "rule_id": "DT.BROKER_REJECTION",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order rejected by the broker: {safe_broker_reason}. Trading may remain paused while account state is checked."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 56,
+      "reason_code": "BROKER_DISCONNECTED",
+      "recovery_action": "Complete the heartbeat, full-reconciliation, and no-unknown-state recovery in section 9.5.",
+      "rule_id": "DT.BROKER_DISCONNECTED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading paused: the broker connection or authoritative account state is unavailable."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 57,
+      "reason_code": "PROTECTIVE_STOP_INVALID",
+      "recovery_action": "Provide a supported server-held protective stop on the loss side and rerun the complete risk calculation.",
+      "rule_id": "DT.PROTECTIVE_STOP_INVALID",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Order blocked: a valid protective stop is required and must be on the loss side of the entry."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 58,
+      "reason_code": "RISK_STATE_UNAVAILABLE",
+      "recovery_action": "Restore every authoritative state source, complete startup-style reconciliation, and enter `READY` with no discrepancy.",
+      "rule_id": "DT.RISK_STATE_UNAVAILABLE",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading paused: account risk, position, cash, or order state is unavailable or inconsistent."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 59,
+      "reason_code": "AUDIT_WRITE_FAILED",
+      "recovery_action": "Restore durable append-only audit storage, prove the failed event is recorded or account for its gap, reconcile, and complete operator review.",
+      "rule_id": "DT.AUDIT_WRITE_FAILED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading paused: the required risk decision record could not be stored."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 60,
+      "reason_code": "KILL_SWITCH_ACTIVE",
+      "recovery_action": "Resolve the cause, reconcile, document root cause, pass health checks, then obtain the section 9.5 clearing approvals.",
+      "rule_id": "DT.KILL_SWITCH_ACTIVE",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading is paused by the emergency safety control. You may only cancel or reduce positions while the account is reconciled."
+    },
+    {
+      "category": "account_risk",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "DEFINED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 61,
+      "reason_code": "ACCOUNT_LOCKED",
+      "recovery_action": "Complete the recovery tied to the lock reason and the section 10 operator review/approval requirements.",
+      "rule_id": "DT.ACCOUNT_LOCKED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [],
+      "user_message": "Trading is locked: {safe_lock_reason}. New positions remain disabled until {unlock_condition}."
+    },
+    {
+      "category": "order_safety",
+      "condition": {
+        "kind": "explicit_boolean_violation",
+        "trigger_value": true
+      },
+      "future_live_status": "UNRESOLVED_FAIL_CLOSED",
+      "missing_or_conflicting_input": "BLOCK_FAIL_CLOSED",
+      "override_allowed": false,
+      "override_authority": "NONE",
+      "priority": 62,
+      "reason_code": "LIVE_TRADING_DISABLED",
+      "recovery_action": "Keep the order in paper, or complete every criterion in section 13 and a separately recorded live go/no-go; the blocked order is never replayed live.",
+      "rule_id": "DT.LIVE_TRADING_DISABLED",
+      "source": {
+        "document": "docs/DAY_TRADING_RISK_GUARDRAILS.md",
+        "reason_section": "11",
+        "recovery_section": "11.1"
+      },
+      "unresolved_dependencies": [
+        "broker",
+        "legal",
+        "licensing",
+        "entitlement",
+        "compliance",
+        "jurisdiction",
+        "PDT",
+        "suitability",
+        "user_disclosure"
+      ],
+      "user_message": "Live-money execution is not enabled for this account. This order was not sent to a broker."
+    }
+  ],
+  "stateful_requirements": {
+    "durable_before_ack": true,
+    "fencing_token_required": true,
+    "restart_state": [
+      "daily_loss",
+      "weekly_loss",
+      "drawdown",
+      "high_water_mark",
+      "total_open_risk",
+      "daily_new_risk",
+      "partial_fills",
+      "idempotency",
+      "stale_state",
+      "lockout",
+      "kill_switch"
+    ],
+    "serializable_transactions": true,
+    "single_writer_per_account": true
+  },
+  "status": "RESEARCH_PAPER_ONLY"
+}

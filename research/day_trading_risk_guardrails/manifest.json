@@ -1,0 +1,5 @@
+{
+  "contract_sha256": "371004c0412f3bae7771a62414f95e2bc0e4ed8c98ef0821f76da8c270643ea3",
+  "generator": "research/day_trading_risk_guardrails/generate_contract.py",
+  "testvectors_sha256": "adb8fde576dce080ee71c60750d98b9ee6a4c72898384c1c133913f9bc2665bc"
+}

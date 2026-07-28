@@ -1,0 +1,3182 @@
+{
+  "contract_id": "day-trading-risk-guardrails",
+  "vectors": [
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 2500,
+        "observed": 2499
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "RISK_PER_TRADE_MAX",
+      "rule_id": "DT.RISK_PER_TRADE_MAX",
+      "testvector_id": "TV.RISK_PER_TRADE_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 2500,
+        "observed": 2500
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "RISK_PER_TRADE_MAX",
+      "rule_id": "DT.RISK_PER_TRADE_MAX",
+      "testvector_id": "TV.RISK_PER_TRADE_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_PER_TRADE_MAX"
+      },
+      "input": {
+        "limit": 2500,
+        "observed": 2501
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "RISK_PER_TRADE_MAX",
+      "rule_id": "DT.RISK_PER_TRADE_MAX",
+      "testvector_id": "TV.RISK_PER_TRADE_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "RISK_PER_TRADE_MAX",
+      "rule_id": "DT.RISK_PER_TRADE_MAX",
+      "testvector_id": "TV.RISK_PER_TRADE_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 15000,
+        "observed": 14999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "DAILY_LOSS_MAX",
+      "rule_id": "DT.DAILY_LOSS_MAX",
+      "testvector_id": "TV.DAILY_LOSS_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DAILY_LOSS_MAX"
+      },
+      "input": {
+        "limit": 15000,
+        "observed": 15000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "DAILY_LOSS_MAX",
+      "rule_id": "DT.DAILY_LOSS_MAX",
+      "testvector_id": "TV.DAILY_LOSS_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DAILY_LOSS_MAX"
+      },
+      "input": {
+        "limit": 15000,
+        "observed": 15001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "DAILY_LOSS_MAX",
+      "rule_id": "DT.DAILY_LOSS_MAX",
+      "testvector_id": "TV.DAILY_LOSS_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "DAILY_LOSS_MAX",
+      "rule_id": "DT.DAILY_LOSS_MAX",
+      "testvector_id": "TV.DAILY_LOSS_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 30000,
+        "observed": 29999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "WEEKLY_LOSS_MAX",
+      "rule_id": "DT.WEEKLY_LOSS_MAX",
+      "testvector_id": "TV.WEEKLY_LOSS_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "WEEKLY_LOSS_MAX"
+      },
+      "input": {
+        "limit": 30000,
+        "observed": 30000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "WEEKLY_LOSS_MAX",
+      "rule_id": "DT.WEEKLY_LOSS_MAX",
+      "testvector_id": "TV.WEEKLY_LOSS_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "WEEKLY_LOSS_MAX"
+      },
+      "input": {
+        "limit": 30000,
+        "observed": 30001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "WEEKLY_LOSS_MAX",
+      "rule_id": "DT.WEEKLY_LOSS_MAX",
+      "testvector_id": "TV.WEEKLY_LOSS_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "WEEKLY_LOSS_MAX",
+      "rule_id": "DT.WEEKLY_LOSS_MAX",
+      "testvector_id": "TV.WEEKLY_LOSS_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 60000,
+        "observed": 59999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "ACCOUNT_DRAWDOWN_MAX",
+      "rule_id": "DT.ACCOUNT_DRAWDOWN_MAX",
+      "testvector_id": "TV.ACCOUNT_DRAWDOWN_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "ACCOUNT_DRAWDOWN_MAX"
+      },
+      "input": {
+        "limit": 60000,
+        "observed": 60000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "ACCOUNT_DRAWDOWN_MAX",
+      "rule_id": "DT.ACCOUNT_DRAWDOWN_MAX",
+      "testvector_id": "TV.ACCOUNT_DRAWDOWN_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "ACCOUNT_DRAWDOWN_MAX"
+      },
+      "input": {
+        "limit": 60000,
+        "observed": 60001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "ACCOUNT_DRAWDOWN_MAX",
+      "rule_id": "DT.ACCOUNT_DRAWDOWN_MAX",
+      "testvector_id": "TV.ACCOUNT_DRAWDOWN_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "ACCOUNT_DRAWDOWN_MAX",
+      "rule_id": "DT.ACCOUNT_DRAWDOWN_MAX",
+      "testvector_id": "TV.ACCOUNT_DRAWDOWN_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 3,
+        "observed": 2
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "CONSECUTIVE_LOSSES_MAX",
+      "rule_id": "DT.CONSECUTIVE_LOSSES_MAX",
+      "testvector_id": "TV.CONSECUTIVE_LOSSES_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "CONSECUTIVE_LOSSES_MAX"
+      },
+      "input": {
+        "limit": 3,
+        "observed": 3
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "CONSECUTIVE_LOSSES_MAX",
+      "rule_id": "DT.CONSECUTIVE_LOSSES_MAX",
+      "testvector_id": "TV.CONSECUTIVE_LOSSES_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "CONSECUTIVE_LOSSES_MAX"
+      },
+      "input": {
+        "limit": 3,
+        "observed": 4
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "CONSECUTIVE_LOSSES_MAX",
+      "rule_id": "DT.CONSECUTIVE_LOSSES_MAX",
+      "testvector_id": "TV.CONSECUTIVE_LOSSES_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "CONSECUTIVE_LOSSES_MAX",
+      "rule_id": "DT.CONSECUTIVE_LOSSES_MAX",
+      "testvector_id": "TV.CONSECUTIVE_LOSSES_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 7500,
+        "observed": 7499
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "TOTAL_OPEN_RISK_MAX",
+      "rule_id": "DT.TOTAL_OPEN_RISK_MAX",
+      "testvector_id": "TV.TOTAL_OPEN_RISK_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 7500,
+        "observed": 7500
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "TOTAL_OPEN_RISK_MAX",
+      "rule_id": "DT.TOTAL_OPEN_RISK_MAX",
+      "testvector_id": "TV.TOTAL_OPEN_RISK_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "TOTAL_OPEN_RISK_MAX"
+      },
+      "input": {
+        "limit": 7500,
+        "observed": 7501
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "TOTAL_OPEN_RISK_MAX",
+      "rule_id": "DT.TOTAL_OPEN_RISK_MAX",
+      "testvector_id": "TV.TOTAL_OPEN_RISK_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "TOTAL_OPEN_RISK_MAX",
+      "rule_id": "DT.TOTAL_OPEN_RISK_MAX",
+      "testvector_id": "TV.TOTAL_OPEN_RISK_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 15000,
+        "observed": 14999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "DAILY_NEW_RISK_MAX",
+      "rule_id": "DT.DAILY_NEW_RISK_MAX",
+      "testvector_id": "TV.DAILY_NEW_RISK_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 15000,
+        "observed": 15000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "DAILY_NEW_RISK_MAX",
+      "rule_id": "DT.DAILY_NEW_RISK_MAX",
+      "testvector_id": "TV.DAILY_NEW_RISK_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DAILY_NEW_RISK_MAX"
+      },
+      "input": {
+        "limit": 15000,
+        "observed": 15001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "DAILY_NEW_RISK_MAX",
+      "rule_id": "DT.DAILY_NEW_RISK_MAX",
+      "testvector_id": "TV.DAILY_NEW_RISK_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "DAILY_NEW_RISK_MAX",
+      "rule_id": "DT.DAILY_NEW_RISK_MAX",
+      "testvector_id": "TV.DAILY_NEW_RISK_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 3,
+        "observed": 2
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "POSITION_COUNT_MAX",
+      "rule_id": "DT.POSITION_COUNT_MAX",
+      "testvector_id": "TV.POSITION_COUNT_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 3,
+        "observed": 3
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "POSITION_COUNT_MAX",
+      "rule_id": "DT.POSITION_COUNT_MAX",
+      "testvector_id": "TV.POSITION_COUNT_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "POSITION_COUNT_MAX"
+      },
+      "input": {
+        "limit": 3,
+        "observed": 4
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "POSITION_COUNT_MAX",
+      "rule_id": "DT.POSITION_COUNT_MAX",
+      "testvector_id": "TV.POSITION_COUNT_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "POSITION_COUNT_MAX",
+      "rule_id": "DT.POSITION_COUNT_MAX",
+      "testvector_id": "TV.POSITION_COUNT_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 250000,
+        "observed": 249999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "POSITION_NOTIONAL_MAX",
+      "rule_id": "DT.POSITION_NOTIONAL_MAX",
+      "testvector_id": "TV.POSITION_NOTIONAL_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 250000,
+        "observed": 250000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "POSITION_NOTIONAL_MAX",
+      "rule_id": "DT.POSITION_NOTIONAL_MAX",
+      "testvector_id": "TV.POSITION_NOTIONAL_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "POSITION_NOTIONAL_MAX"
+      },
+      "input": {
+        "limit": 250000,
+        "observed": 250001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "POSITION_NOTIONAL_MAX",
+      "rule_id": "DT.POSITION_NOTIONAL_MAX",
+      "testvector_id": "TV.POSITION_NOTIONAL_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "POSITION_NOTIONAL_MAX",
+      "rule_id": "DT.POSITION_NOTIONAL_MAX",
+      "testvector_id": "TV.POSITION_NOTIONAL_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 750000,
+        "observed": 749999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "GROSS_EXPOSURE_MAX",
+      "rule_id": "DT.GROSS_EXPOSURE_MAX",
+      "testvector_id": "TV.GROSS_EXPOSURE_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 750000,
+        "observed": 750000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "GROSS_EXPOSURE_MAX",
+      "rule_id": "DT.GROSS_EXPOSURE_MAX",
+      "testvector_id": "TV.GROSS_EXPOSURE_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "GROSS_EXPOSURE_MAX"
+      },
+      "input": {
+        "limit": 750000,
+        "observed": 750001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "GROSS_EXPOSURE_MAX",
+      "rule_id": "DT.GROSS_EXPOSURE_MAX",
+      "testvector_id": "TV.GROSS_EXPOSURE_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "GROSS_EXPOSURE_MAX",
+      "rule_id": "DT.GROSS_EXPOSURE_MAX",
+      "testvector_id": "TV.GROSS_EXPOSURE_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 250000,
+        "observed": 249999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "SECTOR_EXPOSURE_MAX",
+      "rule_id": "DT.SECTOR_EXPOSURE_MAX",
+      "testvector_id": "TV.SECTOR_EXPOSURE_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 250000,
+        "observed": 250000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "SECTOR_EXPOSURE_MAX",
+      "rule_id": "DT.SECTOR_EXPOSURE_MAX",
+      "testvector_id": "TV.SECTOR_EXPOSURE_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "SECTOR_EXPOSURE_MAX"
+      },
+      "input": {
+        "limit": 250000,
+        "observed": 250001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "SECTOR_EXPOSURE_MAX",
+      "rule_id": "DT.SECTOR_EXPOSURE_MAX",
+      "testvector_id": "TV.SECTOR_EXPOSURE_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "SECTOR_EXPOSURE_MAX",
+      "rule_id": "DT.SECTOR_EXPOSURE_MAX",
+      "testvector_id": "TV.SECTOR_EXPOSURE_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 350000,
+        "observed": 349999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "CORRELATED_EXPOSURE_MAX",
+      "rule_id": "DT.CORRELATED_EXPOSURE_MAX",
+      "testvector_id": "TV.CORRELATED_EXPOSURE_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 350000,
+        "observed": 350000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "CORRELATED_EXPOSURE_MAX",
+      "rule_id": "DT.CORRELATED_EXPOSURE_MAX",
+      "testvector_id": "TV.CORRELATED_EXPOSURE_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "CORRELATED_EXPOSURE_MAX"
+      },
+      "input": {
+        "limit": 350000,
+        "observed": 350001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "CORRELATED_EXPOSURE_MAX",
+      "rule_id": "DT.CORRELATED_EXPOSURE_MAX",
+      "testvector_id": "TV.CORRELATED_EXPOSURE_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "CORRELATED_EXPOSURE_MAX",
+      "rule_id": "DT.CORRELATED_EXPOSURE_MAX",
+      "testvector_id": "TV.CORRELATED_EXPOSURE_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "SECTOR_UNKNOWN",
+      "rule_id": "DT.SECTOR_UNKNOWN",
+      "testvector_id": "TV.SECTOR_UNKNOWN.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "SECTOR_UNKNOWN"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "SECTOR_UNKNOWN",
+      "rule_id": "DT.SECTOR_UNKNOWN",
+      "testvector_id": "TV.SECTOR_UNKNOWN.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "SECTOR_UNKNOWN",
+      "rule_id": "DT.SECTOR_UNKNOWN",
+      "testvector_id": "TV.SECTOR_UNKNOWN.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "AVERAGING_DOWN_BLOCKED",
+      "rule_id": "DT.AVERAGING_DOWN_BLOCKED",
+      "testvector_id": "TV.AVERAGING_DOWN_BLOCKED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "AVERAGING_DOWN_BLOCKED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "AVERAGING_DOWN_BLOCKED",
+      "rule_id": "DT.AVERAGING_DOWN_BLOCKED",
+      "testvector_id": "TV.AVERAGING_DOWN_BLOCKED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "AVERAGING_DOWN_BLOCKED",
+      "rule_id": "DT.AVERAGING_DOWN_BLOCKED",
+      "testvector_id": "TV.AVERAGING_DOWN_BLOCKED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "MARTINGALE_BLOCKED",
+      "rule_id": "DT.MARTINGALE_BLOCKED",
+      "testvector_id": "TV.MARTINGALE_BLOCKED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "MARTINGALE_BLOCKED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "MARTINGALE_BLOCKED",
+      "rule_id": "DT.MARTINGALE_BLOCKED",
+      "testvector_id": "TV.MARTINGALE_BLOCKED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "MARTINGALE_BLOCKED",
+      "rule_id": "DT.MARTINGALE_BLOCKED",
+      "testvector_id": "TV.MARTINGALE_BLOCKED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 1000,
+        "observed": 999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "QUOTE_STALE",
+      "rule_id": "DT.QUOTE_STALE",
+      "testvector_id": "TV.QUOTE_STALE.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 1000,
+        "observed": 1000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "QUOTE_STALE",
+      "rule_id": "DT.QUOTE_STALE",
+      "testvector_id": "TV.QUOTE_STALE.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "QUOTE_STALE"
+      },
+      "input": {
+        "limit": 1000,
+        "observed": 1001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "QUOTE_STALE",
+      "rule_id": "DT.QUOTE_STALE",
+      "testvector_id": "TV.QUOTE_STALE.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "QUOTE_STALE",
+      "rule_id": "DT.QUOTE_STALE",
+      "testvector_id": "TV.QUOTE_STALE.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "QUOTE_INVALID",
+      "rule_id": "DT.QUOTE_INVALID",
+      "testvector_id": "TV.QUOTE_INVALID.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "QUOTE_INVALID"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "QUOTE_INVALID",
+      "rule_id": "DT.QUOTE_INVALID",
+      "testvector_id": "TV.QUOTE_INVALID.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "QUOTE_INVALID",
+      "rule_id": "DT.QUOTE_INVALID",
+      "testvector_id": "TV.QUOTE_INVALID.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "DATA_FEED_UNHEALTHY",
+      "rule_id": "DT.DATA_FEED_UNHEALTHY",
+      "testvector_id": "TV.DATA_FEED_UNHEALTHY.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DATA_FEED_UNHEALTHY"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "DATA_FEED_UNHEALTHY",
+      "rule_id": "DT.DATA_FEED_UNHEALTHY",
+      "testvector_id": "TV.DATA_FEED_UNHEALTHY.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "DATA_FEED_UNHEALTHY",
+      "rule_id": "DT.DATA_FEED_UNHEALTHY",
+      "testvector_id": "TV.DATA_FEED_UNHEALTHY.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "SPREAD_MAX",
+      "rule_id": "DT.SPREAD_MAX",
+      "testvector_id": "TV.SPREAD_MAX.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "SPREAD_MAX"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "SPREAD_MAX",
+      "rule_id": "DT.SPREAD_MAX",
+      "testvector_id": "TV.SPREAD_MAX.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "SPREAD_MAX",
+      "rule_id": "DT.SPREAD_MAX",
+      "testvector_id": "TV.SPREAD_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "DISPLAYED_SIZE_MIN",
+      "rule_id": "DT.DISPLAYED_SIZE_MIN",
+      "testvector_id": "TV.DISPLAYED_SIZE_MIN.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DISPLAYED_SIZE_MIN"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "DISPLAYED_SIZE_MIN",
+      "rule_id": "DT.DISPLAYED_SIZE_MIN",
+      "testvector_id": "TV.DISPLAYED_SIZE_MIN.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "DISPLAYED_SIZE_MIN",
+      "rule_id": "DT.DISPLAYED_SIZE_MIN",
+      "testvector_id": "TV.DISPLAYED_SIZE_MIN.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DOLLAR_VOLUME_MIN"
+      },
+      "input": {
+        "limit": 1500000000,
+        "observed": 1499999999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "DOLLAR_VOLUME_MIN",
+      "rule_id": "DT.DOLLAR_VOLUME_MIN",
+      "testvector_id": "TV.DOLLAR_VOLUME_MIN.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 1500000000,
+        "observed": 1500000000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "DOLLAR_VOLUME_MIN",
+      "rule_id": "DT.DOLLAR_VOLUME_MIN",
+      "testvector_id": "TV.DOLLAR_VOLUME_MIN.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 1500000000,
+        "observed": 1500000001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "DOLLAR_VOLUME_MIN",
+      "rule_id": "DT.DOLLAR_VOLUME_MIN",
+      "testvector_id": "TV.DOLLAR_VOLUME_MIN.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "DOLLAR_VOLUME_MIN",
+      "rule_id": "DT.DOLLAR_VOLUME_MIN",
+      "testvector_id": "TV.DOLLAR_VOLUME_MIN.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "DOLLAR_VOLUME_HISTORY",
+      "rule_id": "DT.DOLLAR_VOLUME_HISTORY",
+      "testvector_id": "TV.DOLLAR_VOLUME_HISTORY.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DOLLAR_VOLUME_HISTORY"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "DOLLAR_VOLUME_HISTORY",
+      "rule_id": "DT.DOLLAR_VOLUME_HISTORY",
+      "testvector_id": "TV.DOLLAR_VOLUME_HISTORY.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "DOLLAR_VOLUME_HISTORY",
+      "rule_id": "DT.DOLLAR_VOLUME_HISTORY",
+      "testvector_id": "TV.DOLLAR_VOLUME_HISTORY.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "PRICE_MIN"
+      },
+      "input": {
+        "limit": 500,
+        "observed": 499
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "PRICE_MIN",
+      "rule_id": "DT.PRICE_MIN",
+      "testvector_id": "TV.PRICE_MIN.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 500,
+        "observed": 500
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "PRICE_MIN",
+      "rule_id": "DT.PRICE_MIN",
+      "testvector_id": "TV.PRICE_MIN.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 500,
+        "observed": 501
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "PRICE_MIN",
+      "rule_id": "DT.PRICE_MIN",
+      "testvector_id": "TV.PRICE_MIN.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "PRICE_MIN",
+      "rule_id": "DT.PRICE_MIN",
+      "testvector_id": "TV.PRICE_MIN.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "INSTRUMENT_INELIGIBLE",
+      "rule_id": "DT.INSTRUMENT_INELIGIBLE",
+      "testvector_id": "TV.INSTRUMENT_INELIGIBLE.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "INSTRUMENT_INELIGIBLE"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "INSTRUMENT_INELIGIBLE",
+      "rule_id": "DT.INSTRUMENT_INELIGIBLE",
+      "testvector_id": "TV.INSTRUMENT_INELIGIBLE.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "INSTRUMENT_INELIGIBLE",
+      "rule_id": "DT.INSTRUMENT_INELIGIBLE",
+      "testvector_id": "TV.INSTRUMENT_INELIGIBLE.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "PARTIAL_IEX_LIVE_BLOCK",
+      "rule_id": "DT.PARTIAL_IEX_LIVE_BLOCK",
+      "testvector_id": "TV.PARTIAL_IEX_LIVE_BLOCK.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "PARTIAL_IEX_LIVE_BLOCK"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "PARTIAL_IEX_LIVE_BLOCK",
+      "rule_id": "DT.PARTIAL_IEX_LIVE_BLOCK",
+      "testvector_id": "TV.PARTIAL_IEX_LIVE_BLOCK.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "PARTIAL_IEX_LIVE_BLOCK",
+      "rule_id": "DT.PARTIAL_IEX_LIVE_BLOCK",
+      "testvector_id": "TV.PARTIAL_IEX_LIVE_BLOCK.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "DATA_ENTITLEMENT_UNVERIFIED",
+      "rule_id": "DT.DATA_ENTITLEMENT_UNVERIFIED",
+      "testvector_id": "TV.DATA_ENTITLEMENT_UNVERIFIED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DATA_ENTITLEMENT_UNVERIFIED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "DATA_ENTITLEMENT_UNVERIFIED",
+      "rule_id": "DT.DATA_ENTITLEMENT_UNVERIFIED",
+      "testvector_id": "TV.DATA_ENTITLEMENT_UNVERIFIED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "DATA_ENTITLEMENT_UNVERIFIED",
+      "rule_id": "DT.DATA_ENTITLEMENT_UNVERIFIED",
+      "testvector_id": "TV.DATA_ENTITLEMENT_UNVERIFIED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 20000,
+        "observed": 19999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "VOLATILITY_MAX",
+      "rule_id": "DT.VOLATILITY_MAX",
+      "testvector_id": "TV.VOLATILITY_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "VOLATILITY_MAX"
+      },
+      "input": {
+        "limit": 20000,
+        "observed": 20000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "VOLATILITY_MAX",
+      "rule_id": "DT.VOLATILITY_MAX",
+      "testvector_id": "TV.VOLATILITY_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "VOLATILITY_MAX"
+      },
+      "input": {
+        "limit": 20000,
+        "observed": 20001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "VOLATILITY_MAX",
+      "rule_id": "DT.VOLATILITY_MAX",
+      "testvector_id": "TV.VOLATILITY_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "VOLATILITY_MAX",
+      "rule_id": "DT.VOLATILITY_MAX",
+      "testvector_id": "TV.VOLATILITY_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 60000,
+        "observed": 59999
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "ABNORMAL_GAP",
+      "rule_id": "DT.ABNORMAL_GAP",
+      "testvector_id": "TV.ABNORMAL_GAP.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "ABNORMAL_GAP"
+      },
+      "input": {
+        "limit": 60000,
+        "observed": 60000
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "ABNORMAL_GAP",
+      "rule_id": "DT.ABNORMAL_GAP",
+      "testvector_id": "TV.ABNORMAL_GAP.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "ABNORMAL_GAP"
+      },
+      "input": {
+        "limit": 60000,
+        "observed": 60001
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "ABNORMAL_GAP",
+      "rule_id": "DT.ABNORMAL_GAP",
+      "testvector_id": "TV.ABNORMAL_GAP.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "ABNORMAL_GAP",
+      "rule_id": "DT.ABNORMAL_GAP",
+      "testvector_id": "TV.ABNORMAL_GAP.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "TRADING_HALT",
+      "rule_id": "DT.TRADING_HALT",
+      "testvector_id": "TV.TRADING_HALT.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "TRADING_HALT"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "TRADING_HALT",
+      "rule_id": "DT.TRADING_HALT",
+      "testvector_id": "TV.TRADING_HALT.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "TRADING_HALT",
+      "rule_id": "DT.TRADING_HALT",
+      "testvector_id": "TV.TRADING_HALT.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "LULD_PAUSE",
+      "rule_id": "DT.LULD_PAUSE",
+      "testvector_id": "TV.LULD_PAUSE.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "LULD_PAUSE"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "LULD_PAUSE",
+      "rule_id": "DT.LULD_PAUSE",
+      "testvector_id": "TV.LULD_PAUSE.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "LULD_PAUSE",
+      "rule_id": "DT.LULD_PAUSE",
+      "testvector_id": "TV.LULD_PAUSE.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "SSR_SHORT_BLOCK",
+      "rule_id": "DT.SSR_SHORT_BLOCK",
+      "testvector_id": "TV.SSR_SHORT_BLOCK.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "SSR_SHORT_BLOCK"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "SSR_SHORT_BLOCK",
+      "rule_id": "DT.SSR_SHORT_BLOCK",
+      "testvector_id": "TV.SSR_SHORT_BLOCK.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "SSR_SHORT_BLOCK",
+      "rule_id": "DT.SSR_SHORT_BLOCK",
+      "testvector_id": "TV.SSR_SHORT_BLOCK.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "SHORTS_DISABLED",
+      "rule_id": "DT.SHORTS_DISABLED",
+      "testvector_id": "TV.SHORTS_DISABLED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "SHORTS_DISABLED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "SHORTS_DISABLED",
+      "rule_id": "DT.SHORTS_DISABLED",
+      "testvector_id": "TV.SHORTS_DISABLED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "SHORTS_DISABLED",
+      "rule_id": "DT.SHORTS_DISABLED",
+      "testvector_id": "TV.SHORTS_DISABLED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "SESSION_NOT_REGULAR",
+      "rule_id": "DT.SESSION_NOT_REGULAR",
+      "testvector_id": "TV.SESSION_NOT_REGULAR.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "SESSION_NOT_REGULAR"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "SESSION_NOT_REGULAR",
+      "rule_id": "DT.SESSION_NOT_REGULAR",
+      "testvector_id": "TV.SESSION_NOT_REGULAR.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "SESSION_NOT_REGULAR",
+      "rule_id": "DT.SESSION_NOT_REGULAR",
+      "testvector_id": "TV.SESSION_NOT_REGULAR.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "AUCTION_RESTRICTED",
+      "rule_id": "DT.AUCTION_RESTRICTED",
+      "testvector_id": "TV.AUCTION_RESTRICTED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "AUCTION_RESTRICTED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "AUCTION_RESTRICTED",
+      "rule_id": "DT.AUCTION_RESTRICTED",
+      "testvector_id": "TV.AUCTION_RESTRICTED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "AUCTION_RESTRICTED",
+      "rule_id": "DT.AUCTION_RESTRICTED",
+      "testvector_id": "TV.AUCTION_RESTRICTED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "FIRST_MINUTE_BLOCK",
+      "rule_id": "DT.FIRST_MINUTE_BLOCK",
+      "testvector_id": "TV.FIRST_MINUTE_BLOCK.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "FIRST_MINUTE_BLOCK"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "FIRST_MINUTE_BLOCK",
+      "rule_id": "DT.FIRST_MINUTE_BLOCK",
+      "testvector_id": "TV.FIRST_MINUTE_BLOCK.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "FIRST_MINUTE_BLOCK",
+      "rule_id": "DT.FIRST_MINUTE_BLOCK",
+      "testvector_id": "TV.FIRST_MINUTE_BLOCK.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "FINAL_MINUTE_BLOCK",
+      "rule_id": "DT.FINAL_MINUTE_BLOCK",
+      "testvector_id": "TV.FINAL_MINUTE_BLOCK.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "FINAL_MINUTE_BLOCK"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "FINAL_MINUTE_BLOCK",
+      "rule_id": "DT.FINAL_MINUTE_BLOCK",
+      "testvector_id": "TV.FINAL_MINUTE_BLOCK.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "FINAL_MINUTE_BLOCK",
+      "rule_id": "DT.FINAL_MINUTE_BLOCK",
+      "testvector_id": "TV.FINAL_MINUTE_BLOCK.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "OPENING_WINDOW",
+      "rule_id": "DT.OPENING_WINDOW",
+      "testvector_id": "TV.OPENING_WINDOW.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "OPENING_WINDOW"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "OPENING_WINDOW",
+      "rule_id": "DT.OPENING_WINDOW",
+      "testvector_id": "TV.OPENING_WINDOW.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "OPENING_WINDOW",
+      "rule_id": "DT.OPENING_WINDOW",
+      "testvector_id": "TV.OPENING_WINDOW.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "NEW_RISK_CUTOFF",
+      "rule_id": "DT.NEW_RISK_CUTOFF",
+      "testvector_id": "TV.NEW_RISK_CUTOFF.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "NEW_RISK_CUTOFF"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "NEW_RISK_CUTOFF",
+      "rule_id": "DT.NEW_RISK_CUTOFF",
+      "testvector_id": "TV.NEW_RISK_CUTOFF.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "NEW_RISK_CUTOFF",
+      "rule_id": "DT.NEW_RISK_CUTOFF",
+      "testvector_id": "TV.NEW_RISK_CUTOFF.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "FLATTEN_REQUIRED",
+      "rule_id": "DT.FLATTEN_REQUIRED",
+      "testvector_id": "TV.FLATTEN_REQUIRED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "FLATTEN_REQUIRED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "FLATTEN_REQUIRED",
+      "rule_id": "DT.FLATTEN_REQUIRED",
+      "testvector_id": "TV.FLATTEN_REQUIRED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "FLATTEN_REQUIRED",
+      "rule_id": "DT.FLATTEN_REQUIRED",
+      "testvector_id": "TV.FLATTEN_REQUIRED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "EARNINGS_BLACKOUT",
+      "rule_id": "DT.EARNINGS_BLACKOUT",
+      "testvector_id": "TV.EARNINGS_BLACKOUT.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "EARNINGS_BLACKOUT"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "EARNINGS_BLACKOUT",
+      "rule_id": "DT.EARNINGS_BLACKOUT",
+      "testvector_id": "TV.EARNINGS_BLACKOUT.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "EARNINGS_BLACKOUT",
+      "rule_id": "DT.EARNINGS_BLACKOUT",
+      "testvector_id": "TV.EARNINGS_BLACKOUT.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "BREAKING_NEWS",
+      "rule_id": "DT.BREAKING_NEWS",
+      "testvector_id": "TV.BREAKING_NEWS.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "BREAKING_NEWS"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "BREAKING_NEWS",
+      "rule_id": "DT.BREAKING_NEWS",
+      "testvector_id": "TV.BREAKING_NEWS.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "BREAKING_NEWS",
+      "rule_id": "DT.BREAKING_NEWS",
+      "testvector_id": "TV.BREAKING_NEWS.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "NEWS_FEED_UNHEALTHY",
+      "rule_id": "DT.NEWS_FEED_UNHEALTHY",
+      "testvector_id": "TV.NEWS_FEED_UNHEALTHY.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "NEWS_FEED_UNHEALTHY"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "NEWS_FEED_UNHEALTHY",
+      "rule_id": "DT.NEWS_FEED_UNHEALTHY",
+      "testvector_id": "TV.NEWS_FEED_UNHEALTHY.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "NEWS_FEED_UNHEALTHY",
+      "rule_id": "DT.NEWS_FEED_UNHEALTHY",
+      "testvector_id": "TV.NEWS_FEED_UNHEALTHY.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "ECONOMIC_EVENT",
+      "rule_id": "DT.ECONOMIC_EVENT",
+      "testvector_id": "TV.ECONOMIC_EVENT.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "ECONOMIC_EVENT"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "ECONOMIC_EVENT",
+      "rule_id": "DT.ECONOMIC_EVENT",
+      "testvector_id": "TV.ECONOMIC_EVENT.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "ECONOMIC_EVENT",
+      "rule_id": "DT.ECONOMIC_EVENT",
+      "testvector_id": "TV.ECONOMIC_EVENT.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "FED_EVENT",
+      "rule_id": "DT.FED_EVENT",
+      "testvector_id": "TV.FED_EVENT.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "FED_EVENT"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "FED_EVENT",
+      "rule_id": "DT.FED_EVENT",
+      "testvector_id": "TV.FED_EVENT.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "FED_EVENT",
+      "rule_id": "DT.FED_EVENT",
+      "testvector_id": "TV.FED_EVENT.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "EVENT_DATA_UNHEALTHY",
+      "rule_id": "DT.EVENT_DATA_UNHEALTHY",
+      "testvector_id": "TV.EVENT_DATA_UNHEALTHY.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "EVENT_DATA_UNHEALTHY"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "EVENT_DATA_UNHEALTHY",
+      "rule_id": "DT.EVENT_DATA_UNHEALTHY",
+      "testvector_id": "TV.EVENT_DATA_UNHEALTHY.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "EVENT_DATA_UNHEALTHY",
+      "rule_id": "DT.EVENT_DATA_UNHEALTHY",
+      "testvector_id": "TV.EVENT_DATA_UNHEALTHY.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "ORDER_TYPE_UNSUPPORTED",
+      "rule_id": "DT.ORDER_TYPE_UNSUPPORTED",
+      "testvector_id": "TV.ORDER_TYPE_UNSUPPORTED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "ORDER_TYPE_UNSUPPORTED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "ORDER_TYPE_UNSUPPORTED",
+      "rule_id": "DT.ORDER_TYPE_UNSUPPORTED",
+      "testvector_id": "TV.ORDER_TYPE_UNSUPPORTED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "ORDER_TYPE_UNSUPPORTED",
+      "rule_id": "DT.ORDER_TYPE_UNSUPPORTED",
+      "testvector_id": "TV.ORDER_TYPE_UNSUPPORTED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 1500,
+        "observed": 1499
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "SLIPPAGE_MAX",
+      "rule_id": "DT.SLIPPAGE_MAX",
+      "testvector_id": "TV.SLIPPAGE_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 1500,
+        "observed": 1500
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "SLIPPAGE_MAX",
+      "rule_id": "DT.SLIPPAGE_MAX",
+      "testvector_id": "TV.SLIPPAGE_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "SLIPPAGE_MAX"
+      },
+      "input": {
+        "limit": 1500,
+        "observed": 1501
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "SLIPPAGE_MAX",
+      "rule_id": "DT.SLIPPAGE_MAX",
+      "testvector_id": "TV.SLIPPAGE_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "SLIPPAGE_MAX",
+      "rule_id": "DT.SLIPPAGE_MAX",
+      "testvector_id": "TV.SLIPPAGE_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 750,
+        "observed": 749
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "LATENCY_MAX",
+      "rule_id": "DT.LATENCY_MAX",
+      "testvector_id": "TV.LATENCY_MAX.JUST_BELOW"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "limit": 750,
+        "observed": 750
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "LATENCY_MAX",
+      "rule_id": "DT.LATENCY_MAX",
+      "testvector_id": "TV.LATENCY_MAX.EQUAL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "LATENCY_MAX"
+      },
+      "input": {
+        "limit": 750,
+        "observed": 751
+      },
+      "kind": "boundary",
+      "mode": "PAPER",
+      "reason_code": "LATENCY_MAX",
+      "rule_id": "DT.LATENCY_MAX",
+      "testvector_id": "TV.LATENCY_MAX.JUST_ABOVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "LATENCY_MAX",
+      "rule_id": "DT.LATENCY_MAX",
+      "testvector_id": "TV.LATENCY_MAX.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "CLOCK_UNSYNCHRONIZED",
+      "rule_id": "DT.CLOCK_UNSYNCHRONIZED",
+      "testvector_id": "TV.CLOCK_UNSYNCHRONIZED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "CLOCK_UNSYNCHRONIZED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "CLOCK_UNSYNCHRONIZED",
+      "rule_id": "DT.CLOCK_UNSYNCHRONIZED",
+      "testvector_id": "TV.CLOCK_UNSYNCHRONIZED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "CLOCK_UNSYNCHRONIZED",
+      "rule_id": "DT.CLOCK_UNSYNCHRONIZED",
+      "testvector_id": "TV.CLOCK_UNSYNCHRONIZED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "DUPLICATE_ORDER",
+      "rule_id": "DT.DUPLICATE_ORDER",
+      "testvector_id": "TV.DUPLICATE_ORDER.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DUPLICATE_ORDER"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "DUPLICATE_ORDER",
+      "rule_id": "DT.DUPLICATE_ORDER",
+      "testvector_id": "TV.DUPLICATE_ORDER.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "DUPLICATE_ORDER",
+      "rule_id": "DT.DUPLICATE_ORDER",
+      "testvector_id": "TV.DUPLICATE_ORDER.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "STALE_STATE",
+      "rule_id": "DT.STALE_STATE",
+      "testvector_id": "TV.STALE_STATE.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "STALE_STATE"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "STALE_STATE",
+      "rule_id": "DT.STALE_STATE",
+      "testvector_id": "TV.STALE_STATE.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "STALE_STATE",
+      "rule_id": "DT.STALE_STATE",
+      "testvector_id": "TV.STALE_STATE.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "CONCURRENT_STATE_CONFLICT",
+      "rule_id": "DT.CONCURRENT_STATE_CONFLICT",
+      "testvector_id": "TV.CONCURRENT_STATE_CONFLICT.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "CONCURRENT_STATE_CONFLICT"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "CONCURRENT_STATE_CONFLICT",
+      "rule_id": "DT.CONCURRENT_STATE_CONFLICT",
+      "testvector_id": "TV.CONCURRENT_STATE_CONFLICT.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "CONCURRENT_STATE_CONFLICT",
+      "rule_id": "DT.CONCURRENT_STATE_CONFLICT",
+      "testvector_id": "TV.CONCURRENT_STATE_CONFLICT.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "ORDER_STATE_UNKNOWN",
+      "rule_id": "DT.ORDER_STATE_UNKNOWN",
+      "testvector_id": "TV.ORDER_STATE_UNKNOWN.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "ORDER_STATE_UNKNOWN"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "ORDER_STATE_UNKNOWN",
+      "rule_id": "DT.ORDER_STATE_UNKNOWN",
+      "testvector_id": "TV.ORDER_STATE_UNKNOWN.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "ORDER_STATE_UNKNOWN",
+      "rule_id": "DT.ORDER_STATE_UNKNOWN",
+      "testvector_id": "TV.ORDER_STATE_UNKNOWN.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "PARTIAL_FILL_RISK",
+      "rule_id": "DT.PARTIAL_FILL_RISK",
+      "testvector_id": "TV.PARTIAL_FILL_RISK.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "PARTIAL_FILL_RISK"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "PARTIAL_FILL_RISK",
+      "rule_id": "DT.PARTIAL_FILL_RISK",
+      "testvector_id": "TV.PARTIAL_FILL_RISK.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "PARTIAL_FILL_RISK",
+      "rule_id": "DT.PARTIAL_FILL_RISK",
+      "testvector_id": "TV.PARTIAL_FILL_RISK.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "BROKER_REJECTION",
+      "rule_id": "DT.BROKER_REJECTION",
+      "testvector_id": "TV.BROKER_REJECTION.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "BROKER_REJECTION"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "BROKER_REJECTION",
+      "rule_id": "DT.BROKER_REJECTION",
+      "testvector_id": "TV.BROKER_REJECTION.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "BROKER_REJECTION",
+      "rule_id": "DT.BROKER_REJECTION",
+      "testvector_id": "TV.BROKER_REJECTION.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "BROKER_DISCONNECTED",
+      "rule_id": "DT.BROKER_DISCONNECTED",
+      "testvector_id": "TV.BROKER_DISCONNECTED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "BROKER_DISCONNECTED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "BROKER_DISCONNECTED",
+      "rule_id": "DT.BROKER_DISCONNECTED",
+      "testvector_id": "TV.BROKER_DISCONNECTED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "BROKER_DISCONNECTED",
+      "rule_id": "DT.BROKER_DISCONNECTED",
+      "testvector_id": "TV.BROKER_DISCONNECTED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "PROTECTIVE_STOP_INVALID",
+      "rule_id": "DT.PROTECTIVE_STOP_INVALID",
+      "testvector_id": "TV.PROTECTIVE_STOP_INVALID.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "PROTECTIVE_STOP_INVALID"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "PROTECTIVE_STOP_INVALID",
+      "rule_id": "DT.PROTECTIVE_STOP_INVALID",
+      "testvector_id": "TV.PROTECTIVE_STOP_INVALID.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "PROTECTIVE_STOP_INVALID",
+      "rule_id": "DT.PROTECTIVE_STOP_INVALID",
+      "testvector_id": "TV.PROTECTIVE_STOP_INVALID.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "RISK_STATE_UNAVAILABLE",
+      "rule_id": "DT.RISK_STATE_UNAVAILABLE",
+      "testvector_id": "TV.RISK_STATE_UNAVAILABLE.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "RISK_STATE_UNAVAILABLE",
+      "rule_id": "DT.RISK_STATE_UNAVAILABLE",
+      "testvector_id": "TV.RISK_STATE_UNAVAILABLE.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "RISK_STATE_UNAVAILABLE",
+      "rule_id": "DT.RISK_STATE_UNAVAILABLE",
+      "testvector_id": "TV.RISK_STATE_UNAVAILABLE.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "AUDIT_WRITE_FAILED",
+      "rule_id": "DT.AUDIT_WRITE_FAILED",
+      "testvector_id": "TV.AUDIT_WRITE_FAILED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "AUDIT_WRITE_FAILED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "AUDIT_WRITE_FAILED",
+      "rule_id": "DT.AUDIT_WRITE_FAILED",
+      "testvector_id": "TV.AUDIT_WRITE_FAILED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "AUDIT_WRITE_FAILED",
+      "rule_id": "DT.AUDIT_WRITE_FAILED",
+      "testvector_id": "TV.AUDIT_WRITE_FAILED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "KILL_SWITCH_ACTIVE",
+      "rule_id": "DT.KILL_SWITCH_ACTIVE",
+      "testvector_id": "TV.KILL_SWITCH_ACTIVE.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "KILL_SWITCH_ACTIVE"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "KILL_SWITCH_ACTIVE",
+      "rule_id": "DT.KILL_SWITCH_ACTIVE",
+      "testvector_id": "TV.KILL_SWITCH_ACTIVE.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "KILL_SWITCH_ACTIVE",
+      "rule_id": "DT.KILL_SWITCH_ACTIVE",
+      "testvector_id": "TV.KILL_SWITCH_ACTIVE.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "ACCOUNT_LOCKED",
+      "rule_id": "DT.ACCOUNT_LOCKED",
+      "testvector_id": "TV.ACCOUNT_LOCKED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "ACCOUNT_LOCKED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "ACCOUNT_LOCKED",
+      "rule_id": "DT.ACCOUNT_LOCKED",
+      "testvector_id": "TV.ACCOUNT_LOCKED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "ACCOUNT_LOCKED",
+      "rule_id": "DT.ACCOUNT_LOCKED",
+      "testvector_id": "TV.ACCOUNT_LOCKED.MISSING"
+    },
+    {
+      "expected": {
+        "decision": "ALLOW",
+        "primary_reason": null
+      },
+      "input": {
+        "violation": false
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "LIVE_TRADING_DISABLED",
+      "rule_id": "DT.LIVE_TRADING_DISABLED",
+      "testvector_id": "TV.LIVE_TRADING_DISABLED.NEGATIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "LIVE_TRADING_DISABLED"
+      },
+      "input": {
+        "violation": true
+      },
+      "kind": "boolean",
+      "mode": "PAPER",
+      "reason_code": "LIVE_TRADING_DISABLED",
+      "rule_id": "DT.LIVE_TRADING_DISABLED",
+      "testvector_id": "TV.LIVE_TRADING_DISABLED.POSITIVE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "input": {
+        "required_input": null
+      },
+      "kind": "fail_closed",
+      "mode": "PAPER",
+      "reason_code": "LIVE_TRADING_DISABLED",
+      "rule_id": "DT.LIVE_TRADING_DISABLED",
+      "testvector_id": "TV.LIVE_TRADING_DISABLED.MISSING"
+    },
+    {
+      "active_reasons": [
+        "QUOTE_STALE",
+        "SPREAD_MAX"
+      ],
+      "expected": {
+        "all_reasons": [
+          "QUOTE_STALE",
+          "SPREAD_MAX"
+        ],
+        "decision": "BLOCK",
+        "primary_reason": "QUOTE_STALE"
+      },
+      "kind": "multi_block",
+      "mode": "PAPER",
+      "testvector_id": "TV.MULTI.01"
+    },
+    {
+      "active_reasons": [
+        "SPREAD_MAX",
+        "DAILY_LOSS_MAX",
+        "EARNINGS_BLACKOUT"
+      ],
+      "expected": {
+        "all_reasons": [
+          "DAILY_LOSS_MAX",
+          "SPREAD_MAX",
+          "EARNINGS_BLACKOUT"
+        ],
+        "decision": "BLOCK",
+        "primary_reason": "DAILY_LOSS_MAX"
+      },
+      "kind": "multi_block",
+      "mode": "PAPER",
+      "testvector_id": "TV.MULTI.02"
+    },
+    {
+      "active_reasons": [
+        "LATENCY_MAX",
+        "TRADING_HALT",
+        "DUPLICATE_ORDER"
+      ],
+      "expected": {
+        "all_reasons": [
+          "TRADING_HALT",
+          "LATENCY_MAX",
+          "DUPLICATE_ORDER"
+        ],
+        "decision": "BLOCK",
+        "primary_reason": "TRADING_HALT"
+      },
+      "kind": "multi_block",
+      "mode": "PAPER",
+      "testvector_id": "TV.MULTI.03"
+    },
+    {
+      "active_reasons": [
+        "RISK_STATE_UNAVAILABLE",
+        "ACCOUNT_LOCKED",
+        "KILL_SWITCH_ACTIVE"
+      ],
+      "expected": {
+        "all_reasons": [
+          "RISK_STATE_UNAVAILABLE",
+          "KILL_SWITCH_ACTIVE",
+          "ACCOUNT_LOCKED"
+        ],
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE"
+      },
+      "kind": "multi_block",
+      "mode": "PAPER",
+      "testvector_id": "TV.MULTI.04"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DAILY_LOSS_MAX",
+        "state_persists_restart": false
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "fill_loss",
+        "mark_to_market"
+      ],
+      "testvector_id": "TV.STATE_DAILY_LOSS"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "WEEKLY_LOSS_MAX",
+        "state_persists_restart": false
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "begin_rolling_window",
+        "session_losses_x5"
+      ],
+      "testvector_id": "TV.STATE_WEEKLY_LOSS"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "ACCOUNT_DRAWDOWN_MAX",
+        "state_persists_restart": false
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "new_high_water",
+        "equity_decline"
+      ],
+      "testvector_id": "TV.STATE_DRAWDOWN"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "TOTAL_OPEN_RISK_MAX",
+        "state_persists_restart": false
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "reserve_order",
+        "partial_fill"
+      ],
+      "testvector_id": "TV.STATE_OPEN_RISK"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "DAILY_NEW_RISK_MAX",
+        "state_persists_restart": false
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "accept_order",
+        "cancel_unfilled"
+      ],
+      "testvector_id": "TV.STATE_NEW_RISK"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "PARTIAL_FILL_RISK",
+        "state_persists_restart": false
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "partial_fill",
+        "protect_timeout"
+      ],
+      "testvector_id": "TV.STATE_PARTIAL_FILL"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "STALE_STATE",
+        "state_persists_restart": false
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "decision",
+        "state_version_change"
+      ],
+      "testvector_id": "TV.STATE_STALE"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "BROKER_DISCONNECTED",
+        "state_persists_restart": false
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "broker_disconnect",
+        "reconnect_without_reconcile"
+      ],
+      "testvector_id": "TV.STATE_RECONNECT"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "RISK_STATE_UNAVAILABLE",
+        "state_persists_restart": true
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "restart",
+        "unreconciled_state"
+      ],
+      "testvector_id": "TV.STATE_RESTART"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "KILL_SWITCH_ACTIVE",
+        "state_persists_restart": true
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "kill_switch",
+        "restart"
+      ],
+      "testvector_id": "TV.STATE_KILL_LOCK"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "CONCURRENT_STATE_CONFLICT",
+        "state_persists_restart": false
+      },
+      "kind": "stateful",
+      "mode": "PAPER",
+      "steps": [
+        "worker_a_fence",
+        "worker_b_stale_fence"
+      ],
+      "testvector_id": "TV.STATE_MULTI_WORKER"
+    },
+    {
+      "expected": {
+        "decision": "BLOCK",
+        "primary_reason": "LIVE_TRADING_DISABLED"
+      },
+      "kind": "future_live_fail_closed",
+      "mode": "FUTURE_LIVE",
+      "testvector_id": "TV.FUTURE_LIVE.UNRESOLVED",
+      "unresolved_dependencies": [
+        "PDT",
+        "broker",
+        "compliance",
+        "data_provider",
+        "entitlement",
+        "jurisdiction",
+        "legal",
+        "licensing",
+        "short_sale",
+        "suitability",
+        "user_disclosure"
+      ]
+    }
+  ]
+}
