@@ -25,6 +25,7 @@ from coach.coach_engine import analyze_completed_trade
 from saas.middleware import RateLimitReadyMiddleware
 from saas.router import router as saas_router
 from saas.invites import router as beta_invites_router
+from saas.admin import router as beta_admin_router
 from briefing import build_daily_briefing
 from universe.universe_registry import (
     all_universe_health,
@@ -41,6 +42,7 @@ app = FastAPI(title="BEAU AI TRADER API")
 app.add_middleware(RateLimitReadyMiddleware)
 app.include_router(saas_router)
 app.include_router(beta_invites_router)
+app.include_router(beta_admin_router)
 
 
 class BacktestRequest(BaseModel):

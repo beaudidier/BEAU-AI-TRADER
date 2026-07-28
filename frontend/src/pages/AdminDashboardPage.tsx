@@ -1,0 +1,56 @@
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { adminApi } from "../services/adminApi";
+
+type Row = Record<string, unknown>;
+type Overview = { testers: Row[]; invites: Row[]; feedback: Row[]; errors: Row[]; audit: Row[]; health: Record<string, unknown>; forward_validation: Record<string, unknown> };
+const empty: Overview = { testers: [], invites: [], feedback: [], errors: [], audit: [], health: {}, forward_validation: {} };
+const text = (value: unknown) => value == null || value === "" ? "—" : String(value);
+const date = (value: unknown) => value ? new Date(String(value)).toLocaleString() : "—";
+
+function Metrics({ title, values }: { title: string; values: Record<string, unknown> }) {
+  return <section><h2 className="text-lg font-semibold">{title}</h2><div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{Object.entries(values).filter(([, value]) => !Array.isArray(value)).map(([key, value]) => <div key={key} className="rounded-xl border border-slate-800 bg-slate-900/60 p-4"><p className="text-xs uppercase tracking-wider text-slate-500">{key.replaceAll("_", " ")}</p><p className="mt-2 text-xl font-semibold">{text(value)}</p></div>)}</div></section>;
+}
+
+export default function AdminDashboardPage() {
+  const navigate = useNavigate();
+  const [data, setData] = useState<Overview>(empty);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+  const [severity, setSeverity] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [inviteUrl, setInviteUrl] = useState("");
+  const [activity, setActivity] = useState<{ user: string; data: Row } | null>(null);
+  const load = useCallback(async () => {
+    setLoading(true); setError("");
+    try { setData(await adminApi.overview(search, status, severity) as Overview); }
+    catch (reason) { setError(reason instanceof Error ? reason.message : "Admin data could not be loaded."); }
+    finally { setLoading(false); }
+  }, [search, severity, status]);
+  useEffect(() => { void load(); }, [load]);
+  async function mutate(action: () => Promise<unknown>) {
+    setError("");
+    try { await action(); await load(); } catch (reason) { setError(reason instanceof Error ? reason.message : "Action failed."); }
+  }
+  if (loading && !data.testers.length) return <div className="grid min-h-screen place-items-center bg-slate-950 text-slate-400">Verifying admin access…</div>;
+  if (error && !data.testers.length) return <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-center text-slate-200"><div><h1 className="text-2xl font-semibold">Admin dashboard unavailable</h1><p className="mt-3 text-slate-400">{error}</p><button onClick={() => navigate("/dashboard")} className="mt-5 rounded-lg bg-cyan-400 px-4 py-2 font-semibold text-slate-950">Return to dashboard</button></div></main>;
+  return <div className="min-h-screen bg-slate-950 text-slate-100">
+    <header className="border-b border-slate-800 px-4 py-4 sm:px-8"><div className="mx-auto flex max-w-[100rem] items-center justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[.2em] text-cyan-300">Owner operations</p><h1 className="mt-1 text-2xl font-semibold">Private beta admin</h1></div><button onClick={() => navigate("/dashboard")} className="rounded-lg border border-slate-700 px-4 py-2 text-sm">Trader dashboard</button></div></header>
+    <main className="mx-auto max-w-[100rem] space-y-8 p-4 sm:p-8">
+      {error && <p className="rounded-lg border border-rose-400/30 bg-rose-400/10 p-3 text-rose-200">{error}</p>}
+      <Metrics title="System health" values={data.health} /><Metrics title="Forward validation" values={data.forward_validation} />
+      <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6"><div className="flex flex-wrap items-end justify-between gap-4"><div><h2 className="text-lg font-semibold">Beta testers</h2><p className="text-sm text-slate-500">{data.testers.length} invited accounts</p></div><div className="flex gap-2"><input id="invite-label" aria-label="Invite label" placeholder="Invite label" className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2" /><button onClick={() => { const label = document.querySelector<HTMLInputElement>("#invite-label")?.value ?? ""; void mutate(async () => { const created = await adminApi.createInvite(label) as { invite_url: string }; setInviteUrl(created.invite_url); }); }} className="rounded-lg bg-cyan-400 px-3 py-2 font-semibold text-slate-950">Create invite</button></div></div>
+        {inviteUrl && <div className="mt-4 rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-3 text-sm"><p>One-time invite URL (shown only now)</p><input readOnly value={inviteUrl} className="mt-2 w-full bg-transparent text-cyan-100" /></div>}
+        <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[850px] text-left text-sm"><thead className="text-slate-500"><tr>{["User","Verified","Last login","Invite","Account","Feedback","Actions"].map(x => <th key={x} className="p-3">{x}</th>)}</tr></thead><tbody>{data.testers.map(row => <tr key={text(row.id)} className="border-t border-slate-800"><td className="p-3"><p>{text(row.email)}</p><p className="text-xs text-slate-500">{text(row.role)}</p></td><td className="p-3">{row.verified ? "Yes" : "No"}</td><td className="p-3">{date(row.last_login)}</td><td className="p-3">{text(row.invite_status)}</td><td className="p-3">{row.account_active ? "Active" : "Disabled"}</td><td className="p-3">{text(row.feedback_count)}</td><td className="flex gap-2 p-3"><button onClick={() => void adminApi.activity(text(row.id)).then(result => setActivity({ user: text(row.email), data: result as Row })).catch(reason => setError(reason instanceof Error ? reason.message : "Activity unavailable."))} className="rounded border border-slate-700 px-2 py-1">Activity</button><button disabled={row.role === "OWNER"} onClick={() => void mutate(() => adminApi.updateAccount(text(row.id), !row.account_active))} className="rounded border border-slate-700 px-2 py-1 disabled:opacity-30">{row.account_active ? "Disable" : "Enable"}</button></td></tr>)}</tbody></table></div>
+        {activity && <div className="mt-4 rounded-xl border border-slate-700 bg-slate-950 p-4"><div className="flex justify-between gap-3"><h3 className="font-semibold">{activity.user} activity</h3><button onClick={() => setActivity(null)} className="text-slate-400">Close</button></div><div className="mt-3 grid gap-3 sm:grid-cols-3">{Object.entries(activity.data).map(([key, value]) => <div key={key} className="rounded-lg border border-slate-800 p-3"><p className="text-xs uppercase text-slate-500">{key.replaceAll("_", " ")}</p><p className="mt-1 text-xl">{Array.isArray(value) ? value.length : text(value)}</p></div>)}</div></div>}
+      </section>
+      <section><h2 className="text-lg font-semibold">Invites</h2><div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{data.invites.map(row => <div key={text(row.id)} className="rounded-xl border border-slate-800 bg-slate-900/40 p-4"><div className="flex justify-between gap-3"><div><p className="font-medium">{text(row.label)}</p><p className="mt-1 text-xs text-slate-500">{text(row.status)} · expires {date(row.expires_at)}</p></div>{row.status === "active" && <button onClick={() => void mutate(() => adminApi.revokeInvite(text(row.id)))} className="rounded border border-rose-400/30 px-2 py-1 text-sm text-rose-200">Revoke</button>}</div></div>)}</div></section>
+      <section><div className="flex flex-wrap items-end gap-3"><div className="mr-auto"><h2 className="text-lg font-semibold">Feedback</h2><p className="text-sm text-slate-500">Review queue with owner notes.</p></div><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search" className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2" /><select value={status} onChange={event => setStatus(event.target.value)} className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2"><option value="">All statuses</option><option>open</option><option>reviewing</option><option>resolved</option></select><select value={severity} onChange={event => setSeverity(event.target.value)} className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2"><option value="">All severities</option><option>low</option><option>medium</option><option>high</option><option>critical</option></select></div>
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">{data.feedback.map(row => <article key={text(row.id)} className="rounded-xl border border-slate-800 bg-slate-900/50 p-4"><div className="flex justify-between gap-2"><p className="font-semibold">{text(row.page)} {row.ticker ? `· ${text(row.ticker)}` : ""}</p><span className="text-xs uppercase text-amber-300">{text(row.severity)}</span></div><p className="mt-1 text-xs text-slate-500">{text(row.category)} · {text(row.user_email)} · {date(row.created_at)}</p><p className="mt-3 whitespace-pre-wrap text-sm text-slate-300">{text(row.message)}</p><textarea id={`notes-${text(row.id)}`} defaultValue={row.owner_notes ? text(row.owner_notes) : ""} placeholder="Owner notes" className="mt-4 w-full rounded-lg border border-slate-700 bg-slate-950 p-2 text-sm" /><div className="mt-2 flex gap-2">{["open","reviewing","resolved"].map(next => <button key={next} onClick={() => { const notes = document.querySelector<HTMLTextAreaElement>(`#notes-${text(row.id)}`)?.value ?? null; void mutate(() => adminApi.updateFeedback(text(row.id), next, notes)); }} className={`rounded px-2 py-1 text-xs ${row.status === next ? "bg-cyan-400 text-slate-950" : "border border-slate-700"}`}>{next}</button>)}</div></article>)}</div>
+      </section>
+      <section><h2 className="text-lg font-semibold">Error monitoring</h2><div className="mt-4 overflow-x-auto rounded-xl border border-slate-800"><table className="w-full min-w-[900px] text-left text-sm"><thead className="bg-slate-900 text-slate-500"><tr>{["Type","Severity","Timestamp","User","Route","Message","Action"].map(x => <th key={x} className="p-3">{x}</th>)}</tr></thead><tbody>{data.errors.map(row => <tr key={text(row.id)} className="border-t border-slate-800"><td className="p-3">{text(row.event_type)}</td><td className="p-3">{text(row.severity)}</td><td className="p-3">{date(row.created_at)}</td><td className="p-3">{text(row.user_email)}</td><td className="p-3">{text(row.path)}</td><td className="max-w-md p-3">{text(row.message)}</td><td className="p-3">{["scheduler_failure","failed_market_data"].includes(text(row.event_type)) && <button onClick={() => void mutate(() => adminApi.retryJob(text(row.id)))} className="rounded border border-slate-700 px-2 py-1">Retry</button>}</td></tr>)}</tbody></table></div></section>
+      <section><h2 className="text-lg font-semibold">Admin audit trail</h2><div className="mt-4 grid gap-2">{data.audit.map(row => <div key={text(row.id)} className="flex flex-wrap justify-between gap-2 rounded-lg border border-slate-800 p-3 text-sm"><span>{text(row.action)} · {text(row.target_type)} · {text(row.target_id)}</span><span className="text-slate-500">{date(row.created_at)}</span></div>)}</div></section>
+    </main>
+  </div>;
+}
