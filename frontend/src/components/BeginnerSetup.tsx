@@ -75,14 +75,16 @@ export default function BeginnerSetup() {
       </div>
 
       <div className="p-5 sm:p-7">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[
             ["Current price", money(signal.current_price), "Where the stock is now", "current-price"],
             ["Planned entry", money(signal.planned_entry), "Only act if price reaches this level", "planned-entry"],
             ["Stop", money(signal.levels.stop), "Exit level if the idea fails", "stop-loss"],
-            ["TP1", money(signal.levels.tp1), "First planned profit target", "tp1"],
-            ["TP2", money(signal.levels.tp2), "Second planned profit target", "tp2"],
           ].map(([label, value, help, tour]) => <div key={label} data-tour={tour} className="rounded-xl border border-slate-800 bg-slate-950/60 p-4"><p className="text-xs text-slate-500">{label} <span title={`About ${label}`} aria-label={`What is this? ${label}`}>ⓘ</span></p><p className="mt-1 text-xl font-semibold text-white">{value}</p><p className="mt-2 text-xs leading-5 text-slate-400">{help}</p></div>)}
+        </div>
+        <div data-tour="profit-targets" className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/5 p-4"><p className="text-xs font-semibold text-emerald-300">TP1 <span title="What is this? The first planned profit target." aria-label="What is this? TP1">ⓘ</span></p><p className="mt-1 text-xl font-semibold text-white">{money(signal.levels.tp1)}</p><p className="mt-2 text-xs leading-5 text-slate-400">First planned profit target</p></div>
+          <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/5 p-4"><p className="text-xs font-semibold text-emerald-300">TP2 <span title="What is this? The second, more ambitious planned profit target." aria-label="What is this? TP2">ⓘ</span></p><p className="mt-1 text-xl font-semibold text-white">{money(signal.levels.tp2)}</p><p className="mt-2 text-xs leading-5 text-slate-400">Second planned profit target</p></div>
         </div>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <div data-tour="maximum-loss" className="rounded-xl border border-rose-400/20 bg-rose-400/5 p-4"><p className="text-xs font-semibold text-rose-300">Maximum possible loss <span title="What is this? Planned loss per share before slippage." aria-label="What is this? Maximum possible loss">ⓘ</span></p><p className="mt-1 text-xl font-semibold text-white">{money(riskPerShare)} per share</p><p className="mt-1 text-xs text-slate-400">Before slippage; total loss depends on share quantity.</p></div>
@@ -91,7 +93,7 @@ export default function BeginnerSetup() {
 
         <div className="mt-5 grid gap-3 lg:grid-cols-2">
           {[
-            ["Why this trade?", signal.setup.beginner_explanation.why_setup_exists],
+            ["Why this trade?", "The broad market currently supports planned buying, and this stock dipped toward its recent average price. The rules found the setup without using future prices."],
             ["Why wait?", signal.setup.beginner_explanation.why_waiting_matters],
             ["What would invalidate it?", signal.invalidation],
             ["What if price never reaches entry?", signal.setup.beginner_explanation.if_price_never_reaches_entry],
@@ -99,6 +101,20 @@ export default function BeginnerSetup() {
             ["Why are TP1 and TP2 there?", `They are rules-based reward levels at ${signal.risk_reward_target_1.toFixed(1)} and ${signal.risk_reward_target_2.toFixed(1)} times the amount risked per share.`],
           ].map(([title, body]) => <div key={title} className="rounded-xl border border-slate-800 bg-slate-950/40 p-4"><h3 className="text-sm font-semibold text-white">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{body}</p></div>)}
         </div>
+
+        <details className="mt-5 rounded-xl border border-slate-800 bg-slate-950/50 p-4">
+          <summary className="cursor-pointer text-sm font-semibold text-cyan-200">Beginner terms: what do these words mean?</summary>
+          <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+            {[
+              ["EMA20", "A recent average price covering about 20 trading days, with newer days counting more."],
+              ["EMA50", "A longer average price covering about 50 trading days, with newer days counting more."],
+              ["Signal-time confidence", "The rules score saved when the setup first appeared. It is not the chance of making a profit."],
+              ["Risk-on market", "Broad market conditions currently support taking carefully planned stock risk."],
+              ["Market regime", "A simple label for the broad market environment: generally rising, falling, or moving sideways."],
+              ["Pullback", "A temporary price dip within a setup that otherwise still meets the rules."],
+            ].map(([term, meaning]) => <div key={term}><dt className="font-semibold text-white">{term}</dt><dd className="mt-1 leading-6 text-slate-400">{meaning}</dd></div>)}
+          </dl>
+        </details>
 
         <div className="mt-5 rounded-xl border border-slate-700 bg-slate-950/70 p-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Biggest risk</p>

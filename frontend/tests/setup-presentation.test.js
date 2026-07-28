@@ -38,3 +38,14 @@ test("no-setup and unavailable states give a safe no-action explanation", () => 
   assert.match(source, /Data unavailable/);
   assert.match(source, /Do not act until current prices/);
 });
+
+test("beginner glossary explains remaining trading jargon without probability claims", () => {
+  const setupSource = readFileSync(new URL("../src/components/BeginnerSetup.tsx", import.meta.url), "utf8");
+  const chartSource = readFileSync(new URL("../src/components/TradingChart.tsx", import.meta.url), "utf8");
+  for (const term of ["EMA20", "EMA50", "Signal-time confidence", "Risk-on market", "Market regime", "Pullback"]) {
+    assert.equal(setupSource.includes(term), true, `missing beginner definition for ${term}`);
+  }
+  assert.match(setupSource, /not the chance of making a profit/);
+  assert.match(chartSource, /EMA20: "A recent average price/);
+  assert.match(chartSource, /EMA50: "A longer average price/);
+});

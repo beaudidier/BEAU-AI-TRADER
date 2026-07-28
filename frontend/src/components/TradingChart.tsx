@@ -10,6 +10,8 @@ type TradingChartProps = {
 };
 
 const chartHelp = {
+  EMA20: "A recent average price covering about 20 trading days, weighted toward newer days.",
+  EMA50: "A longer average price covering about 50 trading days, weighted toward newer days.",
   Current: "The latest available price. It is not automatically an entry.",
   Entry: "The planned buy level. Wait for price to reach it before opening a paper trade.",
   Stop: "The planned exit if the setup fails. A gap can cause a larger loss.",

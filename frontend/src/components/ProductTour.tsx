@@ -152,7 +152,7 @@ export default function ProductTour() {
     if (target.top + target.height + gap + dialogHeight <= window.innerHeight) {
       return { top: target.top + target.height + gap, left: clampLeft(target.left) };
     }
-    return { top: Math.max(16, target.top - dialogHeight - gap), left: clampLeft(target.left) };
+    return { top: Math.max(8, target.top - 286 - gap), left: clampLeft(target.left) };
   })();
   const dialogStyle = mobile
     ? undefined

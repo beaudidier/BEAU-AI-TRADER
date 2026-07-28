@@ -1,4 +1,4 @@
-export const TOUR_VERSION = 1;
+export const TOUR_VERSION = 2;
 export const TOUR_EVENT = "beau:restart-product-tour";
 
 export const productTourSteps = [
@@ -8,17 +8,13 @@ export const productTourSteps = [
   { id: "current-price", title: "Current price", target: '[data-tour="current-price"]', body: "This is where the stock is now. It is not automatically the price where the plan says to enter." },
   { id: "entry", title: "Planned entry", target: '[data-tour="planned-entry"]', body: "Wait for this planned price. A setup can expire or become invalid before an entry happens." },
   { id: "stop", title: "Stop loss", target: '[data-tour="stop-loss"]', body: "This planning level marks where the idea has failed. Stops are not guaranteed fills." },
-  { id: "tp1", title: "First target (TP1)", target: '[data-tour="tp1"]', body: "TP1 is the first planned profit-taking level. Targets are planning levels, not guarantees." },
-  { id: "tp2", title: "Second target (TP2)", target: '[data-tour="tp2"]', body: "TP2 is the more ambitious target. Price may reach neither target." },
+  { id: "profit-targets", title: "TP1 and TP2 targets", target: '[data-tour="profit-targets"]', body: "TP1 is the first planned profit level; TP2 is higher. Neither target is guaranteed." },
   { id: "maximum-loss", title: "Maximum possible loss", target: '[data-tour="maximum-loss"]', body: "This is planned loss per share before slippage. Gaps can make the actual loss larger." },
-  { id: "next-action", title: "Your next action", target: '[data-tour="next-action"]', body: "Use this one button to review the chart and risk. Confidence is not a guaranteed probability of profit." },
-  { id: "workspace", title: "Trade Workspace", target: '[data-tour="workspace-link"]', body: "The workspace connects the chart, plan levels, explanations, and paper-trade decision." },
-  { id: "paper-trading", title: "Paper Trading", target: '[data-tour="nav-paper-trading"]', body: "Practice positions here. Paper trading uses no real money." },
-  { id: "portfolio-risk", title: "Portfolio risk", target: '[data-tour="nav-paper-trading"]', body: "Portfolio limits can block a new paper trade when total risk is already too high." },
-  { id: "historical-evidence", title: "Historical Evidence", target: '[data-tour="nav-evidence"]', body: "See how the same fixed rules behaved on older, unseen market periods. Past results do not guarantee future results." },
-  { id: "forward-validation", title: "Forward Validation", target: '[data-tour="nav-forward-validation"]', body: "See signals recorded after the rules were frozen. This is evidence, not a promise." },
-  { id: "portfolio-journal", title: "Portfolio and Journal", target: '[data-tour="nav-learning"]', body: "Review simulated positions and learning history so decisions can be judged, not just outcomes." },
-  { id: "feedback", title: "Feedback", target: '[data-tour="nav-feedback"]', body: "Tell us what was unclear or risky. Feedback never changes a live trade automatically." },
+  { id: "next-action", title: "Your next action and workspace", target: '[data-tour="next-action"]', body: "Open the workspace to review the chart and risk before any paper trade. Confidence is a rules-based score, not a guaranteed probability of profit." },
+  { id: "paper-risk", title: "Paper Trading and portfolio risk", target: '[data-tour="nav-paper-trading"]', body: "Practice here with no real money. Existing portfolio limits can safely block another paper trade." },
+  { id: "historical-evidence", title: "Historical Evidence", target: '[data-tour="nav-evidence"]', body: "See how the same fixed rules behaved in older markets. Past results do not guarantee future results." },
+  { id: "forward-validation", title: "Forward Validation", target: '[data-tour="nav-forward-validation"]', body: "See results recorded after the rules were fixed. This is useful evidence, not a promise." },
+  { id: "feedback", title: "Feedback", target: '[data-tour="nav-feedback"]', body: "Tell us what was unclear or felt risky. Feedback never changes a trade automatically." },
   { id: "mode-switch", title: "Beginner / Advanced switch", target: '[data-tour="mode-switch"]', body: "Beginner Mode keeps decisions plain. Advanced Mode restores scanner scores and technical detail." },
 ];
 

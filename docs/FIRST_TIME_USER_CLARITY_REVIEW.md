@@ -86,7 +86,7 @@ At 390px, these answers remain in a single vertical reading order with no horizo
 
 ## Guided first-login product tour
 
-Tour version 1 adds an 18-step, plain-language walkthrough that starts on the first authenticated dashboard visit. It covers the dashboard, best setup, status, current price, planned entry, stop, both targets, planned maximum loss, next action, Trade Workspace, Paper Trading, portfolio risk, Historical Evidence, Forward Validation, portfolio/journal learning, Feedback, and the Beginner/Advanced switch.
+Tour version 2 adds a 14-step, plain-language walkthrough that starts on the first authenticated dashboard visit. It covers the dashboard, best setup, status, current price, planned entry, stop, both profit targets, planned maximum loss, next action/Trade Workspace, Paper Trading with portfolio risk, Historical Evidence, Forward Validation, Feedback, and the Beginner/Advanced switch.
 
 The tour highlights only visible DOM targets, dims the remaining screen, scrolls targets into view, and skips missing or hidden elements. The best-setup step falls back to the no-setup/data-unavailable state. On viewports below 640px the dialog is fixed above the bottom edge with 44px minimum controls; desktop placement follows the highlighted element.
 
@@ -114,7 +114,7 @@ Closing with Escape or the close button keeps the current step for the next brow
 ### Tour verification
 
 - Frontend state tests cover first start, completed second login, skip, resume, next/back, version reset, restart, and user isolation.
-- Guided-flow tests cover unavailable targets, the 390px breakpoint, keyboard mapping, all 18 required concepts, and required safety phrases.
+- Guided-flow tests cover unavailable targets, the 390px breakpoint, keyboard mapping, all 14 final steps, and required safety phrases.
 - Production build and lint pass.
 - The 390px production shell has no horizontal overflow. Full authenticated tour rendering still requires a signed-in preview session; the automated mobile behavior test verifies bottom placement selection at 390px.
 
@@ -122,7 +122,7 @@ Closing with Escape or the close button keeps the current step for the next brow
 
 ### Preview result
 
-The feature branch was run locally with the FastAPI backend on port 8000 and Vite frontend on port 5173 using an existing authenticated beta-test session. The tour automatically opened at step 1 for the current tour version. A complete 18-step desktop run reached Finish.
+The feature branch was run locally with the FastAPI backend on port 8000 and Vite frontend on port 5173 using an existing authenticated beta-test session. The original version-1 tour automatically opened at step 1 and completed all 18 preview steps; the final version-2 pass below verifies the reduced 14-step tour.
 
 Every final target was visible, auto-scrolled into view, and avoided dialog overlap after the targeting fixes below. The explanations matched the displayed controls. Close, browser reload/resume, Next, Back, Skip persistence, Finish, Profile restart, Arrow Right/Enter, Arrow Left, Escape/resume, and Tab/Shift+Tab focus wrapping were verified against the running app.
 
@@ -142,7 +142,7 @@ The zero-knowledge check passed for the live PNW setup before the stale-data gua
 ### Critical issues found and fixed
 
 1. **False “Data unavailable” in local development.** React Strict Mode intentionally aborted the first signal request during its remount check, but the beginner card treated that abort as a real data failure. Aborted requests are now ignored, allowing the valid setup and its tour targets to render.
-2. **Tour dialog covered highlighted regions.** Dashboard and best-setup targets were too tall, and desktop placement only attempted to position below them. Targets now identify the exact visible summary elements, while placement chooses right, left, below, or above according to available space. The final 18-step geometry audit recorded no overlap.
+2. **Tour dialog covered highlighted regions.** Dashboard and best-setup targets were too tall, and desktop placement only attempted to position below them. Targets now identify the exact visible summary elements, while placement chooses right, left, below, or above according to available space. The original 18-step geometry audit recorded no overlap after this correction.
 3. **Stale quote described as current.** The July 23 quote was still labelled “Current price” on July 28. Prices older than a conservative 120 hours now block action and show the source time explicitly. This is presentation-only and changes no entry, stop, target, score, or strategy rule.
 4. **Portfolio block absent from the beginner status.** The dashboard now reads the existing portfolio-risk status and displays Blocked when the existing rules reject new risk. It does not create or modify any limit.
 
@@ -156,14 +156,77 @@ The zero-knowledge check passed for the live PNW setup before the stale-data gua
 - Missing/hidden tour targets: verified through automated skip tests and the live data-unavailable fallback before the abort fix.
 - Mobile: 390px behavior, bottom placement selection, 44px targets, and hidden-target skipping pass automated tests. The connected browser ignored its requested 390×844 override and remained 1280×720, so an authenticated pixel-level 390px browser inspection could not be completed in that runtime.
 
-### Remaining usability risks
+### Remaining usability risks after preview
 
-- Paper Trading and Portfolio risk are consecutive steps pointing to the same navigation control, so they feel repetitive even though the safety concepts differ.
-- “Portfolio and Journal” points to the navigation item currently labelled “Learning.” The explanation is understandable, but the product label is not an exact vocabulary match.
-- “EMA20,” “signal-time,” and “risk-on” remain jargon inside the longer “Why this trade?” explanation. The core action is understandable without them, but a dedicated glossary would reduce cognitive load.
-- Eighteen steps is long. Likely abandonment risk rises around steps 12–16, where the tour shifts from the immediate trade decision into evidence and navigation.
 - The 120-hour stale threshold is deliberately conservative and calendar-based; a future market-calendar-aware freshness service would handle extended exchange holidays more precisely.
+- Native iPhone Safari still needs the manual verification listed in the final pass below.
 
 ### Final recommendation
 
 **Ready for a controlled user preview: yes.** The critical false-error, overlap, stale-price, and portfolio-status risks are fixed. Keep the preview paper-only and observe whether beginners abandon during the navigation/evidence section. A real-device 390px pass remains recommended before broader beta exposure because the connected browser could not apply its viewport override.
+
+## Final beginner tour clarity pass
+
+### Final structure and corrected targets
+
+The final tour has **14 steps** and uses tour version 2 so users who completed the materially different version-1 tour can see the clearer walkthrough once:
+
+1. Dashboard overview
+2. Best current setup
+3. Setup status
+4. Current price
+5. Planned entry
+6. Stop loss
+7. TP1 and TP2 targets
+8. Maximum possible loss
+9. Next action and Trade Workspace
+10. Paper Trading and portfolio risk
+11. Historical Evidence
+12. Forward Validation
+13. Feedback
+14. Beginner / Advanced switch
+
+TP1 and TP2 now share one target and explanation. Next action and Trade Workspace are one step. Paper Trading and portfolio risk are one safety step. Historical and forward evidence stay separate because they point to different real screens and answer different questions.
+
+The unavailable Portfolio/Journal feature is omitted. The tour no longer points incorrectly to Learning and does not promise a screen that is absent on this branch.
+
+### Jargon removed
+
+The main “Why this trade?” explanation no longer requires technical vocabulary. A compact, optional Beginner terms section defines:
+
+- **EMA20:** a recent average price covering about 20 trading days, weighted toward newer days.
+- **EMA50:** a longer average price covering about 50 trading days, weighted toward newer days.
+- **Signal-time confidence:** the rules score saved when the setup first appeared, not the chance of profit.
+- **Risk-on market:** broad conditions that support taking carefully planned stock risk.
+- **Market regime:** whether the broad market is generally rising, falling, or sideways.
+- **Pullback:** a temporary dip inside a setup that still meets the rules.
+
+EMA20 and EMA50 also have plain-language explanations in the chart’s tap/hover legend. Confidence wording remains explicit: it is a rules-based score, not a guaranteed probability of profit.
+
+### Mobile Safari status
+
+Native Safari automation was attempted but the available Mac computer-control service could not start. The connected browser also did not honor its requested iPhone viewport. Automated coverage still verifies the 390px mobile placement branch, missing/hidden target skipping, 44px controls, and keyboard behavior.
+
+Remaining human iPhone Safari checklist:
+
+- Open the authenticated tour in portrait at approximately 390 × 844.
+- Run all 14 steps with Safari’s bottom bar expanded and collapsed.
+- Confirm the bottom-fixed dialog stays above browser chrome and no text or buttons are clipped.
+- Confirm Close, Back, Next, Skip, and Finish remain at least 44 × 44 CSS pixels.
+- Confirm each visible target scrolls fully into view and the dialog does not cover it.
+- Confirm hidden desktop navigation targets skip safely instead of producing an empty highlight.
+- Rotate to landscape, continue two steps, then rotate back to portrait.
+- Confirm orientation changes preserve the step, reposition the highlight, and do not create horizontal scrolling.
+- Close Safari during the tour, reopen it, and confirm the same step resumes.
+
+This checklist is the remaining human verification before broad mobile beta exposure.
+
+### Bundle warning
+
+The production sourcemap attributes the largest source inputs to React DOM (about 533 KiB source), Supabase Auth (about 400 KiB), React Router (about 363 KiB), application pages (about 286 KiB), and Lightweight Charts (about 183 KiB), followed by the other Supabase clients. The tour is not the dominant cause.
+
+The app still compiles into one approximately 833 KiB minified initial chunk (about 231 KiB gzip), so Vite reports its 500 KiB warning. Lazy-loading only the small tour would not resolve it. Splitting authentication, charts, and route pages is a broader performance refactor with more regression risk than this clarity milestone, so the warning is documented as non-blocking and unchanged.
+
+### Final verdict
+
+**Merge-ready: yes.** The comprehension, fatigue, jargon, and incorrect-target issues are resolved; all 14 live desktop targets are visible and non-overlapping. Native iPhone Safari remains a manual pre-release check, not a blocker for merging this isolated clarity branch.

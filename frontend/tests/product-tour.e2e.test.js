@@ -28,22 +28,23 @@ test("keyboard navigation maps next, back, and safe close", () => {
   assert.equal(keyboardTourAction("Tab"), null);
 });
 
-test("required tour contains all 18 ordered product concepts", () => {
+test("final tour contains 14 focused steps with real targets", () => {
   assert.deepEqual(productTourSteps.map((step) => step.id), [
     "dashboard", "best-setup", "status", "current-price", "entry", "stop",
-    "tp1", "tp2", "maximum-loss", "next-action", "workspace",
-    "paper-trading", "portfolio-risk", "historical-evidence",
-    "forward-validation", "portfolio-journal", "feedback", "mode-switch",
+    "profit-targets", "maximum-loss", "next-action", "paper-risk",
+    "historical-evidence", "forward-validation", "feedback", "mode-switch",
   ]);
+  assert.equal(productTourSteps.length, 14);
+  assert.equal(productTourSteps.some((step) => step.id === "portfolio-journal"), false);
 });
 
 test("safety wording is explicit in the tour copy", () => {
   const copy = productTourSteps.map((step) => step.body).join(" ");
   for (const phrase of [
     "does not mean buy now",
-    "Confidence is not a guaranteed probability",
-    "Paper trading uses no real money",
-    "planning levels, not guarantees",
+    "Confidence is a rules-based score, not a guaranteed probability",
+    "no real money",
+    "Neither target is guaranteed",
     "expire or become invalid",
   ]) assert.match(copy, new RegExp(phrase));
 });
