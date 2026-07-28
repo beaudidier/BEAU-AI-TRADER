@@ -42,6 +42,7 @@ class SettingsUpdate(BaseModel):
     default_risk_percent: float | None = Field(default=None, gt=0, le=100)
     preferred_currency: str | None = None
     theme: str | None = None
+    experience_mode: Literal["beginner", "advanced"] | None = None
 
 
 class WatchlistCreate(BaseModel): name: str = Field(min_length=1, max_length=80)
