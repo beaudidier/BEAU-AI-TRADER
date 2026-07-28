@@ -152,6 +152,58 @@ class PrivateBetaTests(unittest.TestCase):
         )
         self.assertNotIn("select id, 'TESTER'", sql)
 
+    def test_expired_temporary_membership_is_rejected(self):
+        class ExpiredMembershipQuery(_MembershipQuery):
+            def execute(self):
+                return SimpleNamespace(data={
+                    "active": True,
+                    "temporary": True,
+                    "expires_at": "2020-01-01T00:00:00+00:00",
+                })
+
+        user = CurrentUser("temporary-1", "temporary@example.com", "token")
+        with (
+            patch(
+                "saas.auth.get_settings",
+                return_value=SimpleNamespace(private_beta_enforced=True),
+            ),
+            patch(
+                "saas.auth._supabase_client",
+                return_value=ExpiredMembershipQuery(True),
+            ),
+            self.assertRaises(HTTPException) as error,
+        ):
+            _require_private_beta_access(user)
+        self.assertEqual(error.exception.status_code, 403)
+
+    def test_temporary_tester_admin_lifecycle_is_audited_and_role_limited(self):
+        function = (
+            ROOT
+            / "supabase"
+            / "functions"
+            / "temporary-tester-admin"
+            / "index.ts"
+        ).read_text()
+        migration = (
+            ROOT
+            / "supabase"
+            / "migrations"
+            / "202607280004_temporary_beta_testers.sql"
+        ).read_text()
+        self.assertIn("email_confirm: true", function)
+        self.assertIn('role: "TESTER"', function)
+        self.assertNotIn('role: "OWNER"', function)
+        self.assertNotIn('role: "ADMIN"', function)
+        for action in (
+            "created",
+            "password_rotated",
+            "expiry_extended",
+            "revoked",
+            "deleted",
+        ):
+            self.assertIn(action, migration)
+        self.assertNotIn("console.log", function)
+
     def test_migration_provisions_owner_and_secures_beta_records(self):
         sql = MIGRATION.read_text()
         self.assertIn("order by created_at", sql)

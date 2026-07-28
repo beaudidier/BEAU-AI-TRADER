@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 from fastapi import Header, HTTPException, status
 try:
@@ -91,7 +92,7 @@ def _require_private_beta_access(user: CurrentUser) -> None:
         membership = (
             _supabase_client(user.access_token)
             .table("private_beta_memberships")
-            .select("active")
+            .select("active,temporary,expires_at")
             .eq("user_id", user.id)
             .eq("active", True)
             .maybe_single()
@@ -101,7 +102,16 @@ def _require_private_beta_access(user: CurrentUser) -> None:
         if getattr(error, "code", None) != "PGRST116":
             raise
         membership = None
-    if not membership or not membership.data:
+    expired = (
+        membership
+        and membership.data
+        and membership.data.get("temporary")
+        and membership.data.get("expires_at")
+        and datetime.fromisoformat(
+            membership.data["expires_at"].replace("Z", "+00:00")
+        ) <= datetime.now(timezone.utc)
+    )
+    if not membership or not membership.data or expired:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="This private beta is available to invited testers only.",
