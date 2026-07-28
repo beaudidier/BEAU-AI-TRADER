@@ -117,3 +117,53 @@ Closing with Escape or the close button keeps the current step for the next brow
 - Guided-flow tests cover unavailable targets, the 390px breakpoint, keyboard mapping, all 18 required concepts, and required safety phrases.
 - Production build and lint pass.
 - The 390px production shell has no horizontal overflow. Full authenticated tour rendering still requires a signed-in preview session; the automated mobile behavior test verifies bottom placement selection at 390px.
+
+## Local authenticated preview verification — 2026-07-28
+
+### Preview result
+
+The feature branch was run locally with the FastAPI backend on port 8000 and Vite frontend on port 5173 using an existing authenticated beta-test session. The tour automatically opened at step 1 for the current tour version. A complete 18-step desktop run reached Finish.
+
+Every final target was visible, auto-scrolled into view, and avoided dialog overlap after the targeting fixes below. The explanations matched the displayed controls. Close, browser reload/resume, Next, Back, Skip persistence, Finish, Profile restart, Arrow Right/Enter, Arrow Left, Escape/resume, and Tab/Shift+Tab focus wrapping were verified against the running app.
+
+The zero-knowledge check passed for the live PNW setup before the stale-data guard was applied:
+
+- Stock: PNW, Pinnacle West Capital.
+- Action: wait; do not buy now.
+- Entry: $106.55.
+- Stop: $101.58.
+- TP1 / TP2: $116.66 / $126.71.
+- Planned loss: $4.97 per share before slippage and quantity effects.
+- Setup reason: risk-on market plus a rules-based pullback near the signal-time EMA20.
+- Invalidation: the entry window expires if price does not reach the fixed entry.
+- Execution: paper trading uses no real money.
+- Next click: Review chart and risk.
+
+### Critical issues found and fixed
+
+1. **False “Data unavailable” in local development.** React Strict Mode intentionally aborted the first signal request during its remount check, but the beginner card treated that abort as a real data failure. Aborted requests are now ignored, allowing the valid setup and its tour targets to render.
+2. **Tour dialog covered highlighted regions.** Dashboard and best-setup targets were too tall, and desktop placement only attempted to position below them. Targets now identify the exact visible summary elements, while placement chooses right, left, below, or above according to available space. The final 18-step geometry audit recorded no overlap.
+3. **Stale quote described as current.** The July 23 quote was still labelled “Current price” on July 28. Prices older than a conservative 120 hours now block action and show the source time explicitly. This is presentation-only and changes no entry, stop, target, score, or strategy rule.
+4. **Portfolio block absent from the beginner status.** The dashboard now reads the existing portfolio-risk status and displays Blocked when the existing rules reject new risk. It does not create or modify any limit.
+
+### State coverage
+
+- Valid setup available: verified live with PNW.
+- Waiting for entry: verified live, including the “does not mean buy now” wording.
+- Stale data: verified live after the safety guard; status becomes Blocked and says not to act.
+- No setup / data unavailable: verified through fallback contracts and focused tests.
+- Entry ready, expired, invalidated, and portfolio-risk blocked: verified through the same presentation function used by the UI, using focused state tests.
+- Missing/hidden tour targets: verified through automated skip tests and the live data-unavailable fallback before the abort fix.
+- Mobile: 390px behavior, bottom placement selection, 44px targets, and hidden-target skipping pass automated tests. The connected browser ignored its requested 390×844 override and remained 1280×720, so an authenticated pixel-level 390px browser inspection could not be completed in that runtime.
+
+### Remaining usability risks
+
+- Paper Trading and Portfolio risk are consecutive steps pointing to the same navigation control, so they feel repetitive even though the safety concepts differ.
+- “Portfolio and Journal” points to the navigation item currently labelled “Learning.” The explanation is understandable, but the product label is not an exact vocabulary match.
+- “EMA20,” “signal-time,” and “risk-on” remain jargon inside the longer “Why this trade?” explanation. The core action is understandable without them, but a dedicated glossary would reduce cognitive load.
+- Eighteen steps is long. Likely abandonment risk rises around steps 12–16, where the tour shifts from the immediate trade decision into evidence and navigation.
+- The 120-hour stale threshold is deliberately conservative and calendar-based; a future market-calendar-aware freshness service would handle extended exchange holidays more precisely.
+
+### Final recommendation
+
+**Ready for a controlled user preview: yes.** The critical false-error, overlap, stale-price, and portfolio-status risks are fixed. Keep the preview paper-only and observe whether beginners abandon during the navigation/evidence section. A real-device 390px pass remains recommended before broader beta exposure because the connected browser could not apply its viewport override.

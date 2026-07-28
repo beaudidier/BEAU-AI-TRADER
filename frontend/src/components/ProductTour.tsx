@@ -136,11 +136,27 @@ export default function ProductTour() {
   if (!open || !userId) return null;
   const step = productTourSteps[stepIndex];
   const mobile = window.innerWidth < 640;
+  const desktopPosition = (() => {
+    if (!target) return { top: 24, left: 24 };
+    const gap = 14;
+    const dialogWidth = 368;
+    const dialogHeight = 310;
+    const clampTop = (value: number) => Math.min(window.innerHeight - dialogHeight - 16, Math.max(16, value));
+    const clampLeft = (value: number) => Math.min(window.innerWidth - dialogWidth - 16, Math.max(16, value));
+    if (target.left + target.width + gap + dialogWidth <= window.innerWidth) {
+      return { top: clampTop(target.top), left: target.left + target.width + gap };
+    }
+    if (target.left - gap - dialogWidth >= 0) {
+      return { top: clampTop(target.top), left: target.left - gap - dialogWidth };
+    }
+    if (target.top + target.height + gap + dialogHeight <= window.innerHeight) {
+      return { top: target.top + target.height + gap, left: clampLeft(target.left) };
+    }
+    return { top: Math.max(16, target.top - dialogHeight - gap), left: clampLeft(target.left) };
+  })();
   const dialogStyle = mobile
     ? undefined
-    : target
-      ? { top: Math.min(window.innerHeight - 310, Math.max(16, target.top + target.height + 14)), left: Math.min(window.innerWidth - 390, Math.max(16, target.left)) }
-      : { top: 24, left: 24 };
+    : desktopPosition;
 
   return (
     <div className="fixed inset-0 z-[100]" aria-live="polite">
