@@ -156,6 +156,11 @@ class LiveSessionVerifierTests(unittest.TestCase):
         self.assertTrue(report["checksum_result"]["valid"])
         self.assertTrue(report["replay"]["deterministic"])
         self.assertEqual(report["rebuilt_state"]["bar_counts"]["1m"], 1)
+        self.assertEqual(report["orders_submitted"], 0)
+        self.assertEqual(report["silent_data_loss"], 0)
+        self.assertEqual(report["mismatches"]["unexplained"], 0)
+        self.assertFalse(report["coverage"]["premarket"])
+        self.assertFalse(report["coverage"]["opening_0925_1030"])
 
     def test_active_session_is_ignored_without_reading_or_changing_it(self):
         data_path, _ = self.write_session(status="recording")

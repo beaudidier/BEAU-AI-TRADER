@@ -13,7 +13,7 @@ from typing import Any, Callable
 
 from .bar_aggregator import BarAggregator
 from .models import Bar, Completeness
-from .session import classify_market_session
+from .session import EASTERN, classify_market_session
 
 MANIFEST_REQUIRED_FIELDS = {
     "session_id",
@@ -286,6 +286,33 @@ class LiveSessionVerifier:
         if not replay_deterministic:
             failures.append("nondeterministic_replay")
 
+        coverage = self._coverage(events)
+        unrepaired_manifest_gap = bool(
+            manifest.get("gaps") and not analysis["repairs"]
+        )
+        silent_data_loss = int(
+            bool(
+                analysis["index_discontinuities"]
+                or analysis["sequence_gaps"]
+                or analysis["unrepaired_reconnects"]
+                or unrepaired_manifest_gap
+            )
+        )
+        order_count = sum(
+            count
+            for event_type, count in analysis["counts"].items()
+            if "order" in event_type.lower()
+        )
+        continuity_tested = (
+            analysis["counts"].get("recording_resumed", 0) > 0
+        )
+        continuity_restored = (
+            not continuity_tested
+            or (
+                not analysis["index_discontinuities"]
+                and not analysis["provider_timestamp_regressions"]
+            )
+        )
         report = {
             "schema_version": 1,
             "session_id": session_id,
@@ -329,6 +356,16 @@ class LiveSessionVerifier:
             "secrets_present": (
                 manifest_secrets_present or analysis["secrets_present"]
             ),
+            "coverage": coverage,
+            "mismatches": {
+                "unexplained": 0 if replay_deterministic else 1,
+            },
+            "silent_data_loss": silent_data_loss,
+            "orders_submitted": order_count,
+            "continuity": {
+                "restart_tested": continuity_tested,
+                "state_restored": continuity_restored,
+            },
             "rebuilt_state": analysis["rebuilt_state"],
             "replay": {
                 "runs": 3,
@@ -346,6 +383,55 @@ class LiveSessionVerifier:
             },
         }
         return self._store(report)
+
+    @staticmethod
+    def _coverage(events: list[dict[str, Any]]) -> dict[str, Any]:
+        timestamps = sorted(
+            _timestamp(event["receipt_timestamp"])
+            for event in events
+            if event.get("receipt_timestamp")
+        )
+        if not timestamps:
+            return {
+                "started_at": None,
+                "ended_at": None,
+                "duration_seconds": 0,
+                "sessions": [],
+                "opening_0925_1030": False,
+                "close_1530_1610": False,
+                "premarket": False,
+                "after_hours": False,
+            }
+        labels = {
+            classify_market_session(value).value for value in timestamps
+        }
+        local = [value.astimezone(EASTERN) for value in timestamps]
+        opening_start = local[0].replace(
+            hour=9,
+            minute=25,
+            second=0,
+            microsecond=0,
+        )
+        opening_end = opening_start.replace(hour=10, minute=30)
+        close_start = opening_start.replace(hour=15, minute=30)
+        close_end = opening_start.replace(hour=16, minute=10)
+        return {
+            "started_at": timestamps[0].isoformat(),
+            "ended_at": timestamps[-1].isoformat(),
+            "duration_seconds": max(
+                0,
+                int((timestamps[-1] - timestamps[0]).total_seconds()),
+            ),
+            "sessions": sorted(labels),
+            "opening_0925_1030": (
+                local[0] <= opening_start and local[-1] >= opening_end
+            ),
+            "close_1530_1610": (
+                local[0] <= close_start and local[-1] >= close_end
+            ),
+            "premarket": "premarket" in labels,
+            "after_hours": "after-hours" in labels,
+        }
 
     def _analyse_events(
         self,
