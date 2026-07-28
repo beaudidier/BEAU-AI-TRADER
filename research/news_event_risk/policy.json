@@ -1,0 +1,1091 @@
+{
+  "action_priority": [
+    "emergency_halt",
+    "paper_only",
+    "trade_block",
+    "reduce_risk",
+    "warning",
+    "ignore",
+    "informational"
+  ],
+  "contract_version": "1.0.0",
+  "determinism": {
+    "timezone": "UTC",
+    "unknown_critical_input": "fail_closed",
+    "window_end_inclusive": true,
+    "window_start_inclusive": true
+  },
+  "document": "docs/NEWS_EVENT_RISK_ENGINE.md",
+  "event_categories": [
+    "earnings_release",
+    "earnings_call",
+    "guidance_change",
+    "sec_filing",
+    "insider_transaction",
+    "analyst_action",
+    "merger_acquisition",
+    "product_announcement",
+    "legal_regulatory",
+    "management_change",
+    "dividend_buyback",
+    "fed_decision",
+    "cpi",
+    "ppi",
+    "jobs_report",
+    "gdp",
+    "treasury_event",
+    "geopolitical",
+    "breaking_company_news",
+    "ceo_company_social",
+    "x_social_sentiment"
+  ],
+  "required_audit_fields": [
+    "source",
+    "source_trust",
+    "source_native_id",
+    "canonical_url",
+    "headline",
+    "event_type",
+    "event_at",
+    "published_at",
+    "first_seen_at",
+    "ingested_at",
+    "severity",
+    "action",
+    "affected_tickers",
+    "mapping_version",
+    "rule_id",
+    "reason_code",
+    "rule_version",
+    "user_explanation",
+    "expiry",
+    "verification_state",
+    "conflict_group_id",
+    "duplicate_cluster_id",
+    "supersedes_event_id"
+  ],
+  "rules": [
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "kind": "critical_invalid"
+      },
+      "document_section": "1, 4, 6",
+      "freshness_limit_seconds": null,
+      "priority": 1,
+      "reason_code": "NER_CRITICAL_INPUT_INVALID",
+      "recovery_condition": "all critical fields validate and event is re-evaluated",
+      "required_inputs": [
+        "event_id",
+        "event_type",
+        "first_seen_at",
+        "ingested_at",
+        "mapping_status",
+        "payload_state",
+        "published_at",
+        "source_trust",
+        "timezone"
+      ],
+      "rule_id": "NER-001",
+      "severity": "S3"
+    },
+    {
+      "action": "paper_only",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "kind": "unresolved_live"
+      },
+      "document_section": "12, 14",
+      "freshness_limit_seconds": null,
+      "priority": 2,
+      "reason_code": "NER_UNRESOLVED_FUTURE_LIVE_DEPENDENCY",
+      "recovery_condition": "required legal, licence, privacy, jurisdiction and advice decisions are approved",
+      "required_inputs": [
+        "mode",
+        "unresolved_dependencies"
+      ],
+      "rule_id": "NER-002",
+      "severity": "S4"
+    },
+    {
+      "action": "emergency_halt",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "field": "market_emergency",
+        "kind": "field_equals",
+        "value": true
+      },
+      "document_section": "5, 8",
+      "freshness_limit_seconds": null,
+      "priority": 3,
+      "reason_code": "NER_MARKET_EMERGENCY",
+      "recovery_condition": "authorized release after market and data health checks",
+      "required_inputs": [
+        "market_emergency"
+      ],
+      "rule_id": "NER-003",
+      "severity": "S4"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "field": "requests_direction_effect",
+        "kind": "social_prohibited"
+      },
+      "document_section": "6, 9",
+      "freshness_limit_seconds": null,
+      "priority": 4,
+      "reason_code": "NER_SOCIAL_DIRECTION_PROHIBITED",
+      "recovery_condition": "remove directional use and re-evaluate",
+      "required_inputs": [
+        "event_type",
+        "requests_direction_effect"
+      ],
+      "rule_id": "NER-004",
+      "severity": "S3"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "field": "requests_confidence_increase",
+        "kind": "social_prohibited"
+      },
+      "document_section": "6, 9",
+      "freshness_limit_seconds": null,
+      "priority": 5,
+      "reason_code": "NER_SOCIAL_CONFIDENCE_INCREASE_PROHIBITED",
+      "recovery_condition": "remove confidence increase and re-evaluate",
+      "required_inputs": [
+        "event_type",
+        "requests_confidence_increase"
+      ],
+      "rule_id": "NER-005",
+      "severity": "S3"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "field": "requests_size_increase",
+        "kind": "social_prohibited"
+      },
+      "document_section": "6, 9",
+      "freshness_limit_seconds": null,
+      "priority": 6,
+      "reason_code": "NER_SOCIAL_SIZE_INCREASE_PROHIBITED",
+      "recovery_condition": "remove size increase and re-evaluate",
+      "required_inputs": [
+        "event_type",
+        "requests_size_increase"
+      ],
+      "rule_id": "NER-006",
+      "severity": "S3"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "field": "conflict_state",
+        "kind": "field_equals",
+        "value": "unresolved_critical"
+      },
+      "document_section": "3, 4",
+      "freshness_limit_seconds": null,
+      "priority": 7,
+      "reason_code": "NER_SOURCE_CONFLICT_UNRESOLVED",
+      "recovery_condition": "primary correction or independent corroboration resolves conflict",
+      "required_inputs": [
+        "conflict_state",
+        "conflict_group_id"
+      ],
+      "rule_id": "NER-007",
+      "severity": "S3"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "fields": {
+          "claim_impact": "catastrophic",
+          "source_trust": "T3",
+          "verification_state": "unconfirmed"
+        },
+        "kind": "all_equals"
+      },
+      "document_section": "3, 6",
+      "freshness_limit_seconds": 900,
+      "priority": 8,
+      "reason_code": "NER_CATASTROPHIC_SECONDARY_UNCONFIRMED",
+      "recovery_condition": "primary confirmation, two independent reliable reports, withdrawal, or expiry",
+      "required_inputs": [
+        "source_trust",
+        "claim_impact",
+        "verification_state"
+      ],
+      "rule_id": "NER-008",
+      "severity": "S3"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "fields": {
+          "material": true,
+          "verification_state": "verified"
+        },
+        "kind": "all_equals"
+      },
+      "document_section": "3, 6",
+      "freshness_limit_seconds": null,
+      "priority": 9,
+      "reason_code": "NER_MATERIAL_PRIMARY_EVENT",
+      "recovery_condition": "category-specific cooldown and data-health checks complete",
+      "required_inputs": [
+        "material",
+        "verification_state",
+        "source_trust"
+      ],
+      "rule_id": "NER-009",
+      "severity": "S3"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "end_seconds": 3600,
+        "event_types": [
+          "earnings_release"
+        ],
+        "kind": "window",
+        "start_seconds": -3600
+      },
+      "document_section": "7",
+      "freshness_limit_seconds": null,
+      "priority": 10,
+      "reason_code": "NER_EARNINGS_INTRADAY_BLACKOUT",
+      "recovery_condition": "decision time is more than 3600 seconds after release",
+      "required_inputs": [
+        "event_type",
+        "event_at"
+      ],
+      "rule_id": "NER-010",
+      "severity": "S3"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "end_seconds": 0,
+        "event_types": [
+          "earnings_call"
+        ],
+        "kind": "window",
+        "start_seconds": -900
+      },
+      "document_section": "7",
+      "freshness_limit_seconds": null,
+      "priority": 11,
+      "reason_code": "NER_EARNINGS_CALL_BLACKOUT",
+      "recovery_condition": "call completion is verified and post-call high-risk window applies",
+      "required_inputs": [
+        "event_type",
+        "event_at"
+      ],
+      "rule_id": "NER-011",
+      "severity": "S3"
+    },
+    {
+      "action": "reduce_risk",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "end_seconds": 86400,
+        "event_types": [
+          "earnings_release"
+        ],
+        "kind": "window",
+        "start_seconds": 3601
+      },
+      "document_section": "7",
+      "freshness_limit_seconds": null,
+      "priority": 12,
+      "reason_code": "NER_EARNINGS_POST_VOLATILITY",
+      "recovery_condition": "next regular-session cooldown and data-health checks complete",
+      "required_inputs": [
+        "event_type",
+        "event_at"
+      ],
+      "rule_id": "NER-012",
+      "severity": "S2"
+    },
+    {
+      "action": "warning",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "end_seconds": -3601,
+        "event_types": [
+          "earnings_release"
+        ],
+        "kind": "window",
+        "start_seconds": -432000
+      },
+      "document_section": "7",
+      "freshness_limit_seconds": null,
+      "priority": 13,
+      "reason_code": "NER_EARNINGS_PRE_RISK",
+      "recovery_condition": "earnings event completes or is cancelled",
+      "required_inputs": [
+        "event_type",
+        "event_at"
+      ],
+      "rule_id": "NER-013",
+      "severity": "S1"
+    },
+    {
+      "action": "reduce_risk",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "fields": {
+          "event_type": "guidance_change",
+          "verification_state": "verified"
+        },
+        "kind": "all_equals"
+      },
+      "document_section": "7",
+      "freshness_limit_seconds": null,
+      "priority": 14,
+      "reason_code": "NER_GUIDANCE_CHANGE_VERIFIED",
+      "recovery_condition": "category cooldown and comparison validation complete",
+      "required_inputs": [
+        "event_type",
+        "verification_state"
+      ],
+      "rule_id": "NER-014",
+      "severity": "S2"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "end_seconds": 3600,
+        "event_types": [
+          "fed_decision"
+        ],
+        "kind": "window",
+        "start_seconds": -1800
+      },
+      "document_section": "8",
+      "freshness_limit_seconds": null,
+      "priority": 15,
+      "reason_code": "NER_FOMC_DECISION_BLACKOUT",
+      "recovery_condition": "decision cooldown completes and market data are healthy",
+      "required_inputs": [
+        "event_type",
+        "event_at"
+      ],
+      "rule_id": "NER-015",
+      "severity": "S3"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "end_seconds": 1800,
+        "event_types": [
+          "cpi",
+          "ppi",
+          "jobs_report"
+        ],
+        "kind": "window",
+        "start_seconds": -900
+      },
+      "document_section": "8",
+      "freshness_limit_seconds": null,
+      "priority": 16,
+      "reason_code": "NER_MAJOR_MACRO_BLACKOUT",
+      "recovery_condition": "release cooldown completes and market data are healthy",
+      "required_inputs": [
+        "event_type",
+        "event_at"
+      ],
+      "rule_id": "NER-016",
+      "severity": "S3"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "end_seconds": 1800,
+        "event_types": [
+          "gdp"
+        ],
+        "kind": "window",
+        "start_seconds": -900
+      },
+      "document_section": "8",
+      "freshness_limit_seconds": null,
+      "priority": 17,
+      "reason_code": "NER_GDP_BLACKOUT",
+      "recovery_condition": "release cooldown completes",
+      "required_inputs": [
+        "event_type",
+        "event_at"
+      ],
+      "rule_id": "NER-017",
+      "severity": "S3"
+    },
+    {
+      "action": "reduce_risk",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "end_seconds": 900,
+        "event_types": [
+          "treasury_event"
+        ],
+        "kind": "window",
+        "start_seconds": -600
+      },
+      "document_section": "8",
+      "freshness_limit_seconds": null,
+      "priority": 18,
+      "reason_code": "NER_TREASURY_HIGH_RISK_WINDOW",
+      "recovery_condition": "event cooldown completes and market data are healthy",
+      "required_inputs": [
+        "event_type",
+        "event_at"
+      ],
+      "rule_id": "NER-018",
+      "severity": "S2"
+    },
+    {
+      "action": "warning",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "event_types": [
+          "breaking_company_news",
+          "geopolitical"
+        ],
+        "kind": "freshness",
+        "operator": "lte",
+        "seconds": 1800
+      },
+      "document_section": "4",
+      "freshness_limit_seconds": 1800,
+      "priority": 19,
+      "reason_code": "NER_BREAKING_NEWS_FRESH",
+      "recovery_condition": "item is resolved, superseded, or older than 1800 seconds",
+      "required_inputs": [
+        "event_type",
+        "published_at"
+      ],
+      "rule_id": "NER-019",
+      "severity": "S1"
+    },
+    {
+      "action": "informational",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "event_types": [
+          "breaking_company_news",
+          "geopolitical"
+        ],
+        "kind": "freshness",
+        "operator": "gt",
+        "seconds": 86400
+      },
+      "document_section": "4",
+      "freshness_limit_seconds": 86400,
+      "priority": 20,
+      "reason_code": "NER_BREAKING_NEWS_STALE",
+      "recovery_condition": "record expires under retention policy",
+      "required_inputs": [
+        "event_type",
+        "published_at"
+      ],
+      "rule_id": "NER-020",
+      "severity": "S0"
+    },
+    {
+      "action": "warning",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "kind": "social_freshness",
+        "operator": "lte",
+        "seconds": 900,
+        "source_trust": "T5",
+        "verification_state": "unconfirmed"
+      },
+      "document_section": "3, 9",
+      "freshness_limit_seconds": 900,
+      "priority": 21,
+      "reason_code": "NER_IDENTIFIED_SOCIAL_UNVERIFIED",
+      "recovery_condition": "primary confirmation, withdrawal, or 900-second expiry",
+      "required_inputs": [
+        "source_trust",
+        "verification_state"
+      ],
+      "rule_id": "NER-021",
+      "severity": "S1"
+    },
+    {
+      "action": "ignore",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "field": "source_trust",
+        "kind": "field_in",
+        "values": [
+          "T6"
+        ]
+      },
+      "document_section": "3, 9",
+      "freshness_limit_seconds": null,
+      "priority": 22,
+      "reason_code": "NER_ANONYMOUS_SOCIAL_IGNORED",
+      "recovery_condition": "not applicable; anonymous content never establishes fact",
+      "required_inputs": [
+        "source_trust"
+      ],
+      "rule_id": "NER-022",
+      "severity": "S0"
+    },
+    {
+      "action": "warning",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "field": "revision_state",
+        "kind": "field_equals",
+        "value": "revised"
+      },
+      "document_section": "4, 11",
+      "freshness_limit_seconds": null,
+      "priority": 23,
+      "reason_code": "NER_REVISION_APPEND_ONLY",
+      "recovery_condition": "new version is linked and only later decisions use it",
+      "required_inputs": [
+        "revision_state",
+        "supersedes_event_id",
+        "published_at"
+      ],
+      "rule_id": "NER-023",
+      "severity": "S1"
+    },
+    {
+      "action": "informational",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "field": "duplicate_state",
+        "kind": "field_equals",
+        "value": "duplicate"
+      },
+      "document_section": "4, 11",
+      "freshness_limit_seconds": null,
+      "priority": 24,
+      "reason_code": "NER_DUPLICATE_NO_ESCALATION",
+      "recovery_condition": "canonical event remains available",
+      "required_inputs": [
+        "duplicate_state",
+        "duplicate_cluster_id"
+      ],
+      "rule_id": "NER-024",
+      "severity": "S0"
+    },
+    {
+      "action": "informational",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "field": "lifecycle_state",
+        "kind": "field_equals",
+        "value": "cancelled"
+      },
+      "document_section": "2, 4",
+      "freshness_limit_seconds": null,
+      "priority": 25,
+      "reason_code": "NER_CANCELLED_EVENT_INFORMATION",
+      "recovery_condition": "replacement schedule creates a new event version",
+      "required_inputs": [
+        "lifecycle_state",
+        "event_id"
+      ],
+      "rule_id": "NER-025",
+      "severity": "S0"
+    },
+    {
+      "action": "trade_block",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "field": "lifecycle_state",
+        "kind": "field_equals",
+        "value": "delayed_critical"
+      },
+      "document_section": "2, 4, 8",
+      "freshness_limit_seconds": null,
+      "priority": 26,
+      "reason_code": "NER_DELAYED_CRITICAL_EVENT",
+      "recovery_condition": "official publication occurs or bounded event window expires",
+      "required_inputs": [
+        "lifecycle_state",
+        "event_id"
+      ],
+      "rule_id": "NER-026",
+      "severity": "S3"
+    },
+    {
+      "action": "ignore",
+      "audit_payload": [
+        "source",
+        "source_trust",
+        "event_type",
+        "published_at",
+        "first_seen_at",
+        "ingested_at",
+        "severity",
+        "action",
+        "affected_tickers",
+        "rule_id",
+        "reason_code",
+        "rule_version",
+        "user_explanation",
+        "expiry"
+      ],
+      "condition": {
+        "kind": "social_freshness",
+        "operator": "gt",
+        "seconds": 900,
+        "source_trust": "T5",
+        "verification_state": "unconfirmed"
+      },
+      "document_section": "4, 9",
+      "freshness_limit_seconds": 900,
+      "priority": 27,
+      "reason_code": "NER_IDENTIFIED_SOCIAL_STALE_IGNORED",
+      "recovery_condition": "not applicable; stale social content cannot establish fact",
+      "required_inputs": [
+        "source_trust",
+        "verification_state",
+        "published_at"
+      ],
+      "rule_id": "NER-027",
+      "severity": "S0"
+    }
+  ],
+  "severity_priority": [
+    "S4",
+    "S3",
+    "S2",
+    "S1",
+    "S0"
+  ],
+  "status": "research_only",
+  "trust_levels": {
+    "T1": "authoritative_primary",
+    "T2": "attributable_primary",
+    "T3": "high_quality_secondary",
+    "T4": "specialist_entitled",
+    "T5": "identified_social",
+    "T6": "unverified"
+  },
+  "unresolved_dependencies": [
+    "provider_selection_and_licence",
+    "redistribution_and_display_rights",
+    "archive_and_deleted_content_rights",
+    "social_data_terms_and_privacy",
+    "jurisdiction_and_market_abuse_rules",
+    "personalised_advice_implications",
+    "override_governance_and_retention",
+    "entity_mapping_and_instrument_scope",
+    "market_health_release_criteria",
+    "consensus_data_provenance"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:beau-ai-trader:news-event-risk-policy:v1",
+  "title": "News and event risk research policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "status",
+    "document",
+    "determinism",
+    "event_categories",
+    "trust_levels",
+    "severity_priority",
+    "action_priority",
+    "required_audit_fields",
+    "unresolved_dependencies",
+    "rules"
+  ],
+  "properties": {
+    "contract_version": {"type": "string", "const": "1.0.0"},
+    "status": {"type": "string", "const": "research_only"},
+    "document": {"type": "string", "const": "docs/NEWS_EVENT_RISK_ENGINE.md"},
+    "determinism": {
+      "type": "object",
+      "required": ["timezone", "window_start_inclusive", "window_end_inclusive", "unknown_critical_input"],
+      "additionalProperties": false
+    },
+    "event_categories": {"type": "array", "minItems": 21, "uniqueItems": true},
+    "trust_levels": {"type": "object"},
+    "severity_priority": {"type": "array", "const": ["S4", "S3", "S2", "S1", "S0"]},
+    "action_priority": {
+      "type": "array",
+      "const": ["emergency_halt", "paper_only", "trade_block", "reduce_risk", "warning", "ignore", "informational"]
+    },
+    "required_audit_fields": {"type": "array", "minItems": 15, "uniqueItems": true},
+    "unresolved_dependencies": {"type": "array", "minItems": 7, "uniqueItems": true},
+    "rules": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule_id",
+          "document_section",
+          "reason_code",
+          "severity",
+          "action",
+          "priority",
+          "required_inputs",
+          "freshness_limit_seconds",
+          "recovery_condition",
+          "audit_payload",
+          "condition"
+        ]
+      }
+    }
+  }
+}

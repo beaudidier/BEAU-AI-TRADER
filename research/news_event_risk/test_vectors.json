@@ -1,0 +1,2175 @@
+[
+  {
+    "decision_at": "2026-01-15T14:00:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": null,
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_CRITICAL_INPUT_INVALID"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-001"
+    ],
+    "vector_id": "TV-001-MISSING-TIMESTAMP"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "mode": "future_live",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "unresolved_dependencies": [
+          "provider_selection_and_licence"
+        ],
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "paper_only",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_UNRESOLVED_FUTURE_LIVE_DEPENDENCY"
+      ],
+      "severity": "S4",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-002"
+    ],
+    "vector_id": "TV-002-UNRESOLVED-LIVE"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "market_emergency": true,
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "emergency_halt",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_MARKET_EMERGENCY"
+      ],
+      "severity": "S4",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-003"
+    ],
+    "vector_id": "TV-003-EMERGENCY"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "x_social_sentiment",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "requests_direction_effect": true,
+        "source_trust": "T5",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_SOCIAL_DIRECTION_PROHIBITED"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-004"
+    ],
+    "vector_id": "TV-004-SOCIAL-PROHIBITED"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "x_social_sentiment",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "requests_confidence_increase": true,
+        "source_trust": "T5",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_SOCIAL_CONFIDENCE_INCREASE_PROHIBITED"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-005"
+    ],
+    "vector_id": "TV-005-SOCIAL-PROHIBITED"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "x_social_sentiment",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "requests_size_increase": true,
+        "source_trust": "T5",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_SOCIAL_SIZE_INCREASE_PROHIBITED"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-006"
+    ],
+    "vector_id": "TV-006-SOCIAL-PROHIBITED"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "conflict_group_id": "c1",
+        "conflict_state": "unresolved_critical",
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_SOURCE_CONFLICT_UNRESOLVED"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-007"
+    ],
+    "vector_id": "TV-007-CONFLICT"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "claim_impact": "catastrophic",
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T3",
+        "timezone": "UTC",
+        "verification_state": "unconfirmed"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_CATASTROPHIC_SECONDARY_UNCONFIRMED"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-008"
+    ],
+    "vector_id": "TV-008-T3-CATASTROPHIC"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "material": true,
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_MATERIAL_PRIMARY_EVENT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-009"
+    ],
+    "vector_id": "TV-009-MATERIAL"
+  },
+  {
+    "decision_at": "2026-01-15T12:59:59Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "warning",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_PRE_RISK"
+      ],
+      "severity": "S1",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-010",
+      "NER-013"
+    ],
+    "vector_id": "TV-010-NER-010-BEFORE"
+  },
+  {
+    "decision_at": "2026-01-15T13:00:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_INTRADAY_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-010"
+    ],
+    "vector_id": "TV-011-NER-010-START"
+  },
+  {
+    "decision_at": "2026-01-15T15:00:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_INTRADAY_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-010"
+    ],
+    "vector_id": "TV-012-NER-010-END"
+  },
+  {
+    "decision_at": "2026-01-15T15:00:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "reduce_risk",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_POST_VOLATILITY"
+      ],
+      "severity": "S2",
+      "size_multiplier_max": 0.5
+    },
+    "rule_ids": [
+      "NER-010",
+      "NER-012"
+    ],
+    "vector_id": "TV-013-NER-010-AFTER"
+  },
+  {
+    "decision_at": "2026-01-15T13:44:59Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_call",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-011"
+    ],
+    "vector_id": "TV-014-NER-011-BEFORE"
+  },
+  {
+    "decision_at": "2026-01-15T13:45:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_call",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_CALL_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-011"
+    ],
+    "vector_id": "TV-015-NER-011-START"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_call",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_CALL_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-011"
+    ],
+    "vector_id": "TV-016-NER-011-END"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_call",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-011"
+    ],
+    "vector_id": "TV-017-NER-011-AFTER"
+  },
+  {
+    "decision_at": "2026-01-15T15:00:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_INTRADAY_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-010",
+      "NER-012"
+    ],
+    "vector_id": "TV-018-NER-012-BEFORE"
+  },
+  {
+    "decision_at": "2026-01-15T15:00:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "reduce_risk",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_POST_VOLATILITY"
+      ],
+      "severity": "S2",
+      "size_multiplier_max": 0.5
+    },
+    "rule_ids": [
+      "NER-012"
+    ],
+    "vector_id": "TV-019-NER-012-START"
+  },
+  {
+    "decision_at": "2026-01-16T14:00:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "reduce_risk",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_POST_VOLATILITY"
+      ],
+      "severity": "S2",
+      "size_multiplier_max": 0.5
+    },
+    "rule_ids": [
+      "NER-012"
+    ],
+    "vector_id": "TV-020-NER-012-END"
+  },
+  {
+    "decision_at": "2026-01-16T14:00:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-012"
+    ],
+    "vector_id": "TV-021-NER-012-AFTER"
+  },
+  {
+    "decision_at": "2026-01-10T13:59:59Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-013"
+    ],
+    "vector_id": "TV-022-NER-013-BEFORE"
+  },
+  {
+    "decision_at": "2026-01-10T14:00:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "warning",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_PRE_RISK"
+      ],
+      "severity": "S1",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-013"
+    ],
+    "vector_id": "TV-023-NER-013-START"
+  },
+  {
+    "decision_at": "2026-01-15T12:59:59Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "warning",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_PRE_RISK"
+      ],
+      "severity": "S1",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-013"
+    ],
+    "vector_id": "TV-024-NER-013-END"
+  },
+  {
+    "decision_at": "2026-01-15T13:00:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "earnings_release",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_EARNINGS_INTRADAY_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-010",
+      "NER-013"
+    ],
+    "vector_id": "TV-025-NER-013-AFTER"
+  },
+  {
+    "decision_at": "2026-01-15T13:29:59Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "fed_decision",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-015"
+    ],
+    "vector_id": "TV-026-NER-015-BEFORE"
+  },
+  {
+    "decision_at": "2026-01-15T13:30:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "fed_decision",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_FOMC_DECISION_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-015"
+    ],
+    "vector_id": "TV-027-NER-015-START"
+  },
+  {
+    "decision_at": "2026-01-15T15:00:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "fed_decision",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_FOMC_DECISION_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-015"
+    ],
+    "vector_id": "TV-028-NER-015-END"
+  },
+  {
+    "decision_at": "2026-01-15T15:00:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "fed_decision",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-015"
+    ],
+    "vector_id": "TV-029-NER-015-AFTER"
+  },
+  {
+    "decision_at": "2026-01-15T13:44:59Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "cpi",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-016"
+    ],
+    "vector_id": "TV-030-NER-016-BEFORE"
+  },
+  {
+    "decision_at": "2026-01-15T13:45:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "cpi",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_MAJOR_MACRO_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-016"
+    ],
+    "vector_id": "TV-031-NER-016-START"
+  },
+  {
+    "decision_at": "2026-01-15T14:30:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "cpi",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_MAJOR_MACRO_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-016"
+    ],
+    "vector_id": "TV-032-NER-016-END"
+  },
+  {
+    "decision_at": "2026-01-15T14:30:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "cpi",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-016"
+    ],
+    "vector_id": "TV-033-NER-016-AFTER"
+  },
+  {
+    "decision_at": "2026-01-15T13:44:59Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "gdp",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-017"
+    ],
+    "vector_id": "TV-034-NER-017-BEFORE"
+  },
+  {
+    "decision_at": "2026-01-15T13:45:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "gdp",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_GDP_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-017"
+    ],
+    "vector_id": "TV-035-NER-017-START"
+  },
+  {
+    "decision_at": "2026-01-15T14:30:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "gdp",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_GDP_BLACKOUT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-017"
+    ],
+    "vector_id": "TV-036-NER-017-END"
+  },
+  {
+    "decision_at": "2026-01-15T14:30:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "gdp",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-017"
+    ],
+    "vector_id": "TV-037-NER-017-AFTER"
+  },
+  {
+    "decision_at": "2026-01-15T13:49:59Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "treasury_event",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-018"
+    ],
+    "vector_id": "TV-038-NER-018-BEFORE"
+  },
+  {
+    "decision_at": "2026-01-15T13:50:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "treasury_event",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "reduce_risk",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_TREASURY_HIGH_RISK_WINDOW"
+      ],
+      "severity": "S2",
+      "size_multiplier_max": 0.5
+    },
+    "rule_ids": [
+      "NER-018"
+    ],
+    "vector_id": "TV-039-NER-018-START"
+  },
+  {
+    "decision_at": "2026-01-15T14:15:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "treasury_event",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "reduce_risk",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_TREASURY_HIGH_RISK_WINDOW"
+      ],
+      "severity": "S2",
+      "size_multiplier_max": 0.5
+    },
+    "rule_ids": [
+      "NER-018"
+    ],
+    "vector_id": "TV-040-NER-018-END"
+  },
+  {
+    "decision_at": "2026-01-15T14:15:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_at": "2026-01-15T14:00:00Z",
+        "event_id": "evt-1",
+        "event_type": "treasury_event",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-018"
+    ],
+    "vector_id": "TV-041-NER-018-AFTER"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "guidance_change",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "reduce_risk",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_GUIDANCE_CHANGE_VERIFIED"
+      ],
+      "severity": "S2",
+      "size_multiplier_max": 0.5
+    },
+    "rule_ids": [
+      "NER-014"
+    ],
+    "vector_id": "TV-042-GUIDANCE"
+  },
+  {
+    "decision_at": "2026-01-15T14:30:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "breaking_company_news",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "warning",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_BREAKING_NEWS_FRESH"
+      ],
+      "severity": "S1",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-019"
+    ],
+    "vector_id": "TV-043-BREAKING-FRESH-BOUNDARY"
+  },
+  {
+    "decision_at": "2026-01-15T14:30:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "breaking_company_news",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-019"
+    ],
+    "vector_id": "TV-044-BREAKING-FRESH-AFTER"
+  },
+  {
+    "decision_at": "2026-01-16T14:00:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "breaking_company_news",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-020"
+    ],
+    "vector_id": "TV-045-BREAKING-STALE-BOUNDARY"
+  },
+  {
+    "decision_at": "2026-01-16T14:00:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "breaking_company_news",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_BREAKING_NEWS_STALE"
+      ],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-020"
+    ],
+    "vector_id": "TV-046-BREAKING-STALE-AFTER"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "x_social_sentiment",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T5",
+        "timezone": "UTC",
+        "verification_state": "unconfirmed"
+      }
+    ],
+    "expected": {
+      "action": "warning",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_IDENTIFIED_SOCIAL_UNVERIFIED"
+      ],
+      "severity": "S1",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-021"
+    ],
+    "vector_id": "TV-047-T5-WARNING"
+  },
+  {
+    "decision_at": "2026-01-15T14:14:59Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "x_social_sentiment",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T5",
+        "timezone": "UTC",
+        "verification_state": "unconfirmed"
+      }
+    ],
+    "expected": {
+      "action": "warning",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_IDENTIFIED_SOCIAL_UNVERIFIED"
+      ],
+      "severity": "S1",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-021"
+    ],
+    "vector_id": "TV-047A-T5-BEFORE-EXPIRY"
+  },
+  {
+    "decision_at": "2026-01-15T14:15:00Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "x_social_sentiment",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T5",
+        "timezone": "UTC",
+        "verification_state": "unconfirmed"
+      }
+    ],
+    "expected": {
+      "action": "warning",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_IDENTIFIED_SOCIAL_UNVERIFIED"
+      ],
+      "severity": "S1",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-021"
+    ],
+    "vector_id": "TV-047B-T5-EXACT-EXPIRY"
+  },
+  {
+    "decision_at": "2026-01-15T14:15:01Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "x_social_sentiment",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T5",
+        "timezone": "UTC",
+        "verification_state": "unconfirmed"
+      }
+    ],
+    "expected": {
+      "action": "ignore",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_IDENTIFIED_SOCIAL_STALE_IGNORED"
+      ],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-021",
+      "NER-027"
+    ],
+    "vector_id": "TV-047C-T5-AFTER-EXPIRY"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "x_social_sentiment",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T6",
+        "timezone": "UTC",
+        "verification_state": "unconfirmed"
+      }
+    ],
+    "expected": {
+      "action": "ignore",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_ANONYMOUS_SOCIAL_IGNORED"
+      ],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-022"
+    ],
+    "vector_id": "TV-048-T6-IGNORE"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "revision_state": "revised",
+        "source_trust": "T1",
+        "supersedes_event_id": "evt-0",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "warning",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_REVISION_APPEND_ONLY"
+      ],
+      "severity": "S1",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-023"
+    ],
+    "vector_id": "TV-049-REVISION"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "duplicate_cluster_id": "d1",
+        "duplicate_state": "duplicate",
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_DUPLICATE_NO_ESCALATION"
+      ],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-024"
+    ],
+    "vector_id": "TV-050-DUPLICATE"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "lifecycle_state": "cancelled",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_CANCELLED_EVENT_INFORMATION"
+      ],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-025"
+    ],
+    "vector_id": "TV-051-CANCELLED"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "lifecycle_state": "delayed_critical",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_DELAYED_CRITICAL_EVENT"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-026"
+    ],
+    "vector_id": "TV-052-DELAYED"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "conflict_group_id": "c1",
+        "conflict_state": "unresolved_critical",
+        "event_id": "evt-1",
+        "event_type": "breaking_company_news",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_SOURCE_CONFLICT_UNRESOLVED",
+        "NER_BREAKING_NEWS_FRESH"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-007",
+      "NER-019"
+    ],
+    "vector_id": "TV-053-PRIORITY-BLOCK-BEATS-WARNING"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "informational",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [],
+      "severity": "S0",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-023"
+    ],
+    "vector_id": "TV-054-POINT-IN-TIME-ORIGINAL"
+  },
+  {
+    "decision_at": "2026-01-15T15:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-2",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T15:00:01Z",
+        "ingested_at": "2026-01-15T15:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T15:00:00Z",
+        "revision_state": "revised",
+        "source_trust": "T1",
+        "supersedes_event_id": "evt-1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "warning",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_REVISION_APPEND_ONLY"
+      ],
+      "severity": "S1",
+      "size_multiplier_max": 1.0
+    },
+    "rule_ids": [
+      "NER-023"
+    ],
+    "vector_id": "TV-055-POINT-IN-TIME-REVISED"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "UNKNOWN",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_CRITICAL_INPUT_INVALID"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-001"
+    ],
+    "vector_id": "TV-056-UNKNOWN-SOURCE"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": null,
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_CRITICAL_INPUT_INVALID"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-001"
+    ],
+    "vector_id": "TV-057-MISSING-TIMEZONE"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "unmapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_CRITICAL_INPUT_INVALID"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-001"
+    ],
+    "vector_id": "TV-058-UNMAPPED"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "sec_filing",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "empty",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_CRITICAL_INPUT_INVALID"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-001"
+    ],
+    "vector_id": "TV-059-EMPTY-PAYLOAD"
+  },
+  {
+    "decision_at": "2026-01-15T14:00:10Z",
+    "events": [
+      {
+        "affected_tickers": [
+          "ABC"
+        ],
+        "event_id": "evt-1",
+        "event_type": "cpi",
+        "first_seen_at": "2026-01-15T14:00:01Z",
+        "ingested_at": "2026-01-15T14:00:02Z",
+        "mapping_status": "mapped",
+        "payload_state": "valid",
+        "published_at": "2026-01-15T14:00:00Z",
+        "source_trust": "T1",
+        "timezone": "UTC",
+        "verification_state": "verified"
+      }
+    ],
+    "expected": {
+      "action": "trade_block",
+      "confidence_delta_max": 0,
+      "direction_effect": "none",
+      "reason_codes": [
+        "NER_CRITICAL_INPUT_INVALID"
+      ],
+      "severity": "S3",
+      "size_multiplier_max": 0.0
+    },
+    "rule_ids": [
+      "NER-001"
+    ],
+    "vector_id": "TV-060-SCHEDULED-MISSING-EVENT-AT"
+  }
+]
