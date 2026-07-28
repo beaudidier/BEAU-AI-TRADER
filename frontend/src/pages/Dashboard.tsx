@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import AdviceBadge from "../components/AdviceBadge";
+import BeginnerSetup from "../components/BeginnerSetup";
 import { BriefingSection } from "../components/BriefingSection";
 import Header from "../components/Header";
 import PrivateBetaStatusPanel from "../components/PrivateBetaStatusPanel";
@@ -142,6 +143,7 @@ async function retryRequest<T>(request: () => Promise<T>): Promise<T> {
 }
 
 function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: DashboardProps) {
+  const [beginnerMode, setBeginnerMode] = useState(() => window.localStorage.getItem("beau-display-mode") !== "advanced");
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [scannerLoading, setScannerLoading] = useState(true);
   const [scannerError, setScannerError] = useState<string | null>(null);
@@ -286,8 +288,13 @@ function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: Dash
     <div className="min-h-screen bg-slate-950 font-sans text-slate-100 lg:flex">
       <Sidebar onNavigate={onNavigate} />
       <div className="min-w-0 flex-1">
-        <Header eyebrow="Trading desk" title="What should I buy today?" />
+        <Header eyebrow="Swing trading · paper-first" title={beginnerMode ? "Your next clear step" : "Trading dashboard"} />
         <main id="scanner" className="mx-auto max-w-7xl p-5 sm:p-8">
+          <div className="mb-5 flex items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+            <div><p className="text-sm font-semibold text-white">{beginnerMode ? "Beginner Mode" : "Advanced Mode"}</p><p className="text-xs text-slate-400">{beginnerMode ? "One setup, plain language, risk first." : "Scanner, scores, and technical detail."}</p></div>
+            <button type="button" onClick={() => setBeginnerMode((current) => { const next = !current; window.localStorage.setItem("beau-display-mode", next ? "beginner" : "advanced"); return next; })} className="rounded-lg border border-cyan-400/30 px-3 py-2 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/10">Switch to {beginnerMode ? "Advanced" : "Beginner"}</button>
+          </div>
+          {beginnerMode ? <BeginnerSetup /> : <>
           <StrategySelector strategies={strategies} selectedId={selectedStrategyId} onSelect={setSelectedStrategyId} />
           <div className="mt-4">
             <PrivateBetaStatusPanel
@@ -309,6 +316,7 @@ function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: Dash
               onAnalyze={onOpenChart}
             />
           </div>
+          <p className="mt-5 rounded-lg border border-cyan-400/20 bg-cyan-400/5 p-3 text-xs leading-5 text-cyan-100">Confidence is a rules-based score, not a guaranteed probability of profit.</p>
           <section className="mt-5 overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 shadow-xl shadow-slate-950/30">
             <div className="flex flex-col gap-4 border-b border-slate-800 p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -406,6 +414,7 @@ function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: Dash
               })}
             />
           </div>
+          </>}
         </main>
       </div>
       <StockDetailPanel stock={selectedStock} onClose={() => setSelectedStock(null)} />
