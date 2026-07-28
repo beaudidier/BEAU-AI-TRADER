@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -272,7 +273,13 @@ def build_vectors() -> list[dict[str, Any]]:
                 size = 0.5
             trace_rules = sorted({rid, matched_rule} - {None})
             vectors.append(vector(f"TV-{counter:03d}-{rid}-{label}", trace_rules, decision,
-                                  [base_event(event_type=event_type, event_at="2026-01-15T14:00:00Z")],
+                                  [base_event(
+                                      event_type=event_type,
+                                      event_at="2026-01-15T14:00:00Z",
+                                      published_at="2026-01-01T00:00:00Z",
+                                      first_seen_at="2026-01-01T00:00:01Z",
+                                      ingested_at="2026-01-01T00:00:02Z",
+                                  )],
                                   expected(severity, action, reasons, size)))
             counter += 1
 
@@ -308,7 +315,10 @@ def build_vectors() -> list[dict[str, Any]]:
                [base_event(event_type="x_social_sentiment", source_trust="T6", verification_state="unconfirmed")],
                expected("S0", "ignore", [reason("NER-022")])),
         vector("TV-049-REVISION", ["NER-023"], "2026-01-15T14:00:10Z",
-               [base_event(revision_state="revised", supersedes_event_id="evt-0")],
+               [base_event(
+                   revision_state="revised", supersedes_event_id="evt-0",
+                   superseded_published_at="2026-01-15T13:00:00Z",
+               )],
                expected("S1", "warning", [reason("NER-023")])),
         vector("TV-050-DUPLICATE", ["NER-024"], "2026-01-15T14:00:10Z",
                [base_event(duplicate_state="duplicate", duplicate_cluster_id="d1")],
@@ -327,7 +337,8 @@ def build_vectors() -> list[dict[str, Any]]:
         vector("TV-055-POINT-IN-TIME-REVISED", ["NER-023"], "2026-01-15T15:00:10Z",
                [base_event(revision_state="revised", supersedes_event_id="evt-1",
                            event_id="evt-2", published_at="2026-01-15T15:00:00Z",
-                           first_seen_at="2026-01-15T15:00:01Z", ingested_at="2026-01-15T15:00:02Z")],
+                           first_seen_at="2026-01-15T15:00:01Z", ingested_at="2026-01-15T15:00:02Z",
+                           superseded_published_at="2026-01-15T14:00:00Z")],
                expected("S1", "warning", [reason("NER-023")])),
         vector("TV-056-UNKNOWN-SOURCE", ["NER-001"], "2026-01-15T14:00:10Z",
                [base_event(source_trust="UNKNOWN")],
@@ -346,6 +357,10 @@ def build_vectors() -> list[dict[str, Any]]:
 
 def write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def file_digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def write_reports(vectors: list[dict[str, Any]]) -> None:
@@ -391,6 +406,14 @@ def main() -> None:
     vectors = build_vectors()
     write_json(ROOT / "policy.json", POLICY)
     write_json(ROOT / "test_vectors.json", vectors)
+    write_json(ROOT / "artifact_manifest.json", {
+        "manifest_version": "1.0.0",
+        "algorithm": "sha256",
+        "artifacts": {
+            name: file_digest(ROOT / name)
+            for name in ["policy.json", "policy.schema.json", "test_vectors.json"]
+        },
+    })
     write_reports(vectors)
 
 

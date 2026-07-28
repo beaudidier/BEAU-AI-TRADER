@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parent
 POLICY_PATH = ROOT / "policy.json"
 SCHEMA_PATH = ROOT / "policy.schema.json"
 VECTORS_PATH = ROOT / "test_vectors.json"
+MANIFEST_PATH = ROOT / "artifact_manifest.json"
 
 VALID_SEVERITIES = ("S0", "S1", "S2", "S3", "S4")
 VALID_ACTIONS = (
@@ -40,6 +41,35 @@ REQUIRED_RULE_FIELDS = {
     "recovery_condition",
     "audit_payload",
     "condition",
+}
+REQUIRED_POLICY_FIELDS = {
+    "contract_version",
+    "status",
+    "document",
+    "determinism",
+    "event_categories",
+    "trust_levels",
+    "severity_priority",
+    "action_priority",
+    "required_audit_fields",
+    "unresolved_dependencies",
+    "rules",
+}
+MINIMUM_RULE_AUDIT_FIELDS = {
+    "source",
+    "source_trust",
+    "event_type",
+    "published_at",
+    "first_seen_at",
+    "ingested_at",
+    "severity",
+    "action",
+    "affected_tickers",
+    "rule_id",
+    "reason_code",
+    "rule_version",
+    "user_explanation",
+    "expiry",
 }
 CRITICAL_EVENT_FIELDS = {
     "event_id",
@@ -89,6 +119,8 @@ def parse_timestamp(value: Any, field: str) -> datetime:
         raise ContractError(f"{field}: invalid timestamp") from exc
     if parsed.tzinfo != timezone.utc:
         raise ContractError(f"{field}: UTC required")
+    if not 2000 <= parsed.year <= 2100:
+        raise ContractError(f"{field}: timestamp outside supported research range")
     return parsed
 
 
@@ -96,6 +128,11 @@ def validate_policy(policy: dict[str, Any], schema: dict[str, Any] | None = None
     """Validate all contract invariants without external dependencies."""
     if not isinstance(policy, dict):
         raise ContractError("policy must be an object")
+    if set(policy) != REQUIRED_POLICY_FIELDS:
+        raise ContractError(
+            f"policy fields mismatch missing={sorted(REQUIRED_POLICY_FIELDS - set(policy))} "
+            f"extra={sorted(set(policy) - REQUIRED_POLICY_FIELDS)}"
+        )
     if policy.get("contract_version") != "1.0.0":
         raise ContractError("unsupported contract_version")
     if policy.get("status") != "research_only":
@@ -141,6 +178,7 @@ def validate_policy(policy: dict[str, Any], schema: dict[str, Any] | None = None
     rule_ids: set[str] = set()
     reason_codes: set[str] = set()
     priorities: set[int] = set()
+    condition_outputs: dict[str, tuple[str, str, str]] = {}
     for index, rule in enumerate(rules):
         if not isinstance(rule, dict):
             raise ContractError(f"rule[{index}] must be an object")
@@ -177,11 +215,36 @@ def validate_policy(policy: dict[str, Any], schema: dict[str, Any] | None = None
             raise ContractError(f"{rule_id}: recovery condition missing")
         if not isinstance(rule["audit_payload"], list) or not set(rule["audit_payload"]).issubset(audit_fields):
             raise ContractError(f"{rule_id}: invalid audit payload")
+        if not MINIMUM_RULE_AUDIT_FIELDS.issubset(rule["audit_payload"]):
+            raise ContractError(f"{rule_id}: required audit payload field missing")
         condition = rule["condition"]
         if not isinstance(condition, dict) or condition.get("kind") not in CONDITION_KINDS:
             raise ContractError(f"{rule_id}: undefined condition")
+        _validate_condition(rule_id, condition)
+        condition_key = canonical_json(condition)
+        output = (rule["severity"], rule["action"], rule["recovery_condition"])
+        previous = condition_outputs.get(condition_key)
+        if previous is not None and previous != output:
+            raise ContractError(f"{rule_id}: conflicting output/recovery for identical condition")
+        condition_outputs[condition_key] = output
     if priorities != set(range(1, len(rules) + 1)):
         raise ContractError("rule priorities must be contiguous and unique")
+    safety_invariants = {
+        "NER-001": ("S3", "trade_block", "critical_invalid"),
+        "NER-002": ("S4", "paper_only", "unresolved_live"),
+        "NER-003": ("S4", "emergency_halt", "field_equals"),
+        "NER-004": ("S3", "trade_block", "social_prohibited"),
+        "NER-005": ("S3", "trade_block", "social_prohibited"),
+        "NER-006": ("S3", "trade_block", "social_prohibited"),
+    }
+    indexed = {item["rule_id"]: item for item in rules}
+    for rule_id, invariant in safety_invariants.items():
+        item = indexed.get(rule_id)
+        actual = None if item is None else (
+            item["severity"], item["action"], item["condition"]["kind"]
+        )
+        if actual != invariant:
+            raise ContractError(f"{rule_id}: mandatory safety invariant changed")
     if schema is not None:
         if schema.get("$id") != "urn:beau-ai-trader:news-event-risk-policy:v1":
             raise ContractError("schema identity mismatch")
@@ -200,6 +263,8 @@ def validate_vector(vector: dict[str, Any]) -> None:
     parse_timestamp(vector["decision_at"], "decision_at")
     if not isinstance(vector["events"], list):
         raise ContractError("events must be an array")
+    if not vector["events"]:
+        raise ContractError("events must not be empty")
     expected = vector["expected"]
     if not isinstance(expected, dict) or set(expected) != {
         "severity",
@@ -210,6 +275,71 @@ def validate_vector(vector: dict[str, Any]) -> None:
         "size_multiplier_max",
     }:
         raise ContractError("expected result fields are invalid")
+    if expected["severity"] not in VALID_SEVERITIES or expected["action"] not in VALID_ACTIONS:
+        raise ContractError("expected severity/action is invalid")
+    if not isinstance(expected["reason_codes"], list):
+        raise ContractError("expected reason_codes must be an array")
+    if expected["direction_effect"] != "none":
+        raise ContractError("direction effect must remain none")
+    if not isinstance(expected["confidence_delta_max"], (int, float)) or expected["confidence_delta_max"] > 0:
+        raise ContractError("confidence_delta_max cannot be positive")
+    multiplier = expected["size_multiplier_max"]
+    if not isinstance(multiplier, (int, float)) or isinstance(multiplier, bool) or not 0 <= multiplier <= 1:
+        raise ContractError("size_multiplier_max must be within [0,1]")
+
+
+def _validate_condition(rule_id: str, condition: dict[str, Any]) -> None:
+    kind = condition["kind"]
+    expected_keys: dict[str, set[str]] = {
+        "critical_invalid": {"kind"},
+        "unresolved_live": {"kind"},
+        "field_equals": {"kind", "field", "value"},
+        "field_in": {"kind", "field", "values"},
+        "all_equals": {"kind", "fields"},
+        "window": {"kind", "event_types", "start_seconds", "end_seconds"},
+        "freshness": {"kind", "event_types", "operator", "seconds"},
+        "social_prohibited": {"kind", "field"},
+        "social_freshness": {
+            "kind", "source_trust", "verification_state", "operator", "seconds"
+        },
+    }
+    if set(condition) != expected_keys[kind]:
+        raise ContractError(f"{rule_id}: malformed {kind} condition")
+    if kind in {"field_equals", "field_in", "social_prohibited"}:
+        if not isinstance(condition["field"], str) or not condition["field"]:
+            raise ContractError(f"{rule_id}: invalid condition field")
+    if kind == "field_in" and (
+        not isinstance(condition["values"], list) or not condition["values"]
+    ):
+        raise ContractError(f"{rule_id}: field_in values must not be empty")
+    if kind == "all_equals" and (
+        not isinstance(condition["fields"], dict) or not condition["fields"]
+    ):
+        raise ContractError(f"{rule_id}: all_equals fields must not be empty")
+    if kind in {"window", "freshness"} and (
+        not isinstance(condition["event_types"], list) or not condition["event_types"]
+    ):
+        raise ContractError(f"{rule_id}: event_types must not be empty")
+    if kind == "window":
+        start = condition["start_seconds"]
+        end = condition["end_seconds"]
+        if (
+            not isinstance(start, int) or isinstance(start, bool)
+            or not isinstance(end, int) or isinstance(end, bool)
+            or start > end
+            or abs(start) > 31_536_000
+            or abs(end) > 31_536_000
+        ):
+            raise ContractError(f"{rule_id}: invalid or conflicting window bounds")
+    if kind in {"freshness", "social_freshness"}:
+        seconds = condition["seconds"]
+        if (
+            condition["operator"] not in {"lte", "gt"}
+            or not isinstance(seconds, int)
+            or isinstance(seconds, bool)
+            or not 0 <= seconds <= 31_536_000
+        ):
+            raise ContractError(f"{rule_id}: invalid freshness condition")
 
 
 def _seconds_from_event(event: dict[str, Any], decision_at: datetime) -> int:
@@ -217,7 +347,7 @@ def _seconds_from_event(event: dict[str, Any], decision_at: datetime) -> int:
     return int((decision_at - event_at).total_seconds())
 
 
-def _critical_invalid(event: dict[str, Any]) -> bool:
+def _critical_invalid(event: dict[str, Any], decision_at: datetime | None = None) -> bool:
     if not isinstance(event, dict) or CRITICAL_EVENT_FIELDS - set(event):
         return True
     if event.get("timezone") != "UTC":
@@ -229,11 +359,21 @@ def _critical_invalid(event: dict[str, Any]) -> bool:
     if event.get("payload_state") != "valid":
         return True
     try:
-        parse_timestamp(event.get("published_at"), "published_at")
-        parse_timestamp(event.get("first_seen_at"), "first_seen_at")
-        parse_timestamp(event.get("ingested_at"), "ingested_at")
+        published = parse_timestamp(event.get("published_at"), "published_at")
+        first_seen = parse_timestamp(event.get("first_seen_at"), "first_seen_at")
+        ingested = parse_timestamp(event.get("ingested_at"), "ingested_at")
+        if not published <= first_seen <= ingested:
+            return True
+        if decision_at is not None and max(published, first_seen, ingested) > decision_at:
+            return True
         if event.get("event_type") in SCHEDULED_EVENT_TYPES:
             parse_timestamp(event.get("event_at"), "event_at")
+        if event.get("revision_state") == "revised":
+            superseded = parse_timestamp(
+                event.get("superseded_published_at"), "superseded_published_at"
+            )
+            if superseded >= published:
+                return True
     except ContractError:
         return True
     return False
@@ -243,8 +383,8 @@ def condition_matches(rule: dict[str, Any], event: dict[str, Any], decision_at: 
     condition = rule["condition"]
     kind = condition["kind"]
     if kind == "critical_invalid":
-        return _critical_invalid(event)
-    if _critical_invalid(event):
+        return _critical_invalid(event, decision_at)
+    if _critical_invalid(event, decision_at):
         return False
     if kind == "unresolved_live":
         return mode == "future_live" and bool(event.get("unresolved_dependencies"))
@@ -337,3 +477,32 @@ def evaluate(policy: dict[str, Any], vector: dict[str, Any]) -> dict[str, Any]:
 
 def contract_digest(policy: dict[str, Any]) -> str:
     return hashlib.sha256(canonical_json(policy).encode("utf-8")).hexdigest()
+
+
+def file_digest(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(65_536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def validate_artifact_manifest(manifest: dict[str, Any], root: Path = ROOT) -> None:
+    expected_fields = {"manifest_version", "algorithm", "artifacts"}
+    if not isinstance(manifest, dict) or set(manifest) != expected_fields:
+        raise ContractError("artifact manifest fields are invalid")
+    if manifest["manifest_version"] != "1.0.0" or manifest["algorithm"] != "sha256":
+        raise ContractError("unsupported artifact manifest")
+    artifacts = manifest["artifacts"]
+    expected_names = {"policy.json", "policy.schema.json", "test_vectors.json"}
+    if not isinstance(artifacts, dict) or set(artifacts) != expected_names:
+        raise ContractError("artifact manifest membership is invalid")
+    for name, expected_digest in artifacts.items():
+        if (
+            not isinstance(expected_digest, str)
+            or len(expected_digest) != 64
+            or any(character not in "0123456789abcdef" for character in expected_digest)
+        ):
+            raise ContractError(f"{name}: invalid sha256 digest")
+        if file_digest(root / name) != expected_digest:
+            raise ContractError(f"{name}: artifact hash mismatch")

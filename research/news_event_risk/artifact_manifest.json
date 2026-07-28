@@ -1,0 +1,9 @@
+{
+  "algorithm": "sha256",
+  "artifacts": {
+    "policy.json": "166e6741477f7b128e2acd416f930c6bc0e63ac3162a5bdccba80af7befd50ea",
+    "policy.schema.json": "c4616c07318c3496dd09240b9abbba73694bc2e1f17ccc3b9597973b5d947055",
+    "test_vectors.json": "5b35f728d409e841e1e040a1c44c68da7b75d7ffed25d3308d28670ae912fbce"
+  },
+  "manifest_version": "1.0.0"
+}

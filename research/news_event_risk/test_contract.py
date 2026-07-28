@@ -131,7 +131,10 @@ class PolicyContractTests(unittest.TestCase):
     def test_generation_is_reproducible(self) -> None:
         tracked = {
             name: (ROOT / name).read_bytes()
-            for name in ["policy.json", "test_vectors.json", "TRACEABILITY.md", "GAPS.md"]
+            for name in [
+                "policy.json", "test_vectors.json", "artifact_manifest.json",
+                "TRACEABILITY.md", "GAPS.md",
+            ]
         }
         subprocess.run(
             [sys.executable, str(ROOT / "generate_artifacts.py")],

@@ -16,6 +16,8 @@ report:
 python3 research/news_event_risk/generate_artifacts.py
 ```
 
-The generator is deterministic and uses only the Python standard library.
-Generated artifacts must be reviewed and committed together. The policy is a
-research contract, not a live-ready, compliant, or predictive system.
+The generator is deterministic and uses only the Python standard library. It
+also emits `artifact_manifest.json` with SHA-256 hashes for the policy, schema,
+and vectors. Generated artifacts must be reviewed and committed together. The
+policy is a research contract, not a live-ready, compliant, or predictive
+system.
