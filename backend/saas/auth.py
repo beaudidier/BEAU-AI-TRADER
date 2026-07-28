@@ -5,11 +5,13 @@ try:
     import jwt
     from supabase import Client, create_client
     from supabase_auth.errors import AuthApiError
+    from postgrest.exceptions import APIError
 except ImportError:
     jwt = None
     Client = object
     create_client = None
     AuthApiError = ValueError
+    APIError = ValueError
 
 from .config import get_settings
 
@@ -85,16 +87,21 @@ def _require_private_beta_access(user: CurrentUser) -> None:
 
     if not getattr(get_settings(), "private_beta_enforced", False):
         return
-    membership = (
-        _supabase_client(user.access_token)
-        .table("private_beta_memberships")
-        .select("active")
-        .eq("user_id", user.id)
-        .eq("active", True)
-        .maybe_single()
-        .execute()
-    )
-    if not membership.data:
+    try:
+        membership = (
+            _supabase_client(user.access_token)
+            .table("private_beta_memberships")
+            .select("active")
+            .eq("user_id", user.id)
+            .eq("active", True)
+            .maybe_single()
+            .execute()
+        )
+    except APIError as error:
+        if getattr(error, "code", None) != "PGRST116":
+            raise
+        membership = None
+    if not membership or not membership.data:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="This private beta is available to invited testers only.",

@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from fastapi import HTTPException
+from postgrest.exceptions import APIError
 from pydantic import ValidationError
 
 import monitoring
@@ -30,6 +31,12 @@ RUNNER_STATUS_MIGRATION = (
     / "supabase"
     / "migrations"
     / "202607270001_private_beta_global_runner_status.sql"
+)
+ACCESS_REPAIR_MIGRATION = (
+    ROOT
+    / "supabase"
+    / "migrations"
+    / "202607280003_restore_private_beta_memberships.sql"
 )
 
 
@@ -113,6 +120,37 @@ class PrivateBetaTests(unittest.TestCase):
             ),
         ):
             _require_private_beta_access(user)
+
+    def test_missing_membership_postgrest_response_is_forbidden_not_crash(self):
+        user = CurrentUser("user-1", "tester@example.com", "token")
+        settings = SimpleNamespace(private_beta_enforced=True)
+        query = _MembershipQuery(False)
+        query.execute = lambda: (_ for _ in ()).throw(
+            APIError(
+                {
+                    "code": "PGRST116",
+                    "message": "The result contains 0 rows",
+                    "hint": None,
+                    "details": None,
+                }
+            )
+        )
+        with (
+            patch("saas.auth.get_settings", return_value=settings),
+            patch("saas.auth._supabase_client", return_value=query),
+            self.assertRaises(HTTPException) as error,
+        ):
+            _require_private_beta_access(user)
+        self.assertEqual(error.exception.status_code, 403)
+
+    def test_access_repair_only_backfills_users_with_invite_evidence(self):
+        sql = ACCESS_REPAIR_MIGRATION.read_text()
+        self.assertIn("from public.beta_invite_uses", sql)
+        self.assertIn(
+            "raw_user_meta_data ->> 'access' = 'private_beta_invite'",
+            sql,
+        )
+        self.assertNotIn("select id, 'TESTER'", sql)
 
     def test_migration_provisions_owner_and_secures_beta_records(self):
         sql = MIGRATION.read_text()
