@@ -6,12 +6,14 @@ const page = readFileSync(new URL("../src/pages/PaperTradingPage.tsx", import.me
 const review = readFileSync(new URL("../src/pages/TradeReviewPage.tsx", import.meta.url), "utf8");
 const api = readFileSync(new URL("../src/services/userApi.ts", import.meta.url), "utf8");
 const app = readFileSync(new URL("../src/App.tsx", import.meta.url), "utf8");
+const beginner = readFileSync(new URL("../src/pages/BeginnerDashboardPage.tsx", import.meta.url), "utf8");
 
 test("position, Coach and chart navigation are wired", () => {
   assert.match(page, /navigate\(`\/journal\/\$\{t\.id\}`\)/);
   assert.match(page, /#coach/);
   assert.match(page, /navigate\(`\/workspace\/\$\{t\.ticker\}`\)/);
   assert.match(app, /journal\/:tradeId/);
+  assert.match(beginner, /\["Portfolio & Journal", "paper-trading"\]/);
 });
 
 test("journal persistence and user-safe API payload are wired", () => {

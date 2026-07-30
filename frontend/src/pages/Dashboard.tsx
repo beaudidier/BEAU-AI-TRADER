@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import AdviceBadge from "../components/AdviceBadge";
 import { BriefingSection } from "../components/BriefingSection";
 import Header from "../components/Header";
+import ModeSwitcher from "../components/ModeSwitcher";
 import PrivateBetaStatusPanel from "../components/PrivateBetaStatusPanel";
 import ScanButton from "../components/ScanButton";
 import ScoreBadge from "../components/ScoreBadge";
@@ -288,6 +289,10 @@ function Dashboard({ onOpenChart, onNavigate, searchTerm, onSearchChange }: Dash
       <div className="min-w-0 flex-1">
         <Header eyebrow="Trading desk" title="What should I buy today?" />
         <main id="scanner" className="mx-auto max-w-7xl p-5 sm:p-8">
+          <div className="mb-4 flex items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+            <div><p className="text-sm font-semibold text-white">Advanced Mode</p><p className="mt-1 text-xs text-slate-400">Full scanner and analysis workspace.</p></div>
+            <ModeSwitcher />
+          </div>
           <StrategySelector strategies={strategies} selectedId={selectedStrategyId} onSelect={setSelectedStrategyId} />
           <div className="mt-4">
             <PrivateBetaStatusPanel
