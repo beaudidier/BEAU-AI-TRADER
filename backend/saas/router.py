@@ -69,6 +69,29 @@ class PaperTradeOpen(BaseModel):
     risk_reward_target_1: float
 
 
+class PaperTradeJournalUpdate(BaseModel):
+    journal_notes: str | None = Field(default=None, max_length=10000)
+    setup_tags: list[str] = Field(default_factory=list, max_length=30)
+    mistake_tags: list[str] = Field(default_factory=list, max_length=30)
+    emotion_tags: list[str] = Field(default_factory=list, max_length=30)
+    confidence_before: float | None = Field(default=None, ge=0, le=100)
+    confidence_after: float | None = Field(default=None, ge=0, le=100)
+    screenshot_url: str | None = Field(default=None, max_length=2000)
+    lessons_learned: str | None = Field(default=None, max_length=10000)
+    review_completed: bool = False
+
+    def safe_update(self) -> dict[str, Any]:
+        values = self.model_dump()
+        for key in ("setup_tags", "mistake_tags", "emotion_tags"):
+            values[key] = list(dict.fromkeys(
+                tag.strip()[:80] for tag in values[key] if tag.strip()
+            ))
+        if values["screenshot_url"] and not values["screenshot_url"].startswith(("https://", "http://")):
+            raise ValueError("Reference URL must start with http:// or https://")
+        values["journal_updated_at"] = datetime.now(timezone.utc).isoformat()
+        return values
+
+
 FeedbackCategory = Literal[
     "strategy logic",
     "entry/stop/target",
@@ -598,6 +621,40 @@ def get_paper_portfolio(user: CurrentUser = Depends(get_current_user)):
         .execute()
     )
     return portfolio
+
+
+@router.get("/paper-trading/{trade_id}")
+def get_paper_trade(trade_id: str, user: CurrentUser = Depends(get_current_user)):
+    """Return one authenticated user's paper trade and journal evidence."""
+
+    trade = _one(
+        _client(user).table("paper_trades").select("*")
+        .eq("id", trade_id).eq("user_id", user.id).maybe_single().execute()
+    )
+    if not trade:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Paper trade not found")
+    return trade
+
+
+@router.patch("/paper-trading/{trade_id}/journal")
+def update_paper_trade_journal(
+    trade_id: str,
+    payload: PaperTradeJournalUpdate,
+    user: CurrentUser = Depends(get_current_user),
+):
+    """Persist user-authored journal fields without accepting or changing user_id."""
+
+    try:
+        values = payload.safe_update()
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+    trade = _one(
+        _client(user).table("paper_trades").update(values)
+        .eq("id", trade_id).eq("user_id", user.id).execute()
+    )
+    if not trade:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Paper trade not found")
+    return trade
 
 
 @router.post("/paper-trading/open", status_code=status.HTTP_201_CREATED)

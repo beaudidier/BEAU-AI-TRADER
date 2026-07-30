@@ -14,6 +14,7 @@ import ProfileSettingsPage from "./pages/ProfileSettingsPage";
 import PaperTradingPage from "./pages/PaperTradingPage";
 import LearningPage from "./pages/LearningPage";
 import TradeWorkspacePage from "./pages/TradeWorkspacePage";
+import TradeReviewPage from "./pages/TradeReviewPage";
 import ValidationPage from "./pages/ValidationPage";
 import ForwardValidationPage from "./pages/ForwardValidationPage";
 import LatestSignalsPage from "./pages/LatestSignalsPage";
@@ -30,6 +31,7 @@ function ProtectedApplication() {
   const location = useLocation();
   const [dashboardSearch, setDashboardSearch] = useState("");
   const workspaceMatch = location.pathname.match(/^\/workspace\/([A-Za-z0-9.-]+)$/);
+  const journalMatch = location.pathname.match(/^\/journal\/([A-Za-z0-9-]+)$/);
   const page: AppPage = location.pathname === "/backtesting" ? "backtesting" : location.pathname === "/paper-trading" ? "paper-trading" : location.pathname === "/forward-validation" ? "forward-validation" : location.pathname === "/latest-signals" ? "latest-signals" : location.pathname === "/learning" ? "learning" : location.pathname === "/validation" ? "validation" : location.pathname === "/evidence" ? "evidence" : location.pathname === "/beta-guide" ? "beta-guide" : location.pathname === "/feedback" ? "feedback" : location.pathname === "/beta-invites" ? "beta-invites" : "dashboard";
 
   function navigatePage(nextPage: AppPage) {
@@ -39,6 +41,7 @@ function ProtectedApplication() {
   if (workspaceMatch) {
     return <TradeWorkspacePage ticker={workspaceMatch[1].toUpperCase()} onBack={() => routerNavigate("/dashboard")} onNavigate={navigatePage} />;
   }
+  if (journalMatch) return <TradeReviewPage tradeId={journalMatch[1]} />;
 
   if (page === "backtesting") {
     return <BacktestingPage onNavigate={navigatePage} />;
@@ -74,7 +77,7 @@ function ProtectedApplication() {
 }
 
 function App() {
-  return <BrowserRouter><AuthProvider><PrivateBetaBanner /><FrontendMonitoring /><Routes><Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} /><Route path="/register" element={<Navigate to="/login" replace />} /><Route path="/invite/:token" element={<GuestRoute><InviteRegistrationPage /></GuestRoute>} /><Route path="/invite" element={<GuestRoute><InviteRegistrationPage /></GuestRoute>} /><Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} /><Route path="/reset-password" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} /><Route path="/settings/profile" element={<ProtectedRoute><ProfileSettingsPage /></ProtectedRoute>} /><Route path="/settings/billing" element={<ProtectedRoute><BillingPage /></ProtectedRoute>} /><Route path="/dashboard" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/backtesting" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/paper-trading" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/forward-validation" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/latest-signals" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/learning" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/validation" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/evidence" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/beta-guide" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/feedback" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/beta-invites" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/workspace/:ticker" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/chart" element={<Navigate to="/dashboard" replace />} /><Route path="*" element={<Navigate to="/dashboard" replace />} /></Routes></AuthProvider></BrowserRouter>;
+  return <BrowserRouter><AuthProvider><PrivateBetaBanner /><FrontendMonitoring /><Routes><Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} /><Route path="/register" element={<Navigate to="/login" replace />} /><Route path="/invite/:token" element={<GuestRoute><InviteRegistrationPage /></GuestRoute>} /><Route path="/invite" element={<GuestRoute><InviteRegistrationPage /></GuestRoute>} /><Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} /><Route path="/reset-password" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} /><Route path="/settings/profile" element={<ProtectedRoute><ProfileSettingsPage /></ProtectedRoute>} /><Route path="/settings/billing" element={<ProtectedRoute><BillingPage /></ProtectedRoute>} /><Route path="/dashboard" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/backtesting" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/paper-trading" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/forward-validation" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/latest-signals" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/learning" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/validation" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/evidence" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/beta-guide" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/feedback" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/beta-invites" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/workspace/:ticker" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/journal/:tradeId" element={<ProtectedRoute><ProtectedApplication /></ProtectedRoute>} /><Route path="/chart" element={<Navigate to="/dashboard" replace />} /><Route path="*" element={<Navigate to="/dashboard" replace />} /></Routes></AuthProvider></BrowserRouter>;
 }
 
 export default App;

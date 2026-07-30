@@ -84,6 +84,7 @@ def build_portfolio_summary(account: dict[str, Any], open_trades: list[dict[str,
         previous_close = _value(quote.get("previous_close"), market_price)
         multiplier = _side_multiplier(side)
         position_pnl = (market_price - entry) * quantity * multiplier
+        initial_risk = abs(entry - _value(trade.get("stop_loss"))) * quantity
         daily_pnl = (market_price - previous_close) * quantity * multiplier
         unrealized_pnl += position_pnl
         today_pnl += daily_pnl
@@ -91,7 +92,9 @@ def build_portfolio_summary(account: dict[str, Any], open_trades: list[dict[str,
             **trade,
             "market_price": _round(market_price),
             "unrealized_pnl": _round(position_pnl),
+            "unrealized_r": round(position_pnl / initial_risk, 4) if initial_risk > 0 else 0,
             "market_value": _round(market_price * quantity * multiplier),
+            "latest_quote_timestamp": quote.get("timestamp") or quote.get("latest_timestamp"),
         })
 
     realized_pnl = sum(_value(trade.get("realized_pnl")) for trade in closed_trades)
@@ -105,6 +108,7 @@ def build_portfolio_summary(account: dict[str, Any], open_trades: list[dict[str,
         "initial_balance": _round(initial_balance),
         "cash_balance": _round(cash_balance),
         "portfolio_balance": _round(portfolio_balance),
+        "open_position_value": _round(sum(abs(_value(position["market_value"])) for position in open_positions)),
         "unrealized_pnl": _round(unrealized_pnl),
         "realized_pnl": _round(realized_pnl),
         "today_pnl": _round(today_pnl),
