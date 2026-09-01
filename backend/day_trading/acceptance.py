@@ -775,6 +775,7 @@ class IntradayAcceptanceAuditor:
         boundary_violations: list[dict[str, Any]] = []
         last_receipt: datetime | None = None
         receipt_regressions = 0
+        duplicate_market_events_skipped = 0
         for event in self._events(session_id):
             event_type = str(event.get("event_type"))
             event_counts[event_type] += 1
@@ -793,6 +794,12 @@ class IntradayAcceptanceAuditor:
             session_counts[market_session] += 1
             payload = event.get("payload") or {}
             minute = timestamp.replace(second=0, microsecond=0)
+            if (
+                event_type in {"quote", "trade", *BAR_MINUTES}
+                and event.get("disposition") == "duplicate"
+            ):
+                duplicate_market_events_skipped += 1
+                continue
             if event_type == "quote":
                 bid = float(payload.get("bp", 0))
                 ask = float(payload.get("ap", 0))
@@ -1079,6 +1086,9 @@ class IntradayAcceptanceAuditor:
             "duplicates": int(metadata.get("duplicate_events", 0)),
             "out_of_order": int(metadata.get("out_of_order_events", 0)),
             "receipt_order_regressions": receipt_regressions,
+            "duplicate_market_events_skipped": (
+                duplicate_market_events_skipped
+            ),
             "gaps": metadata.get("gaps", []),
             "stale_quote_periods_over_15s": dict(sorted(stale_periods.items())),
             "provider_bars": {
