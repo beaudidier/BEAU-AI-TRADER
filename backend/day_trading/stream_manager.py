@@ -96,6 +96,8 @@ class AlpacaStreamManager:
         self._seen_order: deque[str] = deque()
         self._maximum_seen_events = 50_000
         self._last_timestamp: dict[tuple[str, str], datetime] = {}
+        self._socket: Any | None = None
+        self._connection_number = 0
 
     @property
     def configured(self) -> bool:
@@ -121,6 +123,25 @@ class AlpacaStreamManager:
                 pass
             self._task = None
         self.diagnostics.state = StreamState.STOPPED
+
+    async def request_reconnect(
+        self,
+        *,
+        reason: str = "acceptance_test",
+    ) -> bool:
+        """Close the active socket so the normal recovery path is exercised."""
+        socket = self._socket
+        if socket is None:
+            return False
+        now = datetime.now(timezone.utc)
+        if self.on_system_event:
+            self.on_system_event(
+                "stream_reconnect_requested",
+                {"reason": reason},
+                now,
+            )
+        await socket.close()
+        return True
 
     async def run(self, *, maximum_attempts: int | None = None) -> None:
         if not self.configured:
@@ -175,58 +196,66 @@ class AlpacaStreamManager:
 
     async def _connect_once(self) -> None:
         async with self.websocket_factory(self.url) as socket:
-            await socket.send(
-                json.dumps(
-                    {
-                        "action": "auth",
-                        "key": self.api_key,
-                        "secret": self.secret_key,
-                    }
-                )
-            )
-            await socket.send(
-                json.dumps(
-                    {
-                        "action": "subscribe",
-                        "trades": self.symbols,
-                        "quotes": self.symbols,
-                        "bars": self.symbols,
-                    }
-                )
-            )
-            now = datetime.now(timezone.utc)
-            self.diagnostics.state = StreamState.CONNECTED
-            self.diagnostics.connected_at = now
-            self.diagnostics.last_heartbeat_at = now
-            if self.on_system_event:
-                self.on_system_event(
-                    "stream_connected",
-                    {
-                        "feed": self.feed,
-                        "symbols": self.symbols,
-                    },
-                    now,
-                )
-            while not self._stop.is_set():
-                try:
-                    message = await asyncio.wait_for(
-                        socket.recv(),
-                        timeout=self.heartbeat_timeout.total_seconds(),
+            self._socket = socket
+            self._connection_number += 1
+            try:
+                await socket.send(
+                    json.dumps(
+                        {
+                            "action": "auth",
+                            "key": self.api_key,
+                            "secret": self.secret_key,
+                        }
                     )
-                except TimeoutError as error:
-                    self.diagnostics.state = StreamState.STALE
-                    if self.on_system_event:
-                        self.on_system_event(
-                            "stream_stale",
-                            {
-                                "heartbeat_timeout_seconds": int(
-                                    self.heartbeat_timeout.total_seconds()
-                                )
-                            },
-                            datetime.now(timezone.utc),
+                )
+                await socket.send(
+                    json.dumps(
+                        {
+                            "action": "subscribe",
+                            "trades": self.symbols,
+                            "quotes": self.symbols,
+                            "bars": self.symbols,
+                        }
+                    )
+                )
+                now = datetime.now(timezone.utc)
+                self.diagnostics.state = StreamState.CONNECTED
+                self.diagnostics.connected_at = now
+                self.diagnostics.last_heartbeat_at = now
+                if self.on_system_event:
+                    self.on_system_event(
+                        "stream_connected",
+                        {
+                            "feed": self.feed,
+                            "symbols": self.symbols,
+                            "connection_number": self._connection_number,
+                        },
+                        now,
+                    )
+                while not self._stop.is_set():
+                    try:
+                        message = await asyncio.wait_for(
+                            socket.recv(),
+                            timeout=self.heartbeat_timeout.total_seconds(),
                         )
-                    raise TimeoutError("Alpaca stream heartbeat timed out.") from error
-                self.process_message(message)
+                    except TimeoutError as error:
+                        self.diagnostics.state = StreamState.STALE
+                        if self.on_system_event:
+                            self.on_system_event(
+                                "stream_stale",
+                                {
+                                    "heartbeat_timeout_seconds": int(
+                                        self.heartbeat_timeout.total_seconds()
+                                    )
+                                },
+                                datetime.now(timezone.utc),
+                            )
+                        raise TimeoutError(
+                            "Alpaca stream heartbeat timed out."
+                        ) from error
+                    self.process_message(message)
+            finally:
+                self._socket = None
 
     def process_message(
         self,

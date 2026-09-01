@@ -1024,6 +1024,9 @@ class IntradayAcceptanceAuditor:
                         }
                     )
         determinism = self.verify_determinism(session_id, runs=3)
+        live_websocket = "websocket" in str(
+            metadata.get("source", "")
+        ).lower()
         spread_summary = {
             symbol: {
                 "quote_count": sum(spread_histograms[symbol].values()),
@@ -1056,10 +1059,16 @@ class IntradayAcceptanceAuditor:
         return {
             "session_id": session_id,
             "market_date": metadata.get("market_date"),
-            "collection_mode": "historical_rest",
+            "collection_mode": (
+                "live_websocket" if live_websocket else "historical_rest"
+            ),
             "transport_scope": (
-                "Historical REST pagination; live WebSocket continuity is not "
-                "proven by this session."
+                "Live Alpaca WebSocket capture."
+                if live_websocket
+                else (
+                    "Historical REST pagination; live WebSocket continuity is "
+                    "not proven by this session."
+                )
             ),
             "event_count": verification["event_count"],
             "event_counts": dict(sorted(event_counts.items())),

@@ -170,7 +170,7 @@ class IntradayRecorder:
             recoverable = (
                 self._find_recoverable(clean_symbols, source, coverage)
                 if session_id is None
-                else None
+                else self._find_existing(session_id)
             )
             identifier = (
                 recoverable[1]["session_id"]
@@ -210,6 +210,28 @@ class IntradayRecorder:
                         if symbol:
                             existing_symbol_counts[symbol] = (
                                 existing_symbol_counts.get(symbol, 0) + 1
+                            )
+                        provider_timestamp = event.get("provider_timestamp")
+                        if provider_timestamp and symbol:
+                            key = (str(symbol), kind)
+                            current = as_utc(
+                                datetime.fromisoformat(
+                                    str(provider_timestamp).replace(
+                                        "Z",
+                                        "+00:00",
+                                    )
+                                )
+                            )
+                            previous = self._last_provider_timestamp.get(key)
+                            if previous is None or current >= previous:
+                                self._last_provider_timestamp[key] = current
+                        sequence = event.get("sequence")
+                        if isinstance(sequence, int) and symbol:
+                            key = (str(symbol), kind)
+                            previous_sequence = self._last_sequence.get(key)
+                            self._last_sequence[key] = max(
+                                sequence,
+                                previous_sequence or sequence,
                             )
             self._metadata = RecordingMetadata(
                 session_id=identifier,
@@ -270,6 +292,21 @@ class IntradayRecorder:
                 occurred_at=now,
             )
             return self.status()
+
+    def _find_existing(
+        self,
+        session_id: str,
+    ) -> tuple[Path, dict[str, Any]] | None:
+        if not self.root.exists():
+            return None
+        matches = list(self.root.glob(f"*/{session_id}.meta.json"))
+        if len(matches) != 1:
+            return None
+        try:
+            metadata = json.loads(matches[0].read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return None
+        return matches[0], metadata
 
     def _find_recoverable(
         self,
