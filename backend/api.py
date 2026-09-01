@@ -34,6 +34,8 @@ from universe.universe_registry import (
 from validation.validation_engine import validation_store
 from providers import get_market_data_provider
 from strategies import StrategyNotFoundError, StrategyUnavailableError, strategy_registry
+from day_trading.health import day_trading_runtime
+from day_trading.router import router as day_trading_router
 
 _previous_debug_scores: dict[str, dict] = {}
 
@@ -41,6 +43,17 @@ app = FastAPI(title="BEAU AI TRADER API")
 app.add_middleware(RateLimitReadyMiddleware)
 app.include_router(saas_router)
 app.include_router(beta_invites_router)
+app.include_router(day_trading_router)
+
+
+@app.on_event("startup")
+async def start_day_trading_runtime():
+    await day_trading_runtime.start()
+
+
+@app.on_event("shutdown")
+async def stop_day_trading_runtime():
+    await day_trading_runtime.stop()
 
 
 class BacktestRequest(BaseModel):

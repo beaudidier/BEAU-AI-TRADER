@@ -1,0 +1,5023 @@
+{
+  "acceptance_verdict": {
+    "data_foundation": "PASS",
+    "live_transport": "INSUFFICIENT LIVE MULTI-DAY EVIDENCE",
+    "overall": "NOT YET ACCEPTED FOR LIVE DAY TRADING"
+  },
+  "boundary_violations": 0,
+  "checksum_failures": 0,
+  "collection_mode": "historical_rest",
+  "collections": [
+    {
+      "api_pages": {
+        "bar_15m_provider": 1,
+        "bar_1m": 1,
+        "bar_5m_provider": 1,
+        "quote": 807,
+        "trade": 19
+      },
+      "checksum_sha256": "7eaa6626979f3ce964020365bf4fe463ce26bb6daa047c7ecc700644dc7bc891",
+      "duplicate_source_events": 0,
+      "ended_at": "2026-07-22T00:00:00+00:00",
+      "event_counts": {
+        "bar_15m_provider": 296,
+        "bar_1m": 3966,
+        "bar_5m_provider": 836,
+        "quote": 8064266,
+        "trade": 182960
+      },
+      "market_date": "2026-07-21",
+      "provider_requests": 829,
+      "recorded_event_count": 8252328,
+      "retries": 0,
+      "session_id": "iex-acceptance-20260721",
+      "source_mode": "historical_rest",
+      "started_at": "2026-07-21T08:00:00+00:00",
+      "symbol_counts": {
+        "AAPL": 1317774,
+        "AMD": 81926,
+        "AMZN": 805946,
+        "META": 47708,
+        "MSFT": 111632,
+        "NVDA": 1582809,
+        "PLTR": 289657,
+        "QQQ": 2249023,
+        "SPY": 1633364,
+        "TSLA": 132485
+      }
+    },
+    {
+      "api_pages": {
+        "bar_15m_provider": 1,
+        "bar_1m": 1,
+        "bar_5m_provider": 1,
+        "quote": 898,
+        "trade": 21
+      },
+      "checksum_sha256": "4a09c3f603dd787c16f3977de10d0e2f5172fdcb09de1a77a1bc60b17b0d1c72",
+      "duplicate_source_events": 0,
+      "ended_at": "2026-07-23T00:00:00+00:00",
+      "event_counts": {
+        "bar_15m_provider": 301,
+        "bar_1m": 3919,
+        "bar_5m_provider": 845,
+        "quote": 8978377,
+        "trade": 208608
+      },
+      "market_date": "2026-07-22",
+      "provider_requests": 922,
+      "recorded_event_count": 9192054,
+      "retries": 0,
+      "session_id": "iex-acceptance-20260722",
+      "source_mode": "historical_rest",
+      "started_at": "2026-07-22T08:00:00+00:00",
+      "symbol_counts": {
+        "AAPL": 1230438,
+        "AMD": 77741,
+        "AMZN": 998008,
+        "META": 58482,
+        "MSFT": 156915,
+        "NVDA": 2386249,
+        "PLTR": 528706,
+        "QQQ": 1921309,
+        "SPY": 1494418,
+        "TSLA": 339784
+      }
+    },
+    {
+      "api_pages": {
+        "bar_15m_provider": 1,
+        "bar_1m": 1,
+        "bar_5m_provider": 1,
+        "quote": 1306,
+        "trade": 28
+      },
+      "checksum_sha256": "907d3bc6554db6312d0494e22b1dd8af266001562a703f092fdc99368849d2ce",
+      "duplicate_source_events": 0,
+      "ended_at": "2026-07-24T00:00:00+00:00",
+      "event_counts": {
+        "bar_15m_provider": 302,
+        "bar_1m": 3997,
+        "bar_5m_provider": 847,
+        "quote": 13059204,
+        "trade": 270104
+      },
+      "market_date": "2026-07-23",
+      "provider_requests": 1337,
+      "recorded_event_count": 13334458,
+      "retries": 0,
+      "session_id": "iex-acceptance-20260723",
+      "source_mode": "historical_rest",
+      "started_at": "2026-07-23T08:00:00+00:00",
+      "symbol_counts": {
+        "AAPL": 1827123,
+        "AMD": 136203,
+        "AMZN": 1467208,
+        "META": 64801,
+        "MSFT": 137567,
+        "NVDA": 3363811,
+        "PLTR": 366010,
+        "QQQ": 2357526,
+        "SPY": 3339311,
+        "TSLA": 274894
+      }
+    },
+    {
+      "api_pages": {
+        "bar_15m_provider": 1,
+        "bar_1m": 1,
+        "bar_5m_provider": 1,
+        "quote": 1275,
+        "trade": 24
+      },
+      "checksum_sha256": "d849ea2ea61def29aa251e6da01364b1c239b695ba3d2000c5011319b9331942",
+      "duplicate_source_events": 0,
+      "ended_at": "2026-07-25T00:00:00+00:00",
+      "event_counts": {
+        "bar_15m_provider": 284,
+        "bar_1m": 3896,
+        "bar_5m_provider": 809,
+        "quote": 12746946,
+        "trade": 239743
+      },
+      "market_date": "2026-07-24",
+      "provider_requests": 1302,
+      "recorded_event_count": 12991682,
+      "retries": 0,
+      "session_id": "iex-acceptance-20260724",
+      "source_mode": "historical_rest",
+      "started_at": "2026-07-24T08:00:00+00:00",
+      "symbol_counts": {
+        "AAPL": 1786704,
+        "AMD": 129771,
+        "AMZN": 1250715,
+        "META": 68014,
+        "MSFT": 141457,
+        "NVDA": 3253496,
+        "PLTR": 325846,
+        "QQQ": 2791717,
+        "SPY": 2864485,
+        "TSLA": 379473
+      }
+    },
+    {
+      "api_pages": {
+        "bar_15m_provider": 1,
+        "bar_1m": 1,
+        "bar_5m_provider": 1,
+        "quote": 1520,
+        "trade": 27
+      },
+      "checksum_sha256": "23255af709765dfc4a7aeec2239cae4a9f7ee1d67973c6ca8989f328eff6240c",
+      "duplicate_source_events": 0,
+      "ended_at": "2026-07-28T00:00:00+00:00",
+      "event_counts": {
+        "bar_15m_provider": 277,
+        "bar_1m": 3923,
+        "bar_5m_provider": 801,
+        "quote": 15192815,
+        "trade": 265782
+      },
+      "market_date": "2026-07-27",
+      "provider_requests": 1550,
+      "recorded_event_count": 15463602,
+      "retries": 0,
+      "session_id": "iex-acceptance-20260727",
+      "source_mode": "historical_rest",
+      "started_at": "2026-07-27T08:00:00+00:00",
+      "symbol_counts": {
+        "AAPL": 2759724,
+        "AMD": 114784,
+        "AMZN": 1805730,
+        "META": 115338,
+        "MSFT": 135804,
+        "NVDA": 3445918,
+        "PLTR": 448123,
+        "QQQ": 2821208,
+        "SPY": 3076034,
+        "TSLA": 740935
+      }
+    }
+  ],
+  "coverage": "partial-market",
+  "duplicates": 0,
+  "explained_vwap_information_loss": 5302,
+  "generated_at": "2026-07-28T09:25:49.039404+00:00",
+  "live_reconnect_scope": "Not measurable from historical REST sessions.",
+  "live_reconnects_observed": null,
+  "market_dates": [
+    "2026-07-21",
+    "2026-07-22",
+    "2026-07-23",
+    "2026-07-24",
+    "2026-07-27"
+  ],
+  "out_of_order": 0,
+  "provider_requests": 5940,
+  "provider_retries": 0,
+  "replay_deterministic_all_sessions": true,
+  "resilience": [
+    {
+      "evidence": "Focused stream lifecycle and reconnect tests",
+      "scenario": "WebSocket disconnect/reconnect",
+      "status": "PASS"
+    },
+    {
+      "evidence": "Append-only recorder recovery test",
+      "scenario": "Process restart",
+      "status": "PASS"
+    },
+    {
+      "evidence": "Bounded retry/backoff fault-injection test",
+      "scenario": "Temporary network outage",
+      "status": "PASS"
+    },
+    {
+      "evidence": "Duplicate dispositions remain audit-visible",
+      "scenario": "Duplicated packets",
+      "status": "PASS"
+    },
+    {
+      "evidence": "Out-of-order dispositions remain audit-visible",
+      "scenario": "Delayed/out-of-order packets",
+      "status": "PASS"
+    },
+    {
+      "evidence": "Checkpoint quarantined and pagination restarted",
+      "scenario": "Corrupted checkpoint",
+      "status": "PASS"
+    },
+    {
+      "evidence": "Failed write does not advance append-only ledger",
+      "scenario": "Storage interruption",
+      "status": "PASS"
+    }
+  ],
+  "schema_version": 1,
+  "sessions": [
+    {
+      "aggregate_mismatches": {
+        "15m": {
+          "count": 0,
+          "sample": []
+        },
+        "5m": {
+          "count": 0,
+          "sample": []
+        }
+      },
+      "boundary_violations_count": 0,
+      "boundary_violations_sample": [],
+      "checksum_valid": true,
+      "collection_mode": "historical_rest",
+      "determinism": {
+        "deterministic": true,
+        "event_counts": [
+          8252328,
+          8252328,
+          8252328
+        ],
+        "event_digests": [
+          "7eaa6626979f3ce964020365bf4fe463ce26bb6daa047c7ecc700644dc7bc891",
+          "7eaa6626979f3ce964020365bf4fe463ce26bb6daa047c7ecc700644dc7bc891",
+          "7eaa6626979f3ce964020365bf4fe463ce26bb6daa047c7ecc700644dc7bc891"
+        ],
+        "receipt_regressions": 0,
+        "runs": 3,
+        "simulated_fill_counts": [
+          0,
+          0,
+          0
+        ],
+        "state_digests": [
+          "6b8596cbebfdd0c8e3c5f1646115a2dd76ba39b67849c0d5964e38e18e04a734",
+          "6b8596cbebfdd0c8e3c5f1646115a2dd76ba39b67849c0d5964e38e18e04a734",
+          "6b8596cbebfdd0c8e3c5f1646115a2dd76ba39b67849c0d5964e38e18e04a734"
+        ]
+      },
+      "duplicates": 0,
+      "event_count": 8252328,
+      "event_counts": {
+        "bar_15m_provider": 296,
+        "bar_1m": 3966,
+        "bar_5m_provider": 836,
+        "historical_import": 1,
+        "historical_import_complete": 1,
+        "quote": 8064266,
+        "recording_started": 1,
+        "recording_stopped": 1,
+        "trade": 182960
+      },
+      "explained_condition_only_minutes_count": 191,
+      "explained_condition_only_minutes_sample": [
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AAPL",
+          "timestamp": "2026-07-21T12:03:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "NVDA",
+          "timestamp": "2026-07-21T12:05:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AAPL",
+          "timestamp": "2026-07-21T12:06:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AAPL",
+          "timestamp": "2026-07-21T12:07:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AAPL",
+          "timestamp": "2026-07-21T12:09:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "MSFT",
+          "timestamp": "2026-07-21T12:11:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AAPL",
+          "timestamp": "2026-07-21T12:11:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMZN",
+          "timestamp": "2026-07-21T12:13:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 2
+          },
+          "price_eligible_count": 0,
+          "symbol": "PLTR",
+          "timestamp": "2026-07-21T12:16:00+00:00",
+          "trade_count": 2
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "NVDA",
+          "timestamp": "2026-07-21T12:16:00+00:00",
+          "trade_count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:12:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-21T12:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:04:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T12:22:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:14:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-21T12:23:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:24:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T12:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:26:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T12:30:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:31:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-21T12:32:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:32:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T12:39:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:34:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-21T12:41:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:26:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-21T12:42:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:42:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T12:44:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:47:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T12:47:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:15:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-21T12:49:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:24:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T12:49:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:50:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T12:53:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:55:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T12:55:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:57:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T12:59:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:01:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T13:02:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:25:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-21T13:03:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:51:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T13:03:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:05:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T13:10:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:05:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T13:10:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:44:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-21T13:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:14:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-21T13:14:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:15:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T13:15:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:43:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-21T13:17:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:12:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T13:17:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:56:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-21T13:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:17:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T13:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:17:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-21T13:20:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:20:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T13:21:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:23:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T13:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:26:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T13:27:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:22:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-21T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:39:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:05:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-21T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:51:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-21T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:19:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-21T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:20:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-21T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T12:22:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-21T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T13:19:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T14:21:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T14:21:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T14:43:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T14:43:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T14:50:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T14:50:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T15:39:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-21T15:39:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T15:41:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T15:41:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T15:45:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T15:45:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T15:49:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T15:49:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T15:50:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-21T15:50:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T16:09:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T16:09:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T17:13:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T17:13:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T17:14:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-21T17:14:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T17:32:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T17:32:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T17:38:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-21T17:38:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T17:41:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T17:41:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T18:06:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T18:06:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T18:18:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T18:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T18:34:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-21T18:34:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T19:17:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T19:17:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T19:21:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T19:21:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T19:22:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-21T19:23:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T19:43:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-21T19:43:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:00:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-21T20:03:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:00:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T20:03:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:00:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-21T20:05:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:07:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T20:07:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:06:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-21T20:08:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:07:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-21T20:09:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:11:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T20:11:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:11:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-21T20:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:14:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-21T20:14:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:14:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T20:14:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:01:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-21T20:16:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:17:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T20:19:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:21:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T20:26:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:29:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T20:33:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:35:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-21T20:38:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:00:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-21T20:43:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-21T20:00:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-21T20:46:00+00:00"
+        }
+      ],
+      "incomplete_bars_treated_as_closed": 0,
+      "live_orders_submitted": 0,
+      "market_date": "2026-07-21",
+      "out_of_order": 0,
+      "paper_orders_submitted": 0,
+      "provider_bars": {
+        "15m": 296,
+        "1m": 3966,
+        "5m": 836
+      },
+      "provider_bars_without_raw_trades_count": 0,
+      "provider_bars_without_raw_trades_sample": [],
+      "published_1m_vwap_information_loss": {
+        "15m": {
+          "count": 271,
+          "sample": [
+            {
+              "differences": {
+                "vw": {
+                  "provider": 649.215294,
+                  "rebuilt": 648.49
+                }
+              },
+              "symbol": "META",
+              "timestamp": "2026-07-21T12:00:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 324.678,
+                  "rebuilt": 324.6857575757576
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-21T12:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 372.895572,
+                  "rebuilt": 372.8982256020279
+                }
+              },
+              "symbol": "TSLA",
+              "timestamp": "2026-07-21T12:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 398.080147,
+                  "rebuilt": 398.06583090379013
+                }
+              },
+              "symbol": "MSFT",
+              "timestamp": "2026-07-21T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 371.566,
+                  "rebuilt": 371.4390909090909
+                }
+              },
+              "symbol": "TSLA",
+              "timestamp": "2026-07-21T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 325.449737,
+                  "rebuilt": 325.4630084428274
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-21T13:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 371.258546,
+                  "rebuilt": 371.3296768079226
+                }
+              },
+              "symbol": "TSLA",
+              "timestamp": "2026-07-21T13:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 324.17521,
+                  "rebuilt": 324.18924105432205
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-21T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 528.361043,
+                  "rebuilt": 528.367331329376
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-21T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 248.25743,
+                  "rebuilt": 248.25199815828503
+                }
+              },
+              "symbol": "AMZN",
+              "timestamp": "2026-07-21T13:30:00+00:00"
+            }
+          ]
+        },
+        "5m": {
+          "count": 789,
+          "sample": [
+            {
+              "differences": {
+                "vw": {
+                  "provider": 649.215294,
+                  "rebuilt": 648.49
+                }
+              },
+              "symbol": "META",
+              "timestamp": "2026-07-21T12:10:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 398.155376,
+                  "rebuilt": 398.1558549222798
+                }
+              },
+              "symbol": "MSFT",
+              "timestamp": "2026-07-21T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 325.5248,
+                  "rebuilt": 325.5213874957265
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-21T13:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 371.254742,
+                  "rebuilt": 371.35585322372657
+                }
+              },
+              "symbol": "TSLA",
+              "timestamp": "2026-07-21T13:25:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 323.937527,
+                  "rebuilt": 323.9483320163795
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-21T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 528.412099,
+                  "rebuilt": 528.4254782204513
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-21T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 248.057978,
+                  "rebuilt": 248.05544957708764
+                }
+              },
+              "symbol": "AMZN",
+              "timestamp": "2026-07-21T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 648.187538,
+                  "rebuilt": 648.180125897945
+                }
+              },
+              "symbol": "META",
+              "timestamp": "2026-07-21T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 397.960052,
+                  "rebuilt": 397.9803887479422
+                }
+              },
+              "symbol": "MSFT",
+              "timestamp": "2026-07-21T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 207.596825,
+                  "rebuilt": 207.55742427054875
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-21T13:30:00+00:00"
+            }
+          ]
+        }
+      },
+      "quote_only_minutes": {
+        "AAPL": 1,
+        "AMD": 3,
+        "AMZN": 2,
+        "META": 4,
+        "MSFT": 3,
+        "NVDA": 4,
+        "PLTR": 4,
+        "QQQ": 32,
+        "SPY": 33,
+        "TSLA": 1
+      },
+      "raw_trade_aggregate_mismatches": {
+        "15m": {
+          "count": 0,
+          "sample": []
+        },
+        "5m": {
+          "count": 0,
+          "sample": []
+        }
+      },
+      "receipt_order_regressions": 0,
+      "secrets_present": false,
+      "session_event_counts": {
+        "after-hours": 15438,
+        "premarket": 8881,
+        "regular": 8228005
+      },
+      "session_id": "iex-acceptance-20260721",
+      "sparse_trade_symbols": [],
+      "spread_summary": {
+        "AAPL": {
+          "maximum_percent": 11.940527,
+          "median_percent": 0.025,
+          "p95_percent": 0.457,
+          "quote_count": 1292497
+        },
+        "AMD": {
+          "maximum_percent": 11.882323,
+          "median_percent": 0.797,
+          "p95_percent": 3.157,
+          "quote_count": 67440
+        },
+        "AMZN": {
+          "maximum_percent": 10.208137,
+          "median_percent": 0.032,
+          "p95_percent": 0.664,
+          "quote_count": 786696
+        },
+        "META": {
+          "maximum_percent": 10.209622,
+          "median_percent": 1.162,
+          "p95_percent": 5.423,
+          "quote_count": 35584
+        },
+        "MSFT": {
+          "maximum_percent": 10.082075,
+          "median_percent": 0.067,
+          "p95_percent": 0.612,
+          "quote_count": 88737
+        },
+        "NVDA": {
+          "maximum_percent": 16.206054,
+          "median_percent": 0.024,
+          "p95_percent": 0.848,
+          "quote_count": 1544736
+        },
+        "PLTR": {
+          "maximum_percent": 8.025487,
+          "median_percent": 0.573,
+          "p95_percent": 3.662,
+          "quote_count": 279332
+        },
+        "QQQ": {
+          "maximum_percent": 6.011269,
+          "median_percent": 0.01,
+          "p95_percent": 0.067,
+          "quote_count": 2239956
+        },
+        "SPY": {
+          "maximum_percent": 6.008895,
+          "median_percent": 0.004,
+          "p95_percent": 0.041,
+          "quote_count": 1614248
+        },
+        "TSLA": {
+          "maximum_percent": 10.107486,
+          "median_percent": 0.521,
+          "p95_percent": 1.654,
+          "quote_count": 115040
+        }
+      },
+      "stale_quote_periods_over_15s": {
+        "AAPL": 2,
+        "AMD": 20,
+        "AMZN": 2,
+        "META": 93,
+        "MSFT": 11,
+        "NVDA": 6,
+        "PLTR": 5,
+        "QQQ": 6,
+        "SPY": 3,
+        "TSLA": 7
+      },
+      "symbol_counts": {
+        "AAPL": 1317774,
+        "AMD": 81926,
+        "AMZN": 805946,
+        "META": 47708,
+        "MSFT": 111632,
+        "NVDA": 1582809,
+        "PLTR": 289657,
+        "QQQ": 2249023,
+        "SPY": 1633364,
+        "TSLA": 132485
+      },
+      "trade_reconstruction_mismatches_count": 0,
+      "trade_reconstruction_mismatches_sample": [],
+      "transport_scope": "Historical REST pagination; live WebSocket continuity is not proven by this session.",
+      "unexplained_mismatch_count": 0,
+      "unexplained_missing_bars_count": 0,
+      "unexplained_missing_bars_sample": []
+    },
+    {
+      "aggregate_mismatches": {
+        "15m": {
+          "count": 0,
+          "sample": []
+        },
+        "5m": {
+          "count": 0,
+          "sample": []
+        }
+      },
+      "boundary_violations_count": 0,
+      "boundary_violations_sample": [],
+      "checksum_valid": true,
+      "collection_mode": "historical_rest",
+      "determinism": {
+        "deterministic": true,
+        "event_counts": [
+          9192054,
+          9192054,
+          9192054
+        ],
+        "event_digests": [
+          "4a09c3f603dd787c16f3977de10d0e2f5172fdcb09de1a77a1bc60b17b0d1c72",
+          "4a09c3f603dd787c16f3977de10d0e2f5172fdcb09de1a77a1bc60b17b0d1c72",
+          "4a09c3f603dd787c16f3977de10d0e2f5172fdcb09de1a77a1bc60b17b0d1c72"
+        ],
+        "receipt_regressions": 0,
+        "runs": 3,
+        "simulated_fill_counts": [
+          0,
+          0,
+          0
+        ],
+        "state_digests": [
+          "3581f7e8d2ae4e6fc9b430fe700ea8506c944c1f617445426ec0f53e27d6b67d",
+          "3581f7e8d2ae4e6fc9b430fe700ea8506c944c1f617445426ec0f53e27d6b67d",
+          "3581f7e8d2ae4e6fc9b430fe700ea8506c944c1f617445426ec0f53e27d6b67d"
+        ]
+      },
+      "duplicates": 0,
+      "event_count": 9192054,
+      "event_counts": {
+        "bar_15m_provider": 301,
+        "bar_1m": 3919,
+        "bar_5m_provider": 845,
+        "historical_import": 1,
+        "historical_import_complete": 1,
+        "quote": 8978377,
+        "recording_started": 1,
+        "recording_stopped": 1,
+        "trade": 208608
+      },
+      "explained_condition_only_minutes_count": 270,
+      "explained_condition_only_minutes_sample": [
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "NVDA",
+          "timestamp": "2026-07-22T12:05:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "NVDA",
+          "timestamp": "2026-07-22T12:07:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "PLTR",
+          "timestamp": "2026-07-22T12:08:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 2
+          },
+          "price_eligible_count": 0,
+          "symbol": "META",
+          "timestamp": "2026-07-22T12:08:00+00:00",
+          "trade_count": 2
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "NVDA",
+          "timestamp": "2026-07-22T12:08:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 2
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMD",
+          "timestamp": "2026-07-22T12:08:00+00:00",
+          "trade_count": 2
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "NVDA",
+          "timestamp": "2026-07-22T12:10:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "TSLA",
+          "timestamp": "2026-07-22T12:11:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 2
+          },
+          "price_eligible_count": 0,
+          "symbol": "AAPL",
+          "timestamp": "2026-07-22T12:11:00+00:00",
+          "trade_count": 2
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "MSFT",
+          "timestamp": "2026-07-22T12:12:00+00:00",
+          "trade_count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:10:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-22T12:10:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:13:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-22T12:19:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:19:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-22T12:22:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:22:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T12:26:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:28:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-22T12:33:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:14:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-22T12:34:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:24:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-22T12:38:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:38:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T12:38:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:40:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T12:40:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:40:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-22T12:43:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:21:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-22T12:44:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:28:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T12:44:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:46:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-22T12:46:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:42:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T12:49:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:49:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-22T12:52:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:54:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-22T12:55:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:46:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T12:56:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:53:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T13:01:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:45:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-22T13:02:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T13:03:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T13:04:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T13:05:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-22T13:06:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:58:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T13:09:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T13:06:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T13:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T13:11:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T13:17:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T13:14:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T13:23:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T13:08:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-22T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T13:25:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:35:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-22T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:46:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-22T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:29:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-22T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:57:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-22T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T13:19:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T12:36:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-22T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T14:18:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-22T14:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T14:24:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T14:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T14:34:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-22T14:34:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T14:43:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T14:43:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T14:50:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-22T14:50:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:01:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T15:01:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:34:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T15:34:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:38:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T15:38:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:43:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T15:43:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:45:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T15:45:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:46:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T15:48:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:52:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-22T15:52:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:52:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T15:52:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:55:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T15:55:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:56:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T15:56:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T15:57:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-22T15:57:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:01:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T16:01:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:16:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-22T16:16:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:18:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T16:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:23:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T16:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:25:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T16:25:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:27:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T16:28:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:30:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T16:30:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:30:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T16:30:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:35:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T16:35:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:43:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T16:43:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:52:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T16:54:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T16:57:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T16:59:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:10:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T17:10:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:19:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T17:19:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:23:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T17:23:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:26:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T17:26:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:29:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T17:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:31:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T17:31:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:34:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T17:34:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:37:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T17:37:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:37:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-22T17:37:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:41:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T17:41:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T17:46:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T17:46:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T18:03:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T18:03:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T18:07:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T18:08:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T18:12:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T18:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T18:21:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T18:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T18:24:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T18:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T18:27:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T18:27:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T18:38:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T18:39:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T18:41:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T18:41:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T18:44:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T18:44:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T18:51:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T18:51:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T19:06:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T19:06:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:00:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T20:00:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:00:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-22T20:02:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:00:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:04:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:02:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T20:05:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:07:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:07:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:00:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-22T20:09:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:07:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T20:09:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:04:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-22T20:11:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:00:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-22T20:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:09:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:00:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-22T20:14:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:11:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T20:15:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:14:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:16:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:13:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-22T20:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:18:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:00:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-22T20:19:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:00:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-22T20:21:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:00:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-22T20:22:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:18:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-22T20:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:21:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-22T20:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:21:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:26:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-22T20:27:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:26:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:28:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:30:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:30:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:29:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-22T20:31:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:24:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-22T20:31:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:32:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:38:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:34:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-22T20:40:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:40:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:40:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:42:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:42:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:42:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-22T20:48:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:21:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-22T20:48:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:44:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:49:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:26:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-22T20:51:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:53:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-22T20:53:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:33:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-22T20:56:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:17:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-22T20:58:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-22T20:51:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-22T20:58:00+00:00"
+        }
+      ],
+      "incomplete_bars_treated_as_closed": 0,
+      "live_orders_submitted": 0,
+      "market_date": "2026-07-22",
+      "out_of_order": 0,
+      "paper_orders_submitted": 0,
+      "provider_bars": {
+        "15m": 301,
+        "1m": 3919,
+        "5m": 845
+      },
+      "provider_bars_without_raw_trades_count": 0,
+      "provider_bars_without_raw_trades_sample": [],
+      "published_1m_vwap_information_loss": {
+        "15m": {
+          "count": 279,
+          "sample": [
+            {
+              "differences": {
+                "vw": {
+                  "provider": 204.654706,
+                  "rebuilt": 204.6641811175337
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-22T12:00:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 327.762308,
+                  "rebuilt": 327.7628571428572
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-22T12:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 327.624286,
+                  "rebuilt": 327.62555555555554
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-22T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 530.627273,
+                  "rebuilt": 530.6299453846153
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-22T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 529.41,
+                  "rebuilt": 529.8136363636364
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-22T12:45:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 205.254,
+                  "rebuilt": 205.25943986820428
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-22T12:45:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 701.832,
+                  "rebuilt": 701.7833333333333
+                }
+              },
+              "symbol": "QQQ",
+              "timestamp": "2026-07-22T12:45:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 327.708572,
+                  "rebuilt": 327.7070709090909
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-22T13:00:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 529.663333,
+                  "rebuilt": 529.6833333333333
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-22T13:00:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 327.289505,
+                  "rebuilt": 327.29238535843325
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-22T13:30:00+00:00"
+            }
+          ]
+        },
+        "5m": {
+          "count": 788,
+          "sample": [
+            {
+              "differences": {
+                "vw": {
+                  "provider": 531.308461,
+                  "rebuilt": 531.3031632470589
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-22T12:35:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 205.243333,
+                  "rebuilt": 205.25082840236686
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-22T12:45:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 529.41,
+                  "rebuilt": 529.8136363636364
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-22T12:50:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 327.695385,
+                  "rebuilt": 327.69396857142857
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-22T13:00:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 327.474872,
+                  "rebuilt": 327.47862937345775
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-22T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 537.512703,
+                  "rebuilt": 537.5231190562467
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-22T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 246.087678,
+                  "rebuilt": 246.09773776803166
+                }
+              },
+              "symbol": "AMZN",
+              "timestamp": "2026-07-22T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 640.174507,
+                  "rebuilt": 640.2494268878098
+                }
+              },
+              "symbol": "META",
+              "timestamp": "2026-07-22T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 396.018589,
+                  "rebuilt": 396.00089242865124
+                }
+              },
+              "symbol": "MSFT",
+              "timestamp": "2026-07-22T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 205.792698,
+                  "rebuilt": 205.80221678901106
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-22T13:30:00+00:00"
+            }
+          ]
+        }
+      },
+      "quote_only_minutes": {
+        "AAPL": 3,
+        "AMD": 1,
+        "AMZN": 4,
+        "META": 3,
+        "MSFT": 1,
+        "NVDA": 5,
+        "PLTR": 6,
+        "QQQ": 8,
+        "SPY": 42,
+        "TSLA": 3
+      },
+      "raw_trade_aggregate_mismatches": {
+        "15m": {
+          "count": 0,
+          "sample": []
+        },
+        "5m": {
+          "count": 0,
+          "sample": []
+        }
+      },
+      "receipt_order_regressions": 0,
+      "secrets_present": false,
+      "session_event_counts": {
+        "after-hours": 727,
+        "premarket": 14378,
+        "regular": 9176945
+      },
+      "session_id": "iex-acceptance-20260722",
+      "sparse_trade_symbols": [],
+      "spread_summary": {
+        "AAPL": {
+          "maximum_percent": 10.007933,
+          "median_percent": 0.031,
+          "p95_percent": 0.56,
+          "quote_count": 1204599
+        },
+        "AMD": {
+          "maximum_percent": 10.282874,
+          "median_percent": 1.575,
+          "p95_percent": 4.289,
+          "quote_count": 65886
+        },
+        "AMZN": {
+          "maximum_percent": 10.378831,
+          "median_percent": 0.029,
+          "p95_percent": 0.361,
+          "quote_count": 977845
+        },
+        "META": {
+          "maximum_percent": 10.457981,
+          "median_percent": 0.321,
+          "p95_percent": 5.079,
+          "quote_count": 45782
+        },
+        "MSFT": {
+          "maximum_percent": 10.395446,
+          "median_percent": 0.054,
+          "p95_percent": 0.545,
+          "quote_count": 131500
+        },
+        "NVDA": {
+          "maximum_percent": 16.394214,
+          "median_percent": 0.015,
+          "p95_percent": 0.44,
+          "quote_count": 2328503
+        },
+        "PLTR": {
+          "maximum_percent": 15.039599,
+          "median_percent": 0.278,
+          "p95_percent": 4.983,
+          "quote_count": 511982
+        },
+        "QQQ": {
+          "maximum_percent": 6.00995,
+          "median_percent": 0.008,
+          "p95_percent": 0.044,
+          "quote_count": 1914338
+        },
+        "SPY": {
+          "maximum_percent": 6.007249,
+          "median_percent": 0.004,
+          "p95_percent": 0.036,
+          "quote_count": 1476894
+        },
+        "TSLA": {
+          "maximum_percent": 10.12301,
+          "median_percent": 0.042,
+          "p95_percent": 1.094,
+          "quote_count": 321048
+        }
+      },
+      "stale_quote_periods_over_15s": {
+        "AAPL": 1,
+        "AMD": 40,
+        "AMZN": 2,
+        "META": 39,
+        "MSFT": 2,
+        "NVDA": 5,
+        "PLTR": 5,
+        "QQQ": 7,
+        "SPY": 3,
+        "TSLA": 1
+      },
+      "symbol_counts": {
+        "AAPL": 1230438,
+        "AMD": 77741,
+        "AMZN": 998008,
+        "META": 58482,
+        "MSFT": 156915,
+        "NVDA": 2386249,
+        "PLTR": 528706,
+        "QQQ": 1921309,
+        "SPY": 1494418,
+        "TSLA": 339784
+      },
+      "trade_reconstruction_mismatches_count": 0,
+      "trade_reconstruction_mismatches_sample": [],
+      "transport_scope": "Historical REST pagination; live WebSocket continuity is not proven by this session.",
+      "unexplained_mismatch_count": 0,
+      "unexplained_missing_bars_count": 0,
+      "unexplained_missing_bars_sample": []
+    },
+    {
+      "aggregate_mismatches": {
+        "15m": {
+          "count": 0,
+          "sample": []
+        },
+        "5m": {
+          "count": 0,
+          "sample": []
+        }
+      },
+      "boundary_violations_count": 0,
+      "boundary_violations_sample": [],
+      "checksum_valid": true,
+      "collection_mode": "historical_rest",
+      "determinism": {
+        "deterministic": true,
+        "event_counts": [
+          13334458,
+          13334458,
+          13334458
+        ],
+        "event_digests": [
+          "907d3bc6554db6312d0494e22b1dd8af266001562a703f092fdc99368849d2ce",
+          "907d3bc6554db6312d0494e22b1dd8af266001562a703f092fdc99368849d2ce",
+          "907d3bc6554db6312d0494e22b1dd8af266001562a703f092fdc99368849d2ce"
+        ],
+        "receipt_regressions": 0,
+        "runs": 3,
+        "simulated_fill_counts": [
+          0,
+          0,
+          0
+        ],
+        "state_digests": [
+          "68f66e1deae68c8601f3689701e005b6009ae504bde3930aa92496cec14c6600",
+          "68f66e1deae68c8601f3689701e005b6009ae504bde3930aa92496cec14c6600",
+          "68f66e1deae68c8601f3689701e005b6009ae504bde3930aa92496cec14c6600"
+        ]
+      },
+      "duplicates": 0,
+      "event_count": 13334458,
+      "event_counts": {
+        "bar_15m_provider": 302,
+        "bar_1m": 3997,
+        "bar_5m_provider": 847,
+        "historical_import": 1,
+        "historical_import_complete": 1,
+        "quote": 13059204,
+        "recording_started": 1,
+        "recording_stopped": 1,
+        "trade": 270104
+      },
+      "explained_condition_only_minutes_count": 245,
+      "explained_condition_only_minutes_sample": [
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "NVDA",
+          "timestamp": "2026-07-23T12:00:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 2
+          },
+          "price_eligible_count": 0,
+          "symbol": "NVDA",
+          "timestamp": "2026-07-23T12:01:00+00:00",
+          "trade_count": 2
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AAPL",
+          "timestamp": "2026-07-23T12:01:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 7
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMZN",
+          "timestamp": "2026-07-23T12:01:00+00:00",
+          "trade_count": 7
+        },
+        {
+          "conditions": {
+            "I": 19
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMZN",
+          "timestamp": "2026-07-23T12:02:00+00:00",
+          "trade_count": 19
+        },
+        {
+          "conditions": {
+            "I": 2
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMZN",
+          "timestamp": "2026-07-23T12:04:00+00:00",
+          "trade_count": 2
+        },
+        {
+          "conditions": {
+            "I": 12
+          },
+          "price_eligible_count": 0,
+          "symbol": "TSLA",
+          "timestamp": "2026-07-23T12:05:00+00:00",
+          "trade_count": 12
+        },
+        {
+          "conditions": {
+            "I": 3
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMD",
+          "timestamp": "2026-07-23T12:05:00+00:00",
+          "trade_count": 3
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "META",
+          "timestamp": "2026-07-23T12:07:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMZN",
+          "timestamp": "2026-07-23T12:07:00+00:00",
+          "trade_count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:01:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T12:01:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:03:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T12:04:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:05:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T12:05:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:06:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T12:07:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:08:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T12:08:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:11:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-23T12:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:10:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T12:13:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:14:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-23T12:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:06:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-23T12:19:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:21:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-23T12:21:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:21:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-23T12:22:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:23:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-23T12:23:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:20:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-23T12:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:26:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-23T12:27:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:26:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-23T12:27:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:30:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-23T12:30:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:26:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-23T12:31:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:09:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T12:32:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:02:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-23T12:32:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:26:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T12:33:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:34:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T12:34:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:34:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-23T12:34:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:33:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-23T12:35:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:36:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T12:36:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:35:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T12:38:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:39:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T12:39:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:32:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-23T12:44:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:40:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T12:45:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:47:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-23T12:47:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:49:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-23T12:49:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:41:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T12:50:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:46:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-23T12:52:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:39:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-23T12:52:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:53:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T12:57:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:54:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-23T12:57:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:59:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T13:00:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:00:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-23T13:01:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:03:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T13:03:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:47:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T13:05:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:05:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T13:06:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:29:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-23T13:06:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:08:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-23T13:08:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:09:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T13:10:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:08:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T13:15:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:54:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-23T13:15:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:15:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T13:20:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:17:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T13:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:16:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T13:27:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:26:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-23T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:34:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-23T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:37:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-23T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:17:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-23T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:51:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-23T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:03:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-23T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T12:50:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-23T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:23:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:10:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-23T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T13:29:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T15:26:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-23T15:26:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T16:10:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-23T16:10:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T17:14:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T17:14:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T17:20:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-23T17:20:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T17:27:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T17:27:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T18:18:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-23T18:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T18:22:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T18:22:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T18:57:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T18:57:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:00:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:00:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:00:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T20:02:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:00:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-23T20:05:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:02:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:05:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:00:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-23T20:07:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:07:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:10:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:12:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:15:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:00:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-23T20:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:20:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-23T20:21:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:00:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-23T20:21:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:18:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:21:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:23:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:28:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:28:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:04:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-23T20:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:24:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-23T20:30:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:30:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:32:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:07:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-23T20:34:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:34:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:39:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:41:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:47:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-23T20:51:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-23T20:51:00+00:00"
+        }
+      ],
+      "incomplete_bars_treated_as_closed": 0,
+      "live_orders_submitted": 0,
+      "market_date": "2026-07-23",
+      "out_of_order": 0,
+      "paper_orders_submitted": 0,
+      "provider_bars": {
+        "15m": 302,
+        "1m": 3997,
+        "5m": 847
+      },
+      "provider_bars_without_raw_trades_count": 0,
+      "provider_bars_without_raw_trades_sample": [],
+      "published_1m_vwap_information_loss": {
+        "15m": {
+          "count": 281,
+          "sample": [
+            {
+              "differences": {
+                "vw": {
+                  "provider": 323.25625,
+                  "rebuilt": 323.3079126213592
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-23T12:00:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 239.613636,
+                  "rebuilt": 239.60235602094244
+                }
+              },
+              "symbol": "AMZN",
+              "timestamp": "2026-07-23T12:00:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 346.796999,
+                  "rebuilt": 346.79691329212187
+                }
+              },
+              "symbol": "TSLA",
+              "timestamp": "2026-07-23T12:00:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 209.815256,
+                  "rebuilt": 209.8046430033389
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-23T12:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 742.306455,
+                  "rebuilt": 742.3015471698113
+                }
+              },
+              "symbol": "SPY",
+              "timestamp": "2026-07-23T12:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 323.945589,
+                  "rebuilt": 323.9704267029703
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-23T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 238.726667,
+                  "rebuilt": 238.7246153846154
+                }
+              },
+              "symbol": "AMZN",
+              "timestamp": "2026-07-23T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 209.409347,
+                  "rebuilt": 209.41207547169813
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-23T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 697.234242,
+                  "rebuilt": 697.2593006993008
+                }
+              },
+              "symbol": "QQQ",
+              "timestamp": "2026-07-23T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 323.375563,
+                  "rebuilt": 323.38688198659963
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-23T12:45:00+00:00"
+            }
+          ]
+        },
+        "5m": {
+          "count": 800,
+          "sample": [
+            {
+              "differences": {
+                "vw": {
+                  "provider": 322.965,
+                  "rebuilt": 322.96827160493825
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-23T12:00:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 323.5475,
+                  "rebuilt": 323.528
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-23T12:05:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 346.79925,
+                  "rebuilt": 346.79934457326283
+                }
+              },
+              "symbol": "TSLA",
+              "timestamp": "2026-07-23T12:05:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 239.613636,
+                  "rebuilt": 239.60235602094244
+                }
+              },
+              "symbol": "AMZN",
+              "timestamp": "2026-07-23T12:10:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 209.930199,
+                  "rebuilt": 209.93139381818182
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-23T12:20:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 209.714367,
+                  "rebuilt": 209.73106733245382
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-23T12:25:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 742.092222,
+                  "rebuilt": 742.0909424083769
+                }
+              },
+              "symbol": "SPY",
+              "timestamp": "2026-07-23T12:25:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 209.51,
+                  "rebuilt": 209.4638720316623
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-23T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 324.047987,
+                  "rebuilt": 324.06013324
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-23T12:35:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 209.32955,
+                  "rebuilt": 209.32690889370934
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-23T12:35:00+00:00"
+            }
+          ]
+        }
+      },
+      "quote_only_minutes": {
+        "AAPL": 4,
+        "AMD": 2,
+        "AMZN": 6,
+        "META": 2,
+        "MSFT": 7,
+        "NVDA": 9,
+        "PLTR": 5,
+        "QQQ": 10,
+        "SPY": 33,
+        "TSLA": 3
+      },
+      "raw_trade_aggregate_mismatches": {
+        "15m": {
+          "count": 0,
+          "sample": []
+        },
+        "5m": {
+          "count": 0,
+          "sample": []
+        }
+      },
+      "receipt_order_regressions": 0,
+      "secrets_present": false,
+      "session_event_counts": {
+        "after-hours": 608,
+        "premarket": 23274,
+        "regular": 13310572
+      },
+      "session_id": "iex-acceptance-20260723",
+      "sparse_trade_symbols": [],
+      "spread_summary": {
+        "AAPL": {
+          "maximum_percent": 10.146673,
+          "median_percent": 0.019,
+          "p95_percent": 0.331,
+          "quote_count": 1801341
+        },
+        "AMD": {
+          "maximum_percent": 10.611206,
+          "median_percent": 1.311,
+          "p95_percent": 5.349,
+          "quote_count": 120219
+        },
+        "AMZN": {
+          "maximum_percent": 10.11683,
+          "median_percent": 0.026,
+          "p95_percent": 0.182,
+          "quote_count": 1433356
+        },
+        "META": {
+          "maximum_percent": 10.191093,
+          "median_percent": 0.46,
+          "p95_percent": 2.149,
+          "quote_count": 47843
+        },
+        "MSFT": {
+          "maximum_percent": 10.225698,
+          "median_percent": 0.179,
+          "p95_percent": 0.943,
+          "quote_count": 110721
+        },
+        "NVDA": {
+          "maximum_percent": 18.325067,
+          "median_percent": 0.015,
+          "p95_percent": 0.482,
+          "quote_count": 3316455
+        },
+        "PLTR": {
+          "maximum_percent": 15.682265,
+          "median_percent": 0.161,
+          "p95_percent": 4.487,
+          "quote_count": 350452
+        },
+        "QQQ": {
+          "maximum_percent": 6.025102,
+          "median_percent": 0.012,
+          "p95_percent": 0.079,
+          "quote_count": 2346829
+        },
+        "SPY": {
+          "maximum_percent": 6.008166,
+          "median_percent": 0.005,
+          "p95_percent": 0.054,
+          "quote_count": 3314101
+        },
+        "TSLA": {
+          "maximum_percent": 10.047146,
+          "median_percent": 0.316,
+          "p95_percent": 1.905,
+          "quote_count": 217887
+        }
+      },
+      "stale_quote_periods_over_15s": {
+        "AAPL": 5,
+        "AMD": 13,
+        "AMZN": 15,
+        "META": 24,
+        "MSFT": 15,
+        "NVDA": 23,
+        "PLTR": 2,
+        "QQQ": 13,
+        "SPY": 4,
+        "TSLA": 16
+      },
+      "symbol_counts": {
+        "AAPL": 1827123,
+        "AMD": 136203,
+        "AMZN": 1467208,
+        "META": 64801,
+        "MSFT": 137567,
+        "NVDA": 3363811,
+        "PLTR": 366010,
+        "QQQ": 2357526,
+        "SPY": 3339311,
+        "TSLA": 274894
+      },
+      "trade_reconstruction_mismatches_count": 0,
+      "trade_reconstruction_mismatches_sample": [],
+      "transport_scope": "Historical REST pagination; live WebSocket continuity is not proven by this session.",
+      "unexplained_mismatch_count": 0,
+      "unexplained_missing_bars_count": 0,
+      "unexplained_missing_bars_sample": []
+    },
+    {
+      "aggregate_mismatches": {
+        "15m": {
+          "count": 0,
+          "sample": []
+        },
+        "5m": {
+          "count": 0,
+          "sample": []
+        }
+      },
+      "boundary_violations_count": 0,
+      "boundary_violations_sample": [],
+      "checksum_valid": true,
+      "collection_mode": "historical_rest",
+      "determinism": {
+        "deterministic": true,
+        "event_counts": [
+          12991682,
+          12991682,
+          12991682
+        ],
+        "event_digests": [
+          "d849ea2ea61def29aa251e6da01364b1c239b695ba3d2000c5011319b9331942",
+          "d849ea2ea61def29aa251e6da01364b1c239b695ba3d2000c5011319b9331942",
+          "d849ea2ea61def29aa251e6da01364b1c239b695ba3d2000c5011319b9331942"
+        ],
+        "receipt_regressions": 0,
+        "runs": 3,
+        "simulated_fill_counts": [
+          0,
+          0,
+          0
+        ],
+        "state_digests": [
+          "b2a9bb7612480dd35633c9af2dc6be069332bf16121043090aad901572f64283",
+          "b2a9bb7612480dd35633c9af2dc6be069332bf16121043090aad901572f64283",
+          "b2a9bb7612480dd35633c9af2dc6be069332bf16121043090aad901572f64283"
+        ]
+      },
+      "duplicates": 0,
+      "event_count": 12991682,
+      "event_counts": {
+        "bar_15m_provider": 284,
+        "bar_1m": 3896,
+        "bar_5m_provider": 809,
+        "historical_import": 1,
+        "historical_import_complete": 1,
+        "quote": 12746946,
+        "recording_started": 1,
+        "recording_stopped": 1,
+        "trade": 239743
+      },
+      "explained_condition_only_minutes_count": 190,
+      "explained_condition_only_minutes_sample": [
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMZN",
+          "timestamp": "2026-07-24T12:00:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "PLTR",
+          "timestamp": "2026-07-24T12:01:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMZN",
+          "timestamp": "2026-07-24T12:02:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "QQQ",
+          "timestamp": "2026-07-24T12:02:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "META",
+          "timestamp": "2026-07-24T12:02:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "PLTR",
+          "timestamp": "2026-07-24T12:02:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 2
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMZN",
+          "timestamp": "2026-07-24T12:04:00+00:00",
+          "trade_count": 2
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "QQQ",
+          "timestamp": "2026-07-24T12:05:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "AMD",
+          "timestamp": "2026-07-24T12:05:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "TSLA",
+          "timestamp": "2026-07-24T12:06:00+00:00",
+          "trade_count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:16:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T12:21:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:24:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-24T12:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:26:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-24T12:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:16:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-24T12:42:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:23:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T12:46:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:44:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-24T12:50:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:31:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-24T12:51:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:49:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T12:52:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:52:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-24T12:58:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:55:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T13:11:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T13:13:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T13:13:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T13:00:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-24T13:20:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T13:23:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-24T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:45:00+00:00",
+          "symbol": "AMZN",
+          "to": "2026-07-24T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T13:02:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-24T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:53:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-24T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:41:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-24T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T13:15:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T12:33:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-24T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T13:28:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-24T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T14:13:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T14:13:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T15:34:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T15:34:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T15:39:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T15:40:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T15:47:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T15:47:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T15:47:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-24T15:47:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T16:10:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T16:10:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T16:35:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T16:35:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T16:37:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T16:37:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T16:41:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T16:41:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T16:45:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T16:46:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T16:59:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T16:59:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:03:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-24T17:03:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:12:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T17:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:12:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-24T17:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:14:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T17:15:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:15:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-24T17:15:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:17:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-24T17:17:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:27:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T17:28:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:31:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T17:31:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:33:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T17:33:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:37:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T17:38:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:43:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T17:43:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:43:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T17:43:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:48:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T17:48:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:49:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T17:49:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:49:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-24T17:49:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:52:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T17:52:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:55:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T17:55:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:57:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-24T17:57:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T17:57:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-24T17:57:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T18:11:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T18:11:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T18:34:00+00:00",
+          "symbol": "META",
+          "to": "2026-07-24T18:34:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T18:47:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T18:47:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T18:49:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T18:49:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T19:03:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T19:03:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T19:04:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T19:04:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T19:37:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-24T19:37:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T20:00:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-24T20:01:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T20:00:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-24T20:07:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T20:03:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-24T20:10:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T20:00:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-24T20:12:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T20:04:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-24T20:21:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T20:09:00+00:00",
+          "symbol": "NVDA",
+          "to": "2026-07-24T20:25:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T20:00:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-24T20:40:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T20:00:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-24T20:42:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-24T20:43:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-24T20:58:00+00:00"
+        }
+      ],
+      "incomplete_bars_treated_as_closed": 0,
+      "live_orders_submitted": 0,
+      "market_date": "2026-07-24",
+      "out_of_order": 0,
+      "paper_orders_submitted": 0,
+      "provider_bars": {
+        "15m": 284,
+        "1m": 3896,
+        "5m": 809
+      },
+      "provider_bars_without_raw_trades_count": 0,
+      "provider_bars_without_raw_trades_sample": [],
+      "published_1m_vwap_information_loss": {
+        "15m": {
+          "count": 264,
+          "sample": [
+            {
+              "differences": {
+                "vw": {
+                  "provider": 208.556923,
+                  "rebuilt": 208.55
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-24T12:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 321.667778,
+                  "rebuilt": 321.67
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-24T13:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 324.984725,
+                  "rebuilt": 324.94608994338444
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 540.900416,
+                  "rebuilt": 540.7679223435331
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 233.732365,
+                  "rebuilt": 233.73113420348528
+                }
+              },
+              "symbol": "AMZN",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 604.710086,
+                  "rebuilt": 604.7228833282718
+                }
+              },
+              "symbol": "META",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 384.822999,
+                  "rebuilt": 384.8366565022035
+                }
+              },
+              "symbol": "MSFT",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 207.452043,
+                  "rebuilt": 207.46124857657693
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 123.678202,
+                  "rebuilt": 123.67002633837615
+                }
+              },
+              "symbol": "PLTR",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 690.394018,
+                  "rebuilt": 690.3996198203645
+                }
+              },
+              "symbol": "QQQ",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            }
+          ]
+        },
+        "5m": {
+          "count": 783,
+          "sample": [
+            {
+              "differences": {
+                "vw": {
+                  "provider": 321.667778,
+                  "rebuilt": 321.67
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-24T13:20:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 323.945303,
+                  "rebuilt": 323.9242744927357
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 542.966833,
+                  "rebuilt": 543.0002422540969
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 233.91809,
+                  "rebuilt": 233.88501938469776
+                }
+              },
+              "symbol": "AMZN",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 605.303777,
+                  "rebuilt": 605.2749110314354
+                }
+              },
+              "symbol": "META",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 384.986653,
+                  "rebuilt": 385.0064438400935
+                }
+              },
+              "symbol": "MSFT",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 207.34482,
+                  "rebuilt": 207.3703014237514
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 124.136671,
+                  "rebuilt": 124.04829782852292
+                }
+              },
+              "symbol": "PLTR",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 690.632056,
+                  "rebuilt": 690.6167977143342
+                }
+              },
+              "symbol": "QQQ",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 738.84867,
+                  "rebuilt": 738.8471957973339
+                }
+              },
+              "symbol": "SPY",
+              "timestamp": "2026-07-24T13:30:00+00:00"
+            }
+          ]
+        }
+      },
+      "quote_only_minutes": {
+        "AAPL": 2,
+        "AMD": 3,
+        "AMZN": 3,
+        "META": 3,
+        "MSFT": 3,
+        "NVDA": 3,
+        "PLTR": 6,
+        "QQQ": 11,
+        "SPY": 41,
+        "TSLA": 3
+      },
+      "raw_trade_aggregate_mismatches": {
+        "15m": {
+          "count": 0,
+          "sample": []
+        },
+        "5m": {
+          "count": 0,
+          "sample": []
+        }
+      },
+      "receipt_order_regressions": 0,
+      "secrets_present": false,
+      "session_event_counts": {
+        "after-hours": 4090,
+        "premarket": 17953,
+        "regular": 12969635
+      },
+      "session_id": "iex-acceptance-20260724",
+      "sparse_trade_symbols": [],
+      "spread_summary": {
+        "AAPL": {
+          "maximum_percent": 11.75619,
+          "median_percent": 0.021,
+          "p95_percent": 0.304,
+          "quote_count": 1750143
+        },
+        "AMD": {
+          "maximum_percent": 10.616285,
+          "median_percent": 0.991,
+          "p95_percent": 4.675,
+          "quote_count": 118205
+        },
+        "AMZN": {
+          "maximum_percent": 10.257394,
+          "median_percent": 0.03,
+          "p95_percent": 0.348,
+          "quote_count": 1224405
+        },
+        "META": {
+          "maximum_percent": 10.188492,
+          "median_percent": 0.664,
+          "p95_percent": 4.878,
+          "quote_count": 54031
+        },
+        "MSFT": {
+          "maximum_percent": 10.119781,
+          "median_percent": 0.099,
+          "p95_percent": 1.266,
+          "quote_count": 117165
+        },
+        "NVDA": {
+          "maximum_percent": 10.085046,
+          "median_percent": 0.015,
+          "p95_percent": 0.076,
+          "quote_count": 3198772
+        },
+        "PLTR": {
+          "maximum_percent": 16.448303,
+          "median_percent": 0.106,
+          "p95_percent": 6.547,
+          "quote_count": 314026
+        },
+        "QQQ": {
+          "maximum_percent": 6.088349,
+          "median_percent": 0.012,
+          "p95_percent": 0.071,
+          "quote_count": 2782317
+        },
+        "SPY": {
+          "maximum_percent": 6.008421,
+          "median_percent": 0.005,
+          "p95_percent": 0.046,
+          "quote_count": 2842915
+        },
+        "TSLA": {
+          "maximum_percent": 10.397911,
+          "median_percent": 0.407,
+          "p95_percent": 1.348,
+          "quote_count": 344967
+        }
+      },
+      "stale_quote_periods_over_15s": {
+        "AAPL": 1,
+        "AMD": 12,
+        "AMZN": 1,
+        "META": 47,
+        "MSFT": 2,
+        "NVDA": 1,
+        "PLTR": 6,
+        "QQQ": 12,
+        "SPY": 2,
+        "TSLA": 1
+      },
+      "symbol_counts": {
+        "AAPL": 1786704,
+        "AMD": 129771,
+        "AMZN": 1250715,
+        "META": 68014,
+        "MSFT": 141457,
+        "NVDA": 3253496,
+        "PLTR": 325846,
+        "QQQ": 2791717,
+        "SPY": 2864485,
+        "TSLA": 379473
+      },
+      "trade_reconstruction_mismatches_count": 0,
+      "trade_reconstruction_mismatches_sample": [],
+      "transport_scope": "Historical REST pagination; live WebSocket continuity is not proven by this session.",
+      "unexplained_mismatch_count": 0,
+      "unexplained_missing_bars_count": 0,
+      "unexplained_missing_bars_sample": []
+    },
+    {
+      "aggregate_mismatches": {
+        "15m": {
+          "count": 0,
+          "sample": []
+        },
+        "5m": {
+          "count": 0,
+          "sample": []
+        }
+      },
+      "boundary_violations_count": 0,
+      "boundary_violations_sample": [],
+      "checksum_valid": true,
+      "collection_mode": "historical_rest",
+      "determinism": {
+        "deterministic": true,
+        "event_counts": [
+          15463602,
+          15463602,
+          15463602
+        ],
+        "event_digests": [
+          "23255af709765dfc4a7aeec2239cae4a9f7ee1d67973c6ca8989f328eff6240c",
+          "23255af709765dfc4a7aeec2239cae4a9f7ee1d67973c6ca8989f328eff6240c",
+          "23255af709765dfc4a7aeec2239cae4a9f7ee1d67973c6ca8989f328eff6240c"
+        ],
+        "receipt_regressions": 0,
+        "runs": 3,
+        "simulated_fill_counts": [
+          0,
+          0,
+          0
+        ],
+        "state_digests": [
+          "799e1875f0355139463f6220c408221ef1fa55d351ed6d266cebaef970538b9c",
+          "799e1875f0355139463f6220c408221ef1fa55d351ed6d266cebaef970538b9c",
+          "799e1875f0355139463f6220c408221ef1fa55d351ed6d266cebaef970538b9c"
+        ]
+      },
+      "duplicates": 0,
+      "event_count": 15463602,
+      "event_counts": {
+        "bar_15m_provider": 277,
+        "bar_1m": 3923,
+        "bar_5m_provider": 801,
+        "historical_import": 1,
+        "historical_import_complete": 1,
+        "quote": 15192815,
+        "recording_started": 1,
+        "recording_stopped": 1,
+        "trade": 265782
+      },
+      "explained_condition_only_minutes_count": 110,
+      "explained_condition_only_minutes_sample": [
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "NVDA",
+          "timestamp": "2026-07-27T12:00:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "TSLA",
+          "timestamp": "2026-07-27T12:03:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "TSLA",
+          "timestamp": "2026-07-27T12:04:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 2
+          },
+          "price_eligible_count": 0,
+          "symbol": "AAPL",
+          "timestamp": "2026-07-27T12:05:00+00:00",
+          "trade_count": 2
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "META",
+          "timestamp": "2026-07-27T12:07:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "MSFT",
+          "timestamp": "2026-07-27T12:07:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 2
+          },
+          "price_eligible_count": 0,
+          "symbol": "NVDA",
+          "timestamp": "2026-07-27T12:09:00+00:00",
+          "trade_count": 2
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "PLTR",
+          "timestamp": "2026-07-27T12:09:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 1
+          },
+          "price_eligible_count": 0,
+          "symbol": "TSLA",
+          "timestamp": "2026-07-27T12:10:00+00:00",
+          "trade_count": 1
+        },
+        {
+          "conditions": {
+            "I": 2
+          },
+          "price_eligible_count": 0,
+          "symbol": "META",
+          "timestamp": "2026-07-27T12:11:00+00:00",
+          "trade_count": 2
+        }
+      ],
+      "gaps": [
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:09:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-27T12:22:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:19:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-27T12:24:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:26:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-27T12:28:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:30:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-27T12:35:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:24:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-27T12:42:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:40:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-27T12:43:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:11:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T12:46:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:46:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-27T12:52:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:49:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T13:07:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T13:09:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T13:11:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T13:13:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T13:18:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:54:00+00:00",
+          "symbol": "TSLA",
+          "to": "2026-07-27T13:25:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:31:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-27T13:27:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:44:00+00:00",
+          "symbol": "AAPL",
+          "to": "2026-07-27T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T13:29:00+00:00",
+          "symbol": "MSFT",
+          "to": "2026-07-27T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T13:20:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T12:32:00+00:00",
+          "symbol": "SPY",
+          "to": "2026-07-27T13:29:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T15:27:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T15:27:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T15:58:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T15:58:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T16:20:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T16:20:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T17:09:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T17:09:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T17:42:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T17:42:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T18:40:00+00:00",
+          "symbol": "PLTR",
+          "to": "2026-07-27T18:40:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T18:49:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-27T18:49:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T20:00:00+00:00",
+          "symbol": "AMD",
+          "to": "2026-07-27T20:00:00+00:00"
+        },
+        {
+          "event_type": "bar_1m",
+          "from": "2026-07-27T20:02:00+00:00",
+          "symbol": "QQQ",
+          "to": "2026-07-27T20:26:00+00:00"
+        }
+      ],
+      "incomplete_bars_treated_as_closed": 0,
+      "live_orders_submitted": 0,
+      "market_date": "2026-07-27",
+      "out_of_order": 0,
+      "paper_orders_submitted": 0,
+      "provider_bars": {
+        "15m": 277,
+        "1m": 3923,
+        "5m": 801
+      },
+      "provider_bars_without_raw_trades_count": 0,
+      "provider_bars_without_raw_trades_sample": [],
+      "published_1m_vwap_information_loss": {
+        "15m": {
+          "count": 265,
+          "sample": [
+            {
+              "differences": {
+                "vw": {
+                  "provider": 315.770626,
+                  "rebuilt": 315.78421330517426
+                }
+              },
+              "symbol": "TSLA",
+              "timestamp": "2026-07-27T12:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 316.45973,
+                  "rebuilt": 316.4453846153846
+                }
+              },
+              "symbol": "TSLA",
+              "timestamp": "2026-07-27T12:45:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 693.433043,
+                  "rebuilt": 693.4275
+                }
+              },
+              "symbol": "QQQ",
+              "timestamp": "2026-07-27T13:00:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 314.5965,
+                  "rebuilt": 314.5643525299335
+                }
+              },
+              "symbol": "TSLA",
+              "timestamp": "2026-07-27T13:15:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 335.686288,
+                  "rebuilt": 335.68342559584573
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 515.363165,
+                  "rebuilt": 515.9920734773694
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 234.861233,
+                  "rebuilt": 234.86497023321536
+                }
+              },
+              "symbol": "AMZN",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 604.593661,
+                  "rebuilt": 604.612728240231
+                }
+              },
+              "symbol": "META",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 390.827495,
+                  "rebuilt": 390.818434551392
+                }
+              },
+              "symbol": "MSFT",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 204.757549,
+                  "rebuilt": 204.79390721746432
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            }
+          ]
+        },
+        "5m": {
+          "count": 782,
+          "sample": [
+            {
+              "differences": {
+                "vw": {
+                  "provider": 314.5965,
+                  "rebuilt": 314.5643525299335
+                }
+              },
+              "symbol": "TSLA",
+              "timestamp": "2026-07-27T13:25:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 335.884269,
+                  "rebuilt": 335.8834478970136
+                }
+              },
+              "symbol": "AAPL",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 521.763547,
+                  "rebuilt": 521.8886643008748
+                }
+              },
+              "symbol": "AMD",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 234.778229,
+                  "rebuilt": 234.78933538549205
+                }
+              },
+              "symbol": "AMZN",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 605.637051,
+                  "rebuilt": 605.6655991110455
+                }
+              },
+              "symbol": "META",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 390.865339,
+                  "rebuilt": 390.8409977788361
+                }
+              },
+              "symbol": "MSFT",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 206.370092,
+                  "rebuilt": 206.34607439083837
+                }
+              },
+              "symbol": "NVDA",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 126.547977,
+                  "rebuilt": 126.50155317368787
+                }
+              },
+              "symbol": "PLTR",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 690.754215,
+                  "rebuilt": 690.7162486244854
+                }
+              },
+              "symbol": "QQQ",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            },
+            {
+              "differences": {
+                "vw": {
+                  "provider": 744.605787,
+                  "rebuilt": 744.6047729137675
+                }
+              },
+              "symbol": "SPY",
+              "timestamp": "2026-07-27T13:30:00+00:00"
+            }
+          ]
+        }
+      },
+      "quote_only_minutes": {
+        "AAPL": 2,
+        "AMD": 1,
+        "AMZN": 3,
+        "META": 4,
+        "MSFT": 4,
+        "NVDA": 2,
+        "PLTR": 7,
+        "QQQ": 18,
+        "SPY": 41,
+        "TSLA": 2
+      },
+      "raw_trade_aggregate_mismatches": {
+        "15m": {
+          "count": 0,
+          "sample": []
+        },
+        "5m": {
+          "count": 0,
+          "sample": []
+        }
+      },
+      "receipt_order_regressions": 0,
+      "secrets_present": false,
+      "session_event_counts": {
+        "after-hours": 4580,
+        "premarket": 11704,
+        "regular": 15447314
+      },
+      "session_id": "iex-acceptance-20260727",
+      "sparse_trade_symbols": [],
+      "spread_summary": {
+        "AAPL": {
+          "maximum_percent": 10.191673,
+          "median_percent": 0.018,
+          "p95_percent": 0.159,
+          "quote_count": 2726145
+        },
+        "AMD": {
+          "maximum_percent": 11.023396,
+          "median_percent": 3.599,
+          "p95_percent": 7.353,
+          "quote_count": 94095
+        },
+        "AMZN": {
+          "maximum_percent": 10.236705,
+          "median_percent": 0.021,
+          "p95_percent": 0.056,
+          "quote_count": 1780812
+        },
+        "META": {
+          "maximum_percent": 10.30187,
+          "median_percent": 0.208,
+          "p95_percent": 5.394,
+          "quote_count": 102803
+        },
+        "MSFT": {
+          "maximum_percent": 10.066085,
+          "median_percent": 0.099,
+          "p95_percent": 0.725,
+          "quote_count": 113425
+        },
+        "NVDA": {
+          "maximum_percent": 10.095865,
+          "median_percent": 0.015,
+          "p95_percent": 0.168,
+          "quote_count": 3367070
+        },
+        "PLTR": {
+          "maximum_percent": 10.171652,
+          "median_percent": 0.549,
+          "p95_percent": 6.534,
+          "quote_count": 428872
+        },
+        "QQQ": {
+          "maximum_percent": 6.132201,
+          "median_percent": 0.016,
+          "p95_percent": 0.069,
+          "quote_count": 2811269
+        },
+        "SPY": {
+          "maximum_percent": 6.07918,
+          "median_percent": 0.005,
+          "p95_percent": 0.043,
+          "quote_count": 3052842
+        },
+        "TSLA": {
+          "maximum_percent": 10.220833,
+          "median_percent": 0.087,
+          "p95_percent": 1.458,
+          "quote_count": 715482
+        }
+      },
+      "stale_quote_periods_over_15s": {
+        "AAPL": 1,
+        "AMD": 9,
+        "AMZN": 1,
+        "META": 20,
+        "MSFT": 5,
+        "NVDA": 1,
+        "PLTR": 5,
+        "QQQ": 18,
+        "SPY": 2,
+        "TSLA": 2
+      },
+      "symbol_counts": {
+        "AAPL": 2759724,
+        "AMD": 114784,
+        "AMZN": 1805730,
+        "META": 115338,
+        "MSFT": 135804,
+        "NVDA": 3445918,
+        "PLTR": 448123,
+        "QQQ": 2821208,
+        "SPY": 3076034,
+        "TSLA": 740935
+      },
+      "trade_reconstruction_mismatches_count": 0,
+      "trade_reconstruction_mismatches_sample": [],
+      "transport_scope": "Historical REST pagination; live WebSocket continuity is not proven by this session.",
+      "unexplained_mismatch_count": 0,
+      "unexplained_missing_bars_count": 0,
+      "unexplained_missing_bars_sample": []
+    }
+  ],
+  "sessions_recorded": 5,
+  "silent_event_loss": 0,
+  "simulated_reconnect_failures": 0,
+  "source": "Alpaca IEX",
+  "symbols": [
+    "AAPL",
+    "NVDA",
+    "SPY",
+    "AMD",
+    "TSLA",
+    "META",
+    "MSFT",
+    "AMZN",
+    "PLTR",
+    "QQQ"
+  ],
+  "total_duration_hours": 80.0,
+  "total_event_count": 59234124,
+  "total_provider_1m_bars": 19701,
+  "total_quotes": 58041608,
+  "total_trades": 1167197,
+  "unexplained_mismatches": 0
+}

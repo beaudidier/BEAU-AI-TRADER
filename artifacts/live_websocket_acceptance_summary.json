@@ -1,0 +1,42 @@
+{
+  "eligible_sessions": 0,
+  "ignored_reports": [],
+  "metrics": {
+    "boundary_coverage": {
+      "after_hours": false,
+      "close_1530_1610": false,
+      "opening_0925_1030": false,
+      "premarket": false
+    },
+    "checksum_failures": 0,
+    "duplicates": 0,
+    "order_count": 0,
+    "out_of_order": 0,
+    "provider_bars": {
+      "15m": 0,
+      "1m": 0,
+      "5m": 0
+    },
+    "quotes": 0,
+    "reconnects": 0,
+    "repaired_gaps": 0,
+    "replay_digest_consistent": true,
+    "secret_scan_findings": 0,
+    "stale_periods": 0,
+    "total_duration_seconds": 0,
+    "total_events": 0,
+    "trades": 0,
+    "unexplained_mismatches": 0,
+    "unrepaired_gaps": 0
+  },
+  "schema_version": 1,
+  "session_ids": [],
+  "unmet_criteria": [
+    "eligible_sessions:0/3",
+    "missing_coverage:after_hours",
+    "missing_coverage:close_1530_1610",
+    "missing_coverage:opening_0925_1030",
+    "missing_coverage:premarket"
+  ],
+  "verdict": "INCOMPLETE"
+}
